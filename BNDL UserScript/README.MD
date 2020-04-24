@@ -8,7 +8,7 @@ Requirements:
   
 Installation:
 - Install UserScript extension to your browser
-- Download BNDL.user.js(some browser extension support automatic installation when you raw view BNDL.user.js)
+- Download BNDL.user.js (some browser extension support automatic installation when you raw view BNDL.user.js)
 - Login your account at Bookwalker Japan
 - Open the book you want to backup
 - Click the button near the Book title
