@@ -3,9 +3,9 @@ BNDL UserScript
 Requirements:
 - Evironment have enough RAM to cache-up all canvas of a book (may cost ~400MB if facing a 500 pages novel)
 - A web browser support extension for running userscript
-  Chrome, Firefox, IE
+  - Chrome, Firefox, IE
 - JSzip library
-  You don't really need to install it, script itself will download it once installed aat your browser.
+  - You don't really need to install it, script itself will download it once installed aat your browser.
   
 Installation:
 - Install UserScript extension to your browser
