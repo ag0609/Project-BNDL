@@ -165,7 +165,7 @@ known issue
         btn_obj.id = 'abc1234';
         btn_obj.innerText = 'Save';
         btn_obj.onclick = saveFile;
-        btn.style = 'width=100%;height=100%;top=0;left=0;background-color=rgb(0,0,0)';
+        //btn.style = 'width=100%;height=100%;top=0;left=0;background-color=rgb(0,0,0)';
         btn.appendChild(btn_obj);
         document.getElementsByClassName('padding')[0].appendChild(btn);
     } //Show "Save" Button on page
@@ -238,7 +238,7 @@ known issue
                 console.log("[%i] size: %i bytes", curp, ba[curp].size);
                 console.log("[B%i] size: %i bytes", curp, trimBlack);
                 if(ba[curp].size < 20000 && trimBlack < 1000 && tmpS < 5) {
-                    console.log("[%i] too small(< 15000 bytes), retrying %i times for capture canvas", curp, tmpS+1);
+                    console.log("[%i] too small(< 20000 bytes), retrying %i times for capture canvas", curp, tmpS+1);
                     tmpS++;
                 } else if(trimBlack < 1000) {
                     console.log("[B%i] too small(< 1000 bytes), retrying %i times for capture canvas", curp, tmpS+1);
