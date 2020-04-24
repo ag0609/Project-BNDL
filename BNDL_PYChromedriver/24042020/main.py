@@ -17,6 +17,8 @@ from selenium.webdriver.support import expected_conditions as EC
 config = configparser.RawConfigParser()
 config.read("./config.ini")
 
+CHROMEDRIVER = config.get("require", "CHROMEDRIVE");
+DTB = config.get("require", "DEATH_TO_BLANK");
 IMGDIR = config.get("config", "IMGDIR")
 SLEEP_TIME = int(config.get("config", "SLEEP_TIME"))
 OVERWRITE = int(config.get("config", "OVERWRITE"))
@@ -36,7 +38,7 @@ if not os.path.isdir(IMGDIR):
 
 def get_driver():
     option = webdriver.ChromeOptions()
-    option.add_extension("./death_to_blank_1.8.0_0.crx")
+    option.add_extension(DTB)
     option.add_argument('high-dpi-support=1')
     option.add_argument('device-scale-factor=1')
     option.add_argument('force-device-scale-factor=1')
