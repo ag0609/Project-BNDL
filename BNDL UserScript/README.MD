@@ -5,7 +5,7 @@ Requirements:
 - A web browser support extension for running userscript
   - Chrome, Firefox, IE
 - JSzip library
-  - You don't really need to install it, script itself will download it once installed aat your browser.
+  - You don't really need to install it, script itself will download it once installed to your browser.
   
 Installation:
 - Install UserScript extension to your browser
