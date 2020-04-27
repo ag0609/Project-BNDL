@@ -20,4 +20,8 @@ known issue
 0.35(23/04/2020)
 -Trim twice to define blacked pages
 -Console log grouped should be easier to preview
+
+0.40(27/04/2020)
+-UI Improvement
+-Trim speed improvement
 */
