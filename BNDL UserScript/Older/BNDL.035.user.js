@@ -11,31 +11,6 @@
 // @grant        none
 // ==/UserScript==
 
-/*
-0.10(15-04-2020)
--Project BNDL kickstarted
-
-0.22(17-04-2020)
-known issue
--[fixed >0.33] download image have black bar at bottom because of download bar appear when using Chrome
-
-0.30(20/04/2020)
--Changed download method
-known issue
--[fixed >0.33] only 10 downloads created in a line without any user interaction
-
-0.33(21/04/2020)
--Change download method again, import JSzip for zipping images...(resolved black bar and downloads count restriction problems)
-known issue
--Black page will show cause of non-ready canvas(set 5 seconds interval and canvas size checking for remediation)
--Zip blob link not start download(change _self location.href for remediation)
-
-0.35(23/04/2020)
--Trim twice to define blacked pages
--Console log grouped should be easier to preview
-*/
-
-
 (function() {
     var img, ba, c, job;
     var [cx, cy, cw, ch] = [0, 0, 0, 0];
