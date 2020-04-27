@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL
 // @namespace    http://sorehadame.com/
-// @version      0.35
+// @version      0.40
 // @description  try to take copy of yours books! Book-worm!
 // @author       ag0609
 // @include      https://*.bookwalker.jp/*/viewer.html?*
@@ -10,31 +10,6 @@
 // @run-at       document-end
 // @grant        none
 // ==/UserScript==
-
-/*
-0.10(15-04-2020)
--Project BNDL kickstarted
-
-0.22(17-04-2020)
-known issue
--[fixed >0.33] download image have black bar at bottom because of download bar appear when using Chrome
-
-0.30(20/04/2020)
--Changed download method
-known issue
--[fixed >0.33] only 10 downloads created in a line without any user interaction
-
-0.33(21/04/2020)
--Change download method again, import JSzip for zipping images...(resolved black bar and downloads count restriction problems)
-known issue
--Black page will show cause of non-ready canvas(set 5 seconds interval and canvas size checking for remediation)
--Zip blob link not start download(change _self location.href for remediation)
-
-0.35(23/04/2020)
--Trim twice to define blacked pages
--Console log grouped should be easier to preview
-*/
-
 
 (function() {
     var img, ba, c, job;
@@ -160,14 +135,37 @@ known issue
     } //wait for canvas object appear
     function create_btn() {
         var btn = document.createElement('div');
+        btn.id = 'abc123';
+        btn.style.position = 'absolute';
+        btn.style.top = '50%';
+        btn.style.left = '50%';
+        btn.style.width = '30%';
+        btn.style.height = '20%';
+        btn.style.display = 'flex';
+        btn.style.backgroundColor = 'grey';
+        btn.style.opacity = 0.95;
+        btn.style.alignItems = 'center';
+        var pc = document.createElement('progress');
+        pc.id = 'pb';
+        pc.style.width = '100%';
+        pc.style.display = 'none';
+        var close_btn = document.createElement('button');
+        close_btn.type = 'button';
+        close_btn.style.alignSelf = 'flex-start';
+        close_btn.innerText = '[x] Close';
+        close_btn.onclick = function() {
+            document.getElementById('abc123').display = 'none';
+        };
         var btn_obj = document.createElement('button');
         btn_obj.type = 'button';
         btn_obj.id = 'abc1234';
         btn_obj.innerText = 'Save';
         btn_obj.onclick = saveFile;
-        //btn.style = 'width=100%;height=100%;top=0;left=0;background-color=rgb(0,0,0)';
+        btn.appendChild(document.createElement('br'));
+        btn.appendChild(pc);
+        btn.appendChild(close_btn);
         btn.appendChild(btn_obj);
-        document.getElementsByClassName('padding')[0].appendChild(btn);
+        document.getElementById('viewer').appendChild(btn);
     } //Show "Save" Button on page
     function DLFile() {
         console.group("JSZip");
@@ -194,17 +192,34 @@ known issue
     } //Download Files
     function saveFile() {
         var obj = document.getElementById('abc1234');
+        var pc = document.getElementById('pb');
+        var phl = document.getElementById('abc123');
         fn = document.getElementsByClassName('titleText')[0].innerText;
         console.log("Title:", fn);
         if(job) {
             clearInterval(job);
+            pc.style.display = 'none';
+            phl.style.backgroundColor = 'transperant';
+            phl.style.opacity = 1;
             obj.innerText = "Save";
             DLFile();
             return console.log('Stopped');
         }
+        pc.style.display = 'block';
+        pc.min = 0;
+        pc.style.width = '100%';
+        phl.style.display = 'flex';
+        phl.style.backgroundColor = 'grey';
+        phl.style.opacity = 0.95;
+        phl.style.width = '100%';
+        phl.style.height = '100%';
+        phl.style.top = 0;
+        phl.style.left = 0;
+        phl.style.alignItems = 'center';
         obj.innerText = "Wait";
         var [fp, tmpS] = [0, 0];
         var totp = (document.getElementById('pageSliderCounter').innerText).split('/')[1] * 1;
+        pc.max = totp;
         ba = new Array();
         job = setInterval(function() {
             var load = 0
@@ -226,15 +241,16 @@ known issue
                 }
                 console.groupEnd();
                 obj.innerText = "Stop("+curp +"/"+ totp+")";
+                pc.value = curp;
                 var img;
-                img = trimCanvas(c, [255,255,255], 20, [cx,cy,cw,ch], 16);
+                img = trimCanvas(c, [255,255,255], 10, [cx,cy,cw,ch], 16);
                 //img = trimCanvas(img, [255,255,255], 20, [cx,cy,cw,ch], 4);
                 //img = trimCanvas(img, [255,255,255], 20, [cx,cy,cw,ch], 2);
                 if(img.width < cw || img.height < ch) {
                     img = chopCanvas(c, cx, cy, cw, ch);
                 }
                 ba[curp] = dataURItoBlob(img.toDataURL('image/jpeg'));
-                var trimBlack = (dataURItoBlob(trimCanvas(img, [0,0,0], null, 10).toDataURL('image/jpeg'))).size;
+                var trimBlack = (dataURItoBlob(trimCanvas(img, [0,0,0], 10, null, 10).toDataURL('image/jpeg'))).size;
                 console.log("[%i] size: %i bytes", curp, ba[curp].size);
                 console.log("[B%i] size: %i bytes", curp, trimBlack);
                 if(ba[curp].size < 20000 && trimBlack < 1000 && tmpS < 5) {
@@ -251,6 +267,9 @@ known issue
             } else console.log("Still loading...");
             if(curp == totp && tmpS == 0) {
                 clearInterval(job);
+                pc.style.display = 'none';
+                phl.style.backgroundColor = 'transperant';
+                phl.style.opacity = 1;
                 DLFile();
                 obj.innerText = "Save";
                 return console.log("completed");
