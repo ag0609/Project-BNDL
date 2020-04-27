@@ -34,7 +34,7 @@
         ctx.putImageData(newData,0,0);
         return croppedCanvas;
     } //Crop canvas
-    function trimCanvas(canvas, color, fuzz, border, skip){
+    function trimCanvas(canvas, color, fuzz, skip, border){
         console.groupCollapsed('trim');
         fuzz = fuzz ? fuzz : 13.33;
         color = typeof(color) == typeof([]) ? color : [255, 255, 255];
@@ -243,14 +243,14 @@
                 obj.innerText = "Stop("+curp +"/"+ totp+")";
                 pc.value = curp;
                 var img;
-                img = trimCanvas(c, [255,255,255], 10, [cx,cy,cw,ch], 16);
-                //img = trimCanvas(img, [255,255,255], 20, [cx,cy,cw,ch], 4);
-                //img = trimCanvas(img, [255,255,255], 20, [cx,cy,cw,ch], 2);
+                img = trimCanvas(c, [255,255,255], 10, 16, [cx,cy,cw,ch]);
+                //img = trimCanvas(img, [255,255,255], 20, 4, [cx,cy,cw,ch]);
+                //img = trimCanvas(img, [255,255,255], 20, 2, [cx,cy,cw,ch]);
                 if(img.width < cw || img.height < ch) {
                     img = chopCanvas(c, cx, cy, cw, ch);
                 }
                 ba[curp] = dataURItoBlob(img.toDataURL('image/jpeg'));
-                var trimBlack = (dataURItoBlob(trimCanvas(img, [0,0,0], 10, null, 10).toDataURL('image/jpeg'))).size;
+                var trimBlack = (dataURItoBlob(trimCanvas(img, [0,0,0], 10, 10).toDataURL('image/jpeg'))).size;
                 console.log("[%i] size: %i bytes", curp, ba[curp].size);
                 console.log("[B%i] size: %i bytes", curp, trimBlack);
                 if(ba[curp].size < 20000 && trimBlack < 1000 && tmpS < 5) {
