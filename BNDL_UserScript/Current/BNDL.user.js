@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL
 // @namespace    http://sorehadame.com/
-// @version      0.40
+// @version      0.44
 // @description  try to take copy of yours books! Book-worm!
 // @author       ag0609
 // @include      https://*.bookwalker.jp/*/viewer.html?*
@@ -15,6 +15,13 @@
     var img, ba, c, job;
     var [cx, cy, cw, ch] = [0, 0, 0, 0];
     var fn = "xxx";
+
+    var style = document.createElement('style');
+    style.type = 'text/css';
+    style.innerHTML = '@keyframes open { from {top:100%;} to {top:40%} } @keyframes extend { from {top:40%;left:35%;width:30%;height:20%;} to {top:0;left:0;width:100%;height:100%;} }';
+    document.getElementsByTagName('head')[0].appendChild(style);
+
+
     function pad(n, t) {
         t = t * 1 ? t * 1 : Math.max(t.length,3);
         return ('0'.repeat(99) + n).slice(t * -1);
@@ -137,8 +144,8 @@
         var btn = document.createElement('div');
         btn.id = 'abc123';
         btn.style.position = 'absolute';
-        btn.style.top = '50%';
-        btn.style.left = '50%';
+        btn.style.top = '100%';
+        btn.style.left = '35%';
         btn.style.width = '30%';
         btn.style.height = '20%';
         btn.style.display = 'flex';
@@ -154,7 +161,8 @@
         close_btn.style.alignSelf = 'flex-start';
         close_btn.innerText = '[x] Close';
         close_btn.onclick = function() {
-            document.getElementById('abc123').display = 'none';
+            document.getElementById('abc123').style.animation = "extend 0.3s ease backwards";
+            document.getElementById('abc123').style.animation = "open 0.5s ease backwards";
         };
         var btn_obj = document.createElement('button');
         btn_obj.type = 'button';
@@ -166,6 +174,7 @@
         btn.appendChild(close_btn);
         btn.appendChild(btn_obj);
         document.getElementById('viewer').appendChild(btn);
+        btn.style.animation = "open 0.5s ease forwards";
     } //Show "Save" Button on page
     function DLFile() {
         console.group("JSZip");
@@ -211,10 +220,7 @@
         phl.style.display = 'flex';
         phl.style.backgroundColor = 'grey';
         phl.style.opacity = 0.95;
-        phl.style.width = '100%';
-        phl.style.height = '100%';
-        phl.style.top = 0;
-        phl.style.left = 0;
+        phl.style.animation = "extend 0.3s ease forwards"
         phl.style.alignItems = 'center';
         obj.innerText = "Wait";
         var [fp, tmpS] = [0, 0];
