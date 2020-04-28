@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL
 // @namespace    http://sorehadame.com/
-// @version      0.44
+// @version      0.45
 // @description  try to take copy of yours books! Book-worm!
 // @author       ag0609
 // @include      https://*.bookwalker.jp/*/viewer.html?*
@@ -18,9 +18,8 @@
 
     var style = document.createElement('style');
     style.type = 'text/css';
-    style.innerHTML = '@keyframes open { from {top:100%;} to {top:40%} } @keyframes extend { from {top:40%;left:35%;width:30%;height:20%;} to {top:0;left:0;width:100%;height:100%;} }';
+    style.innerHTML = '#abc123 {transition:all 1s;} #abc123.close {top:100%;left:35%} #abc123.open {top:40%;left:35%;width:30%;height:20%} #abc123.extend {top:0;left:0;width:100%;height:100%;}';
     document.getElementsByTagName('head')[0].appendChild(style);
-
 
     function pad(n, t) {
         t = t * 1 ? t * 1 : Math.max(t.length,3);
@@ -93,14 +92,9 @@
         if(borderFlag) {
             if(cw < 1) {
                 [cx, cy, cw, ch] = [bx, by, bw, bh];
-            }
-            if(bx+bw < bottomRight.x) {
+            } else if(bx+bw < bottomRight.x) {
                 cx = bottomRight.x - cw;
                 bx = cx;
-            }
-            if(by+bh < bottomRight.y) {
-                cy = bottomRight.y -ch;
-                by = cy;
             }
         }
         console.log("tLx: %i, tLy: %i, w: %i, h: %i", bx, by, bw, bh);
@@ -149,14 +143,11 @@
         var btn = document.createElement('div');
         btn.id = 'abc123';
         btn.style.position = 'absolute';
-        btn.style.top = '100%';
-        btn.style.left = '35%';
-        btn.style.width = '30%';
-        btn.style.height = '20%';
         btn.style.display = 'flex';
         btn.style.backgroundColor = 'grey';
         btn.style.opacity = 0.95;
         btn.style.alignItems = 'center';
+        btn.classList.add('close');
         var pc = document.createElement('progress');
         pc.id = 'pb';
         pc.style.width = '100%';
@@ -164,22 +155,25 @@
         var close_btn = document.createElement('button');
         close_btn.type = 'button';
         close_btn.style.alignSelf = 'flex-start';
+        close_btn.style.backgroundColor = 'white';
         close_btn.innerText = '[x] Close';
         close_btn.onclick = function() {
-            document.getElementById('abc123').style.animation = "extend 0.3s ease backwards";
-            document.getElementById('abc123').style.animation = "open 0.5s ease backwards";
+            document.getElementById('abc123').classList.remove('extend');
+            document.getElementById('abc123').classList.remove('open');
+            document.getElementById('abc123').classList.add('close');
         };
         var btn_obj = document.createElement('button');
         btn_obj.type = 'button';
         btn_obj.id = 'abc1234';
+        btn_obj.style.backgroundColor = 'white';
         btn_obj.innerText = 'Save';
         btn_obj.onclick = saveFile;
         btn.appendChild(document.createElement('br'));
         btn.appendChild(pc);
         btn.appendChild(close_btn);
         btn.appendChild(btn_obj);
-        document.getElementById('viewer').appendChild(btn);
-        btn.style.animation = "open 0.5s ease forwards";
+        document.body.appendChild(btn);
+        document.getElementById('abc123').classList.toggle('open');
     } //Show "Save" Button on page
     function DLFile() {
         console.group("JSZip");
@@ -213,8 +207,7 @@
         if(job) {
             clearInterval(job);
             pc.style.display = 'none';
-            phl.style.backgroundColor = 'transperant';
-            phl.style.opacity = 1;
+            document.getElementById('abc123').classList.remove('extend');
             obj.innerText = "Save";
             DLFile();
             return console.log('Stopped');
@@ -225,7 +218,8 @@
         phl.style.display = 'flex';
         phl.style.backgroundColor = 'grey';
         phl.style.opacity = 0.95;
-        phl.style.animation = "extend 0.3s ease forwards"
+        document.getElementById('abc123').classList.remove('open');
+        document.getElementById('abc123').classList.add('extend');
         phl.style.alignItems = 'center';
         obj.innerText = "Wait";
         var [fp, tmpS] = [0, 0];
@@ -279,8 +273,8 @@
             if(curp == totp && tmpS == 0) {
                 clearInterval(job);
                 pc.style.display = 'none';
-                phl.style.backgroundColor = 'transperant';
-                phl.style.opacity = 1;
+                document.getElementById('abc123').classList.remove('extend');
+                 document.getElementById('abc123').classList.remove('extend');
                 DLFile();
                 obj.innerText = "Save";
                 return console.log("completed");
