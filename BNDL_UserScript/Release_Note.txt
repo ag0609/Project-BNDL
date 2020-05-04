@@ -24,4 +24,13 @@ known issue
 0.40(27/04/2020)
 -UI Improvement
 -Trim speed improvement
+
+0.44(29/04/2020)
+-UI Layer Improvement
+
+0.45(01/05/2020)
+-Minor bug fixes
+
+0.46(04/05/2020)
+-Trim Logic fixes for missing extending height check
 */
