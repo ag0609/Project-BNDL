@@ -34,12 +34,12 @@ button .bndl-btn {
 	align-self: center;
 }
 
-.progress {
+.bndl-progress {
 	width: 100%;
 	background-color: lightgrey;
 	position: relative;
   }
-  .progress:before {
+  .bndl-progress:before {
 	content: attr(data-label);
 	font-size: 0.8em;
 	position: absolute;
@@ -48,12 +48,12 @@ button .bndl-btn {
 	left: 0;
 	right: 0;
   }
-  .progress .value {
+  .bndl-progress .bndl-value {
 	background-color: lightskyblue;
 	display: inline-block;
 	height: 0%;
 	transition: ease 0.3s;
   }
-  .progress .value.start {
+  .bndl-progress .bndl-value.start {
 	height: 15%
   }
