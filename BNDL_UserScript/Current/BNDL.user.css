@@ -1,0 +1,59 @@
+#bndl {
+	position: absolute;
+	display: flexbox;
+	background-color: darkred;
+	transition:ease 0.3s;
+}
+
+#bndl.close {
+	top:95%;
+	left:90%;
+	width:10%;
+	height:5%
+}
+
+#bndl.open {
+	top:40%;
+	left:35%;
+	width:30%;
+	height:20%
+}
+
+#bndl.extend {
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	overflow: hidden;
+}
+
+button .bndl-btn {
+	-webkit-appearance: none;
+	background-color: black;
+	font-size: 10px;
+	align-self: center;
+}
+
+.progress {
+	width: 100%;
+	background-color: lightgrey;
+	position: relative;
+  }
+  .progress:before {
+	content: attr(data-label);
+	font-size: 0.8em;
+	position: absolute;
+	text-align: center;
+	top: 5px;
+	left: 0;
+	right: 0;
+  }
+  .progress .value {
+	background-color: lightskyblue;
+	display: inline-block;
+	height: 0%;
+	transition: ease 0.3s;
+  }
+  .progress .value.start {
+	height: 15%
+  }
