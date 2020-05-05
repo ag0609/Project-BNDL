@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL
-// @namespace    http://sorehadame.com/
-// @version      0.45
+// @namespace    https://github.com/ag0609/bndl
+// @version      0.47
 // @description  try to take copy of yours books! Book-worm!
 // @author       ag0609
 // @include      https://*.bookwalker.jp/*/viewer.html?*
@@ -16,9 +16,10 @@
     var [cx, cy, cw, ch] = [0, 0, 0, 0];
     var fn = "xxx";
 
+    const css = "I2JuZGwgew0KCXBvc2l0aW9uOiBhYnNvbHV0ZTsNCglkaXNwbGF5OiBmbGV4Ym94Ow0KCWJhY2tncm91bmQtY29sb3I6IGRhcmtyZWQ7DQoJdHJhbnNpdGlvbjplYXNlIDAuM3M7DQp9DQoNCiNibmRsLmNsb3NlIHsNCgl0b3A6OTUlOw0KCWxlZnQ6OTAlOw0KCXdpZHRoOjEwJTsNCgloZWlnaHQ6NSUNCn0NCg0KI2JuZGwub3BlbiB7DQoJdG9wOjQwJTsNCglsZWZ0OjM1JTsNCgl3aWR0aDozMCU7DQoJaGVpZ2h0OjIwJQ0KfQ0KDQojYm5kbC5leHRlbmQgew0KCXRvcDowOw0KCWxlZnQ6MDsNCgl3aWR0aDoxMDAlOw0KCWhlaWdodDoxMDAlOw0KCW92ZXJmbG93OiBoaWRkZW47DQp9DQoNCmJ1dHRvbiAuYm5kbC1idG4gew0KCS13ZWJraXQtYXBwZWFyYW5jZTogbm9uZTsNCgliYWNrZ3JvdW5kLWNvbG9yOiBibGFjazsNCglmb250LXNpemU6IDEwcHg7DQoJYWxpZ24tc2VsZjogY2VudGVyOw0KfQ0KDQouYm5kbC1wcm9ncmVzcyB7DQoJd2lkdGg6IDEwMCU7DQoJaGVpZ2h0OiAwJTsNCgliYWNrZ3JvdW5kLWNvbG9yOiBsaWdodGdyZXk7DQoJcG9zaXRpb246IHJlbGF0aXZlOw0KCXRyYW5zaXRpb246IGVhc2UgMC4zczsNCiAgfQ0KICAuYm5kbC1wcm9ncmVzczpiZWZvcmUgew0KCWNvbnRlbnQ6IGF0dHIoZGF0YS1sYWJlbCk7DQoJZm9udC1zaXplOiAwLjhlbTsNCglwb3NpdGlvbjogYWJzb2x1dGU7DQoJdGV4dC1hbGlnbjogY2VudGVyOw0KCXRvcDogNXB4Ow0KCWxlZnQ6IDA7DQoJcmlnaHQ6IDA7DQogIH0NCiAgLmJuZGwtcHJvZ3Jlc3MgPiBzcGFuIHsNCgloZWlnaHQ6IDEwMCU7DQoJYmFja2dyb3VuZC1jb2xvcjogcmdiKDQzLDE5NCw4Myk7DQoJYmFja2dyb3VuZC1pbWFnZTogbGluZWFyLWdyYWRpZW50KA0KCQktNDVkZWcsIA0KCQlyZ2JhKDI1NSwgMjU1LCAyNTUsIC4yKSAyNSUsIA0KCQl0cmFuc3BhcmVudCAyNSUsIA0KCQl0cmFuc3BhcmVudCA1MCUsIA0KCQlyZ2JhKDI1NSwgMjU1LCAyNTUsIC4yKSA1MCUsIA0KCQlyZ2JhKDI1NSwgMjU1LCAyNTUsIC4yKSA3NSUsIA0KCQl0cmFuc3BhcmVudCA3NSUsIA0KCQl0cmFuc3BhcmVudA0KCSAgKTsNCgkgIHotaW5kZXg6IDE7DQoJYmFja2dyb3VuZC1zaXplOiA1MHB4IDUwcHg7DQoJYW5pbWF0aW9uOiBtb3ZlIDJzIGxpbmVhciBpbmZpbml0ZTsNCglib3gtc2hhZG93OiANCgkgIGluc2V0IDAgMnB4IDlweCAgcmdiYSgyNTUsMjU1LDI1NSwwLjMpLA0KCSAgaW5zZXQgMCAtMnB4IDZweCByZ2JhKDAsMCwwLDAuNCk7DQoJcG9zaXRpb246IHJlbGF0aXZlOw0KCW92ZXJmbG93OiBoaWRkZW47DQoJZGlzcGxheTogaW5saW5lLWJsb2NrOw0KCXRyYW5zaXRpb246IGVhc2UgMC4zczsNCiAgfQ0KICAuYm5kbC1wcm9ncmVzcy5zdGFydCB7DQoJaGVpZ2h0OiAyMHB4Ow0KICB9";
     var style = document.createElement('style');
     style.type = 'text/css';
-    style.innerHTML = '#abc123 {transition:all 1s;} #abc123.close {top:100%;left:35%} #abc123.open {top:40%;left:35%;width:30%;height:20%} #abc123.extend {top:0;left:0;width:100%;height:100%;}';
+    style.innerHTML = atob(css);
     document.getElementsByTagName('head')[0].appendChild(style);
 
     function pad(n, t) {
@@ -139,41 +140,49 @@
         c = canvas_list[0];
         create_btn();
     } //wait for canvas object appear
+    function callback($$e,_f_) {
+        var p = document.getElementsByClassName('bndl-progress')[0];
+        var v = p.getElementsByClassName('bndl-value')[0];
+        v.style.width = ((p.getAttribute('value') - p.getAttribute('min')) * 100 / p.getAttribute('max')) + "%";
+    }
     function create_btn() {
         var btn = document.createElement('div');
-        btn.id = 'abc123';
-        btn.style.position = 'absolute';
-        btn.style.display = 'flex';
-        btn.style.backgroundColor = 'grey';
-        btn.style.opacity = 0.95;
-        btn.style.alignItems = 'center';
-        btn.classList.add('close');
-        var pc = document.createElement('progress');
-        pc.id = 'pb';
-        pc.style.width = '100%';
-        pc.style.display = 'none';
+        btn.id = 'bndl';
+        btn.ob = new MutationObserver(callback);
+        btn.classList.add('open');
+        var pc = document.createElement('div');
+        pc.id = 'bndl-progress';
+        pc.classList.add("bndl-progress");
+        var pcv = document.createElement('span');
+        pcv.classList.add("bndl-value");
+        pc.setAttribute("min", 0);
+        pc.setAttribute("max", 0);
+        pc.setAttribute("value", 0);
+        pc.appendChild(pcv);
+        btn.ob.observe(pc, {attributes:true});
+        /*
         var close_btn = document.createElement('button');
         close_btn.type = 'button';
         close_btn.style.alignSelf = 'flex-start';
         close_btn.style.backgroundColor = 'white';
         close_btn.innerText = '[x] Close';
         close_btn.onclick = function() {
-            document.getElementById('abc123').classList.remove('extend');
-            document.getElementById('abc123').classList.remove('open');
-            document.getElementById('abc123').classList.add('close');
+            document.getElementById('bndl').classList.remove('extend');
+            document.getElementById('bndl').classList.remove('open');
+            document.getElementById('bndl').classList.add('close');
         };
+        */
         var btn_obj = document.createElement('button');
         btn_obj.type = 'button';
-        btn_obj.id = 'abc1234';
+        btn_obj.id = 'bndl4';
         btn_obj.style.backgroundColor = 'white';
         btn_obj.innerText = 'Save';
         btn_obj.onclick = saveFile;
         btn.appendChild(document.createElement('br'));
         btn.appendChild(pc);
-        btn.appendChild(close_btn);
+        //btn.appendChild(close_btn);
         btn.appendChild(btn_obj);
         document.body.appendChild(btn);
-        document.getElementById('abc123').classList.toggle('open');
     } //Show "Save" Button on page
     function DLFile() {
         console.group("JSZip");
@@ -199,32 +208,29 @@
         });
     } //Download Files
     function saveFile() {
-        var obj = document.getElementById('abc1234');
-        var pc = document.getElementById('pb');
-        var phl = document.getElementById('abc123');
+        var obj = document.getElementById('bndl4');
+        var pc = document.getElementById('bndl-progress');
+        var phl = document.getElementById('bndl');
         fn = document.getElementsByClassName('titleText')[0].innerText;
         console.log("Title:", fn);
         if(job) {
             clearInterval(job);
-            pc.style.display = 'none';
-            document.getElementById('abc123').classList.remove('extend');
+            pc.classList.toggle("start");
+            //document.getElementById('bndl').classList.remove('extend');
             obj.innerText = "Save";
             DLFile();
             return console.log('Stopped');
         }
-        pc.style.display = 'block';
-        pc.min = 0;
-        pc.style.width = '100%';
+        pc.classList.toggle("start");
         phl.style.display = 'flex';
         phl.style.backgroundColor = 'grey';
         phl.style.opacity = 0.95;
-        document.getElementById('abc123').classList.remove('open');
-        document.getElementById('abc123').classList.add('extend');
+        document.getElementById('bndl').classList.add('extend');
         phl.style.alignItems = 'center';
         obj.innerText = "Wait";
         var [fp, tmpS] = [0, 0];
         var totp = (document.getElementById('pageSliderCounter').innerText).split('/')[1] * 1;
-        pc.max = totp;
+        pc.setAttribute("max", totp);
         ba = new Array();
         job = setInterval(function() {
             var load = 0
@@ -246,11 +252,9 @@
                 }
                 console.groupEnd();
                 obj.innerText = "Stop("+curp +"/"+ totp+")";
-                pc.value = curp;
+                pc.setAttribute("value", curp);
                 var img;
                 img = trimCanvas(c, [255,255,255], 10, 16, [cx,cy,cw,ch]);
-                //img = trimCanvas(img, [255,255,255], 20, 4, [cx,cy,cw,ch]);
-                //img = trimCanvas(img, [255,255,255], 20, 2, [cx,cy,cw,ch]);
                 if(img.width < cw || img.height < ch) {
                     img = chopCanvas(c, cx, cy, cw, ch);
                 }
@@ -272,9 +276,7 @@
             } else console.log("Still loading...");
             if(curp == totp && tmpS == 0) {
                 clearInterval(job);
-                pc.style.display = 'none';
-                document.getElementById('abc123').classList.remove('extend');
-                 document.getElementById('abc123').classList.remove('extend');
+                pc.classList.toggle("start");
                 DLFile();
                 obj.innerText = "Save";
                 return console.log("completed");
