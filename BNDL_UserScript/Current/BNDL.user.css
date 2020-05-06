@@ -44,9 +44,11 @@ button .bndl-btn {
 	font-size: 0.8em;
 	position: absolute;
 	text-align: center;
+	overflow: hidden;
 	top: 5px;
 	left: 0;
 	right: 0;
+	animation: bndl-value-start-bar 2s linear;
   }
   .bndl-progress .bndl-value {
 	background-color: lightskyblue;
@@ -56,4 +58,13 @@ button .bndl-btn {
   }
   .bndl-progress .bndl-value.start {
 	height: 15%
+  }
+
+  @keyframes bndl-value-start-bar {
+	0% {
+		background-position-x: 50px;
+	}
+	100% {
+		background-position-x: 0px;
+	}
   }
