@@ -1,12 +1,11 @@
 // ==UserScript==
 // @name         BNDL
 // @namespace    https://github.com/ag0609/bndl
-// @version      0.47
+// @version      0.48
 // @description  try to take copy of yours books! Book-worm!
 // @author       ag0609
 // @include      https://*.bookwalker.jp/*/viewer.html?*
 // @require      https://stuk.github.io/jszip/dist/jszip.js
-// @resource     https://stuk.github.io/jszip/dist/jszip.js
 // @run-at       document-end
 // @grant        none
 // ==/UserScript==
@@ -16,7 +15,7 @@
     var [cx, cy, cw, ch] = [0, 0, 0, 0];
     var fn = "xxx";
 
-    const css = "I2JuZGwgew0KCXBvc2l0aW9uOiBhYnNvbHV0ZTsNCglkaXNwbGF5OiBmbGV4Ym94Ow0KCWJhY2tncm91bmQtY29sb3I6IGRhcmtyZWQ7DQoJdHJhbnNpdGlvbjplYXNlIDAuM3M7DQp9DQoNCiNibmRsLmNsb3NlIHsNCgl0b3A6OTUlOw0KCWxlZnQ6OTAlOw0KCXdpZHRoOjEwJTsNCgloZWlnaHQ6NSUNCn0NCg0KI2JuZGwub3BlbiB7DQoJdG9wOjQwJTsNCglsZWZ0OjM1JTsNCgl3aWR0aDozMCU7DQoJaGVpZ2h0OjIwJQ0KfQ0KDQojYm5kbC5leHRlbmQgew0KCXRvcDowOw0KCWxlZnQ6MDsNCgl3aWR0aDoxMDAlOw0KCWhlaWdodDoxMDAlOw0KCW92ZXJmbG93OiBoaWRkZW47DQp9DQoNCmJ1dHRvbiAuYm5kbC1idG4gew0KCS13ZWJraXQtYXBwZWFyYW5jZTogbm9uZTsNCgliYWNrZ3JvdW5kLWNvbG9yOiBibGFjazsNCglmb250LXNpemU6IDEwcHg7DQoJYWxpZ24tc2VsZjogY2VudGVyOw0KfQ0KDQouYm5kbC1wcm9ncmVzcyB7DQoJd2lkdGg6IDEwMCU7DQoJaGVpZ2h0OiAwJTsNCgliYWNrZ3JvdW5kLWNvbG9yOiBsaWdodGdyZXk7DQoJcG9zaXRpb246IHJlbGF0aXZlOw0KCXRyYW5zaXRpb246IGVhc2UgMC4zczsNCiAgfQ0KICAuYm5kbC1wcm9ncmVzczpiZWZvcmUgew0KCWNvbnRlbnQ6IGF0dHIoZGF0YS1sYWJlbCk7DQoJZm9udC1zaXplOiAwLjhlbTsNCglwb3NpdGlvbjogYWJzb2x1dGU7DQoJdGV4dC1hbGlnbjogY2VudGVyOw0KCXRvcDogNXB4Ow0KCWxlZnQ6IDA7DQoJcmlnaHQ6IDA7DQogIH0NCiAgLmJuZGwtcHJvZ3Jlc3MgPiBzcGFuIHsNCgloZWlnaHQ6IDEwMCU7DQoJYmFja2dyb3VuZC1jb2xvcjogcmdiKDQzLDE5NCw4Myk7DQoJYmFja2dyb3VuZC1pbWFnZTogbGluZWFyLWdyYWRpZW50KA0KCQktNDVkZWcsIA0KCQlyZ2JhKDI1NSwgMjU1LCAyNTUsIC4yKSAyNSUsIA0KCQl0cmFuc3BhcmVudCAyNSUsIA0KCQl0cmFuc3BhcmVudCA1MCUsIA0KCQlyZ2JhKDI1NSwgMjU1LCAyNTUsIC4yKSA1MCUsIA0KCQlyZ2JhKDI1NSwgMjU1LCAyNTUsIC4yKSA3NSUsIA0KCQl0cmFuc3BhcmVudCA3NSUsIA0KCQl0cmFuc3BhcmVudA0KCSAgKTsNCgkgIHotaW5kZXg6IDE7DQoJYmFja2dyb3VuZC1zaXplOiA1MHB4IDUwcHg7DQoJYW5pbWF0aW9uOiBtb3ZlIDJzIGxpbmVhciBpbmZpbml0ZTsNCglib3gtc2hhZG93OiANCgkgIGluc2V0IDAgMnB4IDlweCAgcmdiYSgyNTUsMjU1LDI1NSwwLjMpLA0KCSAgaW5zZXQgMCAtMnB4IDZweCByZ2JhKDAsMCwwLDAuNCk7DQoJcG9zaXRpb246IHJlbGF0aXZlOw0KCW92ZXJmbG93OiBoaWRkZW47DQoJZGlzcGxheTogaW5saW5lLWJsb2NrOw0KCXRyYW5zaXRpb246IGVhc2UgMC4zczsNCiAgfQ0KICAuYm5kbC1wcm9ncmVzcy5zdGFydCB7DQoJaGVpZ2h0OiAyMHB4Ow0KICB9";
+    const css = "I2JuZGwgew0KCXBvc2l0aW9uOiBhYnNvbHV0ZTsNCglkaXNwbGF5OiBmbGV4Ym94Ow0KCWJhY2tncm91bmQtY29sb3I6IGRhcmtyZWQ7DQoJdHJhbnNpdGlvbjplYXNlIDAuM3M7DQp9DQoNCiNibmRsOmhvdmVyIHsNCglvcGFjaXR5OiAuNzsNCn0NCg0KI2JuZGwuY2xvc2Ugew0KCXRvcDo5NSU7DQoJbGVmdDo5MCU7DQoJd2lkdGg6MTAlOw0KCWhlaWdodDo1JQ0KfQ0KDQojYm5kbC5vcGVuIHsNCgl0b3A6NDAlOw0KCWxlZnQ6MzUlOw0KCXdpZHRoOjMwJTsNCgloZWlnaHQ6MjAlDQp9DQoNCiNibmRsLmV4dGVuZCB7DQoJdG9wOjA7DQoJbGVmdDowOw0KCXdpZHRoOjEwMCU7DQoJaGVpZ2h0OjEwMCU7DQoJb3ZlcmZsb3c6IGhpZGRlbjsNCn0NCg0KYnV0dG9uIC5ibmRsLWJ0biB7DQoJLXdlYmtpdC1hcHBlYXJhbmNlOiBub25lOw0KCWJhY2tncm91bmQtY29sb3I6IGJsYWNrOw0KCWZvbnQtc2l6ZTogMTBweDsNCglhbGlnbi1zZWxmOiBjZW50ZXI7DQp9DQoNCi5ibmRsLXByb2dyZXNzIHsNCgl3aWR0aDogMTAwJTsNCgloZWlnaHQ6IDAlOw0KCWJhY2tncm91bmQtY29sb3I6IHdoaXRlc21va2U7DQoJcG9zaXRpb246IHJlbGF0aXZlOw0KCW92ZXJmbG93OiBoaWRkZW47DQoJdHJhbnNpdGlvbjogZWFzZSAwLjNzOw0KICB9DQogIC5ibmRsLXByb2dyZXNzOmJlZm9yZSB7DQoJY29udGVudDogYXR0cihkYXRhLWxhYmVsKTsNCglmb250LXNpemU6IDAuOGVtOw0KCXBvc2l0aW9uOiBhYnNvbHV0ZTsNCglkaXNwbGF5OiB0YWJsZS1jZWxsOw0KCW1hcmdpbjogYXV0bzsNCgl0ZXh0LWFsaWduOiBjZW50ZXI7DQoJdmVydGljYWwtYWxpZ246IG1pZGRsZTsNCgl6LWluZGV4OiA5OTk5Ow0KCXRvcDogMDsNCglsZWZ0OiAwOw0KCXJpZ2h0OiAwOw0KCWJvdHRvbTogMDsNCiAgfQ0KICAuYm5kbC1wcm9ncmVzcyA+IHNwYW4gew0KCWhlaWdodDogMTAwJTsNCgliYWNrZ3JvdW5kLWNvbG9yOiByZ2JhKDEzNSwgMjA2LCAyMzUsIDAuOSk7DQoJYmFja2dyb3VuZC1pbWFnZTogbGluZWFyLWdyYWRpZW50KA0KCQktNDVkZWcsIA0KCQlyZ2JhKDI1NSwgMjU1LCAyNTUsIC40KSAyNSUsIA0KCQl0cmFuc3BhcmVudCAyNSUsIA0KCQl0cmFuc3BhcmVudCA1MCUsIA0KCQlyZ2JhKDI1NSwgMjU1LCAyNTUsIC40KSA1MCUsIA0KCQlyZ2JhKDI1NSwgMjU1LCAyNTUsIC40KSA3NSUsIA0KCQl0cmFuc3BhcmVudCA3NSUsIA0KCQl0cmFuc3BhcmVudA0KCSAgKTsNCgkgIHotaW5kZXg6IDE7DQoJYmFja2dyb3VuZC1zaXplOiA1MHB4IDUwcHg7DQoJYW5pbWF0aW9uOiBtb3ZlIDJzIGxpbmVhciBpbmZpbml0ZTsNCglib3gtc2hhZG93OiANCgkgIGluc2V0IDAgMnB4IDlweCAgcmdiYSgyNTUsMjU1LDI1NSwwLjMpLA0KCSAgaW5zZXQgMCAtMnB4IDZweCByZ2JhKDAsMCwwLDAuNCk7DQoJcG9zaXRpb246IHJlbGF0aXZlOw0KCW92ZXJmbG93OiBoaWRkZW47DQoJZGlzcGxheTogaW5saW5lLWJsb2NrOw0KCXRyYW5zaXRpb246IGVhc2UgMC4zczsNCiAgfQ0KICAuYm5kbC1wcm9ncmVzcy5zdGFydCB7DQoJaGVpZ2h0OiAyMHB4Ow0KICB9DQogIC5ibmRsLXByb2dyZXNzLnN0YXJ0ID4gc3BhbiB7DQoJICBhbmltYXRpb246IGJuZGwtdmFsdWUtc3RhcnQtYmFyIDFzIGluZmluaXRlIGxpbmVhcjsNCiAgfQ0KICBAa2V5ZnJhbWVzIGJuZGwtdmFsdWUtc3RhcnQtYmFyIHsNCgkwJSB7DQoJCWJhY2tncm91bmQtcG9zaXRpb24teDogNTBweDsNCgl9DQoJMTAwJSB7DQoJCWJhY2tncm91bmQtcG9zaXRpb24teDogMHB4Ow0KCX0NCiAgfQ==";
     var style = document.createElement('style');
     style.type = 'text/css';
     style.innerHTML = atob(css);
@@ -25,7 +24,7 @@
     function pad(n, t) {
         t = t * 1 ? t * 1 : Math.max(t.length,3);
         return ('0'.repeat(99) + n).slice(t * -1);
-    }
+    } //padding for tidy sortable filename
     function chopCanvas(canvas, x, y, w, h) {
         x = x ? x : 0;
         y = y ? y : 0;
@@ -144,7 +143,7 @@
         var p = document.getElementsByClassName('bndl-progress')[0];
         var v = p.getElementsByClassName('bndl-value')[0];
         v.style.width = ((p.getAttribute('value') - p.getAttribute('min')) * 100 / p.getAttribute('max')) + "%";
-    }
+    } //Progress bar uses
     function create_btn() {
         var btn = document.createElement('div');
         btn.id = 'bndl';
@@ -160,27 +159,14 @@
         pc.setAttribute("value", 0);
         pc.appendChild(pcv);
         btn.ob.observe(pc, {attributes:true});
-        /*
-        var close_btn = document.createElement('button');
-        close_btn.type = 'button';
-        close_btn.style.alignSelf = 'flex-start';
-        close_btn.style.backgroundColor = 'white';
-        close_btn.innerText = '[x] Close';
-        close_btn.onclick = function() {
-            document.getElementById('bndl').classList.remove('extend');
-            document.getElementById('bndl').classList.remove('open');
-            document.getElementById('bndl').classList.add('close');
-        };
-        */
         var btn_obj = document.createElement('button');
         btn_obj.type = 'button';
         btn_obj.id = 'bndl4';
         btn_obj.style.backgroundColor = 'white';
-        btn_obj.innerText = 'Save';
+        btn_obj.innerText = 'BNDL';
         btn_obj.onclick = saveFile;
         btn.appendChild(document.createElement('br'));
         btn.appendChild(pc);
-        //btn.appendChild(close_btn);
         btn.appendChild(btn_obj);
         document.body.appendChild(btn);
     } //Show "Save" Button on page
@@ -204,9 +190,8 @@
             a.href = Url;
             e.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null)
             a.dispatchEvent(e)
-            //location.href=Url;
         });
-    } //Download Files
+    } //Zip Canvas and Download archive
     function saveFile() {
         var obj = document.getElementById('bndl4');
         var pc = document.getElementById('bndl-progress');
@@ -215,19 +200,19 @@
         console.log("Title:", fn);
         if(job) {
             clearInterval(job);
+            job = 0;
             pc.classList.toggle("start");
-            //document.getElementById('bndl').classList.remove('extend');
-            obj.innerText = "Save";
+            pc.setAttribute("data-label", '');
+            obj.innerText = "BNDL";
             DLFile();
             return console.log('Stopped');
         }
         pc.classList.toggle("start");
         phl.style.display = 'flex';
         phl.style.backgroundColor = 'grey';
-        phl.style.opacity = 0.95;
         document.getElementById('bndl').classList.add('extend');
         phl.style.alignItems = 'center';
-        obj.innerText = "Wait";
+        obj.innerText = "WAIT";
         var [fp, tmpS] = [0, 0];
         var totp = (document.getElementById('pageSliderCounter').innerText).split('/')[1] * 1;
         pc.setAttribute("max", totp);
@@ -251,7 +236,8 @@
                     document.getElementById("zoomInBtn").click();
                 }
                 console.groupEnd();
-                obj.innerText = "Stop("+curp +"/"+ totp+")";
+                obj.innerText = "Stop";
+                pc.setAttribute("data-label", curp +"/"+ totp);
                 pc.setAttribute("value", curp);
                 var img;
                 img = trimCanvas(c, [255,255,255], 10, 16, [cx,cy,cw,ch]);
@@ -276,9 +262,11 @@
             } else console.log("Still loading...");
             if(curp == totp && tmpS == 0) {
                 clearInterval(job);
+                job = 0;
                 pc.classList.toggle("start");
                 DLFile();
-                obj.innerText = "Save";
+                pc.setAttribute("data-label", '');
+                obj.innerText = "BNDL";
                 return console.log("completed");
             }
         },1000);
