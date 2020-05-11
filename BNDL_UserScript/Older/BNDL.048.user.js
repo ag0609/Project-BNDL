@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL
 // @namespace    https://github.com/ag0609/bndl
-// @version      0.49
+// @version      0.48
 // @description  try to take copy of yours books! Book-worm!
 // @author       ag0609
 // @include      https://*.bookwalker.jp/*/viewer.html?*
@@ -15,9 +15,6 @@
     var [cx, cy, cw, ch] = [0, 0, 0, 0];
     var fn = "xxx";
 
-    const emptyAudioFile = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU3LjcxLjEwMAAAAAAAAAAAAAAA/+M4wAAAAAAAAAAAAEluZm8AAAAPAAAAEAAABVgANTU1NTU1Q0NDQ0NDUFBQUFBQXl5eXl5ea2tra2tra3l5eXl5eYaGhoaGhpSUlJSUlKGhoaGhoaGvr6+vr6+8vLy8vLzKysrKysrX19fX19fX5eXl5eXl8vLy8vLy////////AAAAAExhdmM1Ny44OQAAAAAAAAAAAAAAACQCgAAAAAAAAAVY82AhbwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/+MYxAALACwAAP/AADwQKVE9YWDGPkQWpT66yk4+zIiYPoTUaT3tnU487uNhOvEmQDaCm1Yz1c6DPjbs6zdZVBk0pdGpMzxF/+MYxA8L0DU0AP+0ANkwmYaAMkOKDDjmYoMtwNMyDxMzDHE/MEsLow9AtDnBlQgDhTx+Eye0GgMHoCyDC8gUswJcMVMABBGj/+MYxBoK4DVpQP8iAtVmDk7LPgi8wvDzI4/MWAwK1T7rxOQwtsItMMQBazAowc4wZMC5MF4AeQAGDpruNuMEzyfjLBJhACU+/+MYxCkJ4DVcAP8MAO9J9THVg6oxRMGNMIqCCTAEwzwwBkINOPAs/iwjgBnMepYyId0PhWo+80PXMVsBFzD/AiwwfcKGMEJB/+MYxDwKKDVkAP8eAF8wMwIxMlpU/OaDPLpNKkEw4dRoBh6qP2FC8jCJQFcweQIPMHOBtTBoAVcwOoCNMYDI0u0Dd8ANTIsy/+MYxE4KUDVsAP8eAFBVpgVVPjdGeTEWQr0wdcDtMCeBgDBkgRgwFYB7Pv/zqx0yQQMCCgKNgonHKj6RRVkxM0GwML0AhDAN/+MYxF8KCDVwAP8MAIHZMDDA3DArAQo3K+TF5WOBDQw0lgcKQUJxhT5sxRcwQQI+EIPWMA7AVBoTABgTgzfBN+ajn3c0lZMe/+MYxHEJyDV0AP7MAA4eEwsqP/PDmzC/gNcwXUGaMBVBIwMEsmB6gaxhVuGkpoqMZMQjooTBwM0+S8FTMC0BcjBTgPwwOQDm/+MYxIQKKDV4AP8WADAzAKQwI4CGPhWOEwCFAiBAYQnQMT+uwXUeGzjBWQVkwTcENMBzA2zAGgFEJfSPkPSZzPXgqFy2h0xB/+MYxJYJCDV8AP7WAE0+7kK7MQrATDAvQRIwOADKMBuA9TAYQNM3AiOSPjGxowgHMKFGcBNMQU1FMy45OS41VVU/31eYM4sK/+MYxKwJaDV8AP7SAI4y1Yq0MmOIADGwBZwwlgIJMztCM0qU5TQPG/MSkn8yEROzCdAxECVMQU1FMy45OS41VTe7Ohk+Pqcx/+MYxMEJMDWAAP6MADVLDFUx+4J6Mq7NsjN2zXo8V5fjVJCXNOhwM0vTCDAxFpMYYQU+RlVMQU1FMy45OS41VVVVVVVVVVVV/+MYxNcJADWAAP7EAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV/+MYxOsJwDWEAP7SAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV/+MYxPMLoDV8AP+eAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV/+MYxPQL0DVcAP+0AFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV';
-    var ss = new Audio(emptyAudioFile);
-    ss.loop = true;
     const css = "I2JuZGwgew0KCXBvc2l0aW9uOiBhYnNvbHV0ZTsNCglkaXNwbGF5OiBmbGV4Ym94Ow0KCWJhY2tncm91bmQtY29sb3I6IGRhcmtyZWQ7DQoJdHJhbnNpdGlvbjplYXNlIDAuM3M7DQp9DQoNCiNibmRsOmhvdmVyIHsNCglvcGFjaXR5OiAuNzsNCn0NCg0KI2JuZGwuY2xvc2Ugew0KCXRvcDo5NSU7DQoJbGVmdDo5MCU7DQoJd2lkdGg6MTAlOw0KCWhlaWdodDo1JQ0KfQ0KDQojYm5kbC5vcGVuIHsNCgl0b3A6NDAlOw0KCWxlZnQ6MzUlOw0KCXdpZHRoOjMwJTsNCgloZWlnaHQ6MjAlDQp9DQoNCiNibmRsLmV4dGVuZCB7DQoJdG9wOjA7DQoJbGVmdDowOw0KCXdpZHRoOjEwMCU7DQoJaGVpZ2h0OjEwMCU7DQoJb3ZlcmZsb3c6IGhpZGRlbjsNCn0NCg0KYnV0dG9uIC5ibmRsLWJ0biB7DQoJLXdlYmtpdC1hcHBlYXJhbmNlOiBub25lOw0KCWJhY2tncm91bmQtY29sb3I6IGJsYWNrOw0KCWZvbnQtc2l6ZTogMTBweDsNCglhbGlnbi1zZWxmOiBjZW50ZXI7DQp9DQoNCi5ibmRsLXByb2dyZXNzIHsNCgl3aWR0aDogMTAwJTsNCgloZWlnaHQ6IDAlOw0KCWJhY2tncm91bmQtY29sb3I6IHdoaXRlc21va2U7DQoJcG9zaXRpb246IHJlbGF0aXZlOw0KCW92ZXJmbG93OiBoaWRkZW47DQoJdHJhbnNpdGlvbjogZWFzZSAwLjNzOw0KICB9DQogIC5ibmRsLXByb2dyZXNzOmJlZm9yZSB7DQoJY29udGVudDogYXR0cihkYXRhLWxhYmVsKTsNCglmb250LXNpemU6IDAuOGVtOw0KCXBvc2l0aW9uOiBhYnNvbHV0ZTsNCglkaXNwbGF5OiB0YWJsZS1jZWxsOw0KCW1hcmdpbjogYXV0bzsNCgl0ZXh0LWFsaWduOiBjZW50ZXI7DQoJdmVydGljYWwtYWxpZ246IG1pZGRsZTsNCgl6LWluZGV4OiA5OTk5Ow0KCXRvcDogMDsNCglsZWZ0OiAwOw0KCXJpZ2h0OiAwOw0KCWJvdHRvbTogMDsNCiAgfQ0KICAuYm5kbC1wcm9ncmVzcyA+IHNwYW4gew0KCWhlaWdodDogMTAwJTsNCgliYWNrZ3JvdW5kLWNvbG9yOiByZ2JhKDEzNSwgMjA2LCAyMzUsIDAuOSk7DQoJYmFja2dyb3VuZC1pbWFnZTogbGluZWFyLWdyYWRpZW50KA0KCQktNDVkZWcsIA0KCQlyZ2JhKDI1NSwgMjU1LCAyNTUsIC40KSAyNSUsIA0KCQl0cmFuc3BhcmVudCAyNSUsIA0KCQl0cmFuc3BhcmVudCA1MCUsIA0KCQlyZ2JhKDI1NSwgMjU1LCAyNTUsIC40KSA1MCUsIA0KCQlyZ2JhKDI1NSwgMjU1LCAyNTUsIC40KSA3NSUsIA0KCQl0cmFuc3BhcmVudCA3NSUsIA0KCQl0cmFuc3BhcmVudA0KCSAgKTsNCgkgIHotaW5kZXg6IDE7DQoJYmFja2dyb3VuZC1zaXplOiA1MHB4IDUwcHg7DQoJYW5pbWF0aW9uOiBtb3ZlIDJzIGxpbmVhciBpbmZpbml0ZTsNCglib3gtc2hhZG93OiANCgkgIGluc2V0IDAgMnB4IDlweCAgcmdiYSgyNTUsMjU1LDI1NSwwLjMpLA0KCSAgaW5zZXQgMCAtMnB4IDZweCByZ2JhKDAsMCwwLDAuNCk7DQoJcG9zaXRpb246IHJlbGF0aXZlOw0KCW92ZXJmbG93OiBoaWRkZW47DQoJZGlzcGxheTogaW5saW5lLWJsb2NrOw0KCXRyYW5zaXRpb246IGVhc2UgMC4zczsNCiAgfQ0KICAuYm5kbC1wcm9ncmVzcy5zdGFydCB7DQoJaGVpZ2h0OiAyMHB4Ow0KICB9DQogIC5ibmRsLXByb2dyZXNzLnN0YXJ0ID4gc3BhbiB7DQoJICBhbmltYXRpb246IGJuZGwtdmFsdWUtc3RhcnQtYmFyIDFzIGluZmluaXRlIGxpbmVhcjsNCiAgfQ0KICBAa2V5ZnJhbWVzIGJuZGwtdmFsdWUtc3RhcnQtYmFyIHsNCgkwJSB7DQoJCWJhY2tncm91bmQtcG9zaXRpb24teDogNTBweDsNCgl9DQoJMTAwJSB7DQoJCWJhY2tncm91bmQtcG9zaXRpb24teDogMHB4Ow0KCX0NCiAgfQ==";
     var style = document.createElement('style');
     style.type = 'text/css';
@@ -208,7 +205,6 @@
             pc.setAttribute("data-label", '');
             obj.innerText = "BNDL";
             DLFile();
-            ss.pause();
             return console.log('Stopped');
         }
         pc.classList.toggle("start");
@@ -221,7 +217,6 @@
         var totp = (document.getElementById('pageSliderCounter').innerText).split('/')[1] * 1;
         pc.setAttribute("max", totp);
         ba = new Array();
-        ss.play();
         job = setInterval(function() {
             var load = 0
             var load_lst = document.getElementsByClassName("loading");
@@ -245,12 +240,7 @@
                 pc.setAttribute("data-label", curp +"/"+ totp);
                 pc.setAttribute("value", curp);
                 var img;
-                var skip=16;
-                var fuzz=10;
-                if(ba.length) {
-                    skip=1;
-                }
-                img = trimCanvas(c, [255,255,255], fuzz, skip, [cx,cy,cw,ch]);
+                img = trimCanvas(c, [255,255,255], 10, 16, [cx,cy,cw,ch]);
                 if(img.width < cw || img.height < ch) {
                     img = chopCanvas(c, cx, cy, cw, ch);
                 }
@@ -277,7 +267,6 @@
                 DLFile();
                 pc.setAttribute("data-label", '');
                 obj.innerText = "BNDL";
-                ss.pause();
                 return console.log("completed");
             }
         },1000);
