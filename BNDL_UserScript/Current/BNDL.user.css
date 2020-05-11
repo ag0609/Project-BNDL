@@ -1,8 +1,16 @@
 #bndl {
 	position: absolute;
-	display: flexbox;
-	background-color: darkred;
+	display: table-cell;
+	vertical-align: middle;
+	background-color: lightgrey ;
 	transition:ease 0.3s;
+	box-shadow:
+	  inset 0 2px 9px  rgba(255,255,255,0.3),
+	  inset 0 -2px 6px rgba(0,0,0,0.4);
+}
+
+#bndl:hover {
+	opacity: .7;
 }
 
 #bndl.close {
@@ -36,30 +44,60 @@ button .bndl-btn {
 
 .bndl-progress {
 	width: 100%;
-	background-color: lightgrey;
+	height: 0%;
+	background-color: whitesmoke;
+	border-radius: 10px;
 	position: relative;
+	overflow: hidden;
+	transition: ease 0.3s;
+	box-shadow: 
+	  inset 0 2px 9px  rgba(0,0,0,0.4),
+	  inset 0 -2px 6px rgba(255,255,255,0.3);
   }
   .bndl-progress:before {
 	content: attr(data-label);
-	font-size: 0.8em;
+	font-size: auto;
 	position: absolute;
+	display: table-cell;
+	margin: auto;
 	text-align: center;
-	overflow: hidden;
-	top: 5px;
+	vertical-align: middle;
+	z-index: 9999;
+	top: 12.5%;
 	left: 0;
 	right: 0;
-	animation: bndl-value-start-bar 2s linear;
+	bottom: 0;
   }
-  .bndl-progress .bndl-value {
-	background-color: lightskyblue;
+  .bndl-progress > span {
+	height: 100%;
+	background-color: rgba(135, 206, 235, 0.9);
+	background-image: linear-gradient(
+		-45deg, 
+		rgba(255, 255, 255, .4) 25%, 
+		transparent 25%, 
+		transparent 50%, 
+		rgba(255, 255, 255, .4) 50%, 
+		rgba(255, 255, 255, .4) 75%, 
+		transparent 75%, 
+		transparent
+	  );
+	  z-index: 1;
+	background-size: 50px 50px;
+	animation: move 2s linear infinite;
+	box-shadow: 
+	  inset 0 2px 9px  rgba(255,255,255,0.3),
+	  inset 0 -2px 6px rgba(0,0,0,0.4);
+	position: relative;
+	overflow: hidden;
 	display: inline-block;
-	height: 0%;
 	transition: ease 0.3s;
   }
-  .bndl-progress .bndl-value.start {
-	height: 15%
+  .bndl-progress.start {
+	height: 20px;
   }
-
+  .bndl-progress.start > span {
+	  animation: bndl-value-start-bar 3s infinite linear;
+  }
   @keyframes bndl-value-start-bar {
 	0% {
 		background-position-x: 50px;
