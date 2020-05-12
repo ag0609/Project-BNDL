@@ -247,7 +247,7 @@
                 var img;
                 var skip=16;
                 var fuzz=10;
-                if(ba.length) {
+                if(!ba.length) {
                     skip=1;
                 }
                 img = trimCanvas(c, [255,255,255], fuzz, skip, [cx,cy,cw,ch]);
