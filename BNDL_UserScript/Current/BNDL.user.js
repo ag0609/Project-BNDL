@@ -51,8 +51,9 @@
         console.log("border:", [bx, by, bw, bh]);
         var borderFlag = true;
         if(bw < 0) borderFlag = false;
-        console.log("color:", color);
-        console.log("fuzz:", fuzz);
+        console.log("color: ", color);
+        console.log("fuzz: ", fuzz);
+        console.log("skip: ", skip)
         const context = canvas.getContext('2d');
         const topLeft = {
             x: canvas.width,
