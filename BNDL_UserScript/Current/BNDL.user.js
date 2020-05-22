@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL
 // @namespace    https://github.com/ag0609/bndl
-// @version      0.50
+// @version      0.52
 // @description  try to take copy of yours books! Book-worm!
 // @author       ag0609
 // @include      https://*.bookwalker.jp/*/viewer.html?*
@@ -18,7 +18,7 @@
     var fn = "xxx";
 
     var cssTxt = GM_getResourceText("customCSS");
-    GM_addStyle (cssTxt);
+    GM_addStyle(cssTxt);
     const emptyAudioFile = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU3LjcxLjEwMAAAAAAAAAAAAAAA/+M4wAAAAAAAAAAAAEluZm8AAAAPAAAAEAAABVgANTU1NTU1Q0NDQ0NDUFBQUFBQXl5eXl5ea2tra2tra3l5eXl5eYaGhoaGhpSUlJSUlKGhoaGhoaGvr6+vr6+8vLy8vLzKysrKysrX19fX19fX5eXl5eXl8vLy8vLy////////AAAAAExhdmM1Ny44OQAAAAAAAAAAAAAAACQCgAAAAAAAAAVY82AhbwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/+MYxAALACwAAP/AADwQKVE9YWDGPkQWpT66yk4+zIiYPoTUaT3tnU487uNhOvEmQDaCm1Yz1c6DPjbs6zdZVBk0pdGpMzxF/+MYxA8L0DU0AP+0ANkwmYaAMkOKDDjmYoMtwNMyDxMzDHE/MEsLow9AtDnBlQgDhTx+Eye0GgMHoCyDC8gUswJcMVMABBGj/+MYxBoK4DVpQP8iAtVmDk7LPgi8wvDzI4/MWAwK1T7rxOQwtsItMMQBazAowc4wZMC5MF4AeQAGDpruNuMEzyfjLBJhACU+/+MYxCkJ4DVcAP8MAO9J9THVg6oxRMGNMIqCCTAEwzwwBkINOPAs/iwjgBnMepYyId0PhWo+80PXMVsBFzD/AiwwfcKGMEJB/+MYxDwKKDVkAP8eAF8wMwIxMlpU/OaDPLpNKkEw4dRoBh6qP2FC8jCJQFcweQIPMHOBtTBoAVcwOoCNMYDI0u0Dd8ANTIsy/+MYxE4KUDVsAP8eAFBVpgVVPjdGeTEWQr0wdcDtMCeBgDBkgRgwFYB7Pv/zqx0yQQMCCgKNgonHKj6RRVkxM0GwML0AhDAN/+MYxF8KCDVwAP8MAIHZMDDA3DArAQo3K+TF5WOBDQw0lgcKQUJxhT5sxRcwQQI+EIPWMA7AVBoTABgTgzfBN+ajn3c0lZMe/+MYxHEJyDV0AP7MAA4eEwsqP/PDmzC/gNcwXUGaMBVBIwMEsmB6gaxhVuGkpoqMZMQjooTBwM0+S8FTMC0BcjBTgPwwOQDm/+MYxIQKKDV4AP8WADAzAKQwI4CGPhWOEwCFAiBAYQnQMT+uwXUeGzjBWQVkwTcENMBzA2zAGgFEJfSPkPSZzPXgqFy2h0xB/+MYxJYJCDV8AP7WAE0+7kK7MQrATDAvQRIwOADKMBuA9TAYQNM3AiOSPjGxowgHMKFGcBNMQU1FMy45OS41VVU/31eYM4sK/+MYxKwJaDV8AP7SAI4y1Yq0MmOIADGwBZwwlgIJMztCM0qU5TQPG/MSkn8yEROzCdAxECVMQU1FMy45OS41VTe7Ohk+Pqcx/+MYxMEJMDWAAP6MADVLDFUx+4J6Mq7NsjN2zXo8V5fjVJCXNOhwM0vTCDAxFpMYYQU+RlVMQU1FMy45OS41VVVVVVVVVVVV/+MYxNcJADWAAP7EAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV/+MYxOsJwDWEAP7SAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV/+MYxPMLoDV8AP+eAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV/+MYxPQL0DVcAP+0AFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV';
     var ss = new Audio(emptyAudioFile);
     ss.loop = true;
@@ -51,9 +51,9 @@
         console.log("border:", [bx, by, bw, bh]);
         var borderFlag = true;
         if(bw < 0) borderFlag = false;
-        console.log("color: ", color);
-        console.log("fuzz: ", fuzz);
-        console.log("skip: ", skip)
+        console.log("color:", color);
+        console.log("fuzz:", fuzz);
+        console.log("skip:", skip);
         const context = canvas.getContext('2d');
         const topLeft = {
             x: canvas.width,
@@ -142,7 +142,7 @@
         c = canvas_list[0];
         create_btn();
     } //wait for canvas object appear
-    function callback($$e,_f_) {
+    function ProgressBarCallback($$e,_f_) {
         var p = document.getElementsByClassName('bndl-progress')[0];
         var v = p.getElementsByClassName('bndl-value')[0];
         v.style.width = ((p.getAttribute('value') - p.getAttribute('min')) * 100 / p.getAttribute('max')) + "%";
@@ -150,11 +150,15 @@
     function create_btn() {
         var btn = document.createElement('div');
         btn.id = 'bndl';
-        btn.ob = new MutationObserver(callback);
+        btn.ob = new MutationObserver(ProgressBarCallback);
+        btn.addEventListener('dblclick', function() {
+            btn.style.display='none';
+        });
         btn.classList.add('open');
         var pc = document.createElement('div');
         pc.id = 'bndl-progress';
         pc.classList.add("bndl-progress");
+        pc.classList.add("w");
         var pcv = document.createElement('span');
         pcv.classList.add("bndl-value");
         pc.setAttribute("min", 0);
@@ -165,34 +169,52 @@
         var btn_obj = document.createElement('button');
         btn_obj.type = 'button';
         btn_obj.id = 'bndl4';
+        btn_obj.className = 'bndl-btn';
         btn_obj.style.backgroundColor = 'white';
         btn_obj.innerText = 'BNDL';
         btn_obj.onclick = saveFile;
-        btn.appendChild(document.createElement('br'));
+        btn.appendChild(document.createElement('tr'));
         btn.appendChild(pc);
         btn.appendChild(btn_obj);
         document.body.appendChild(btn);
     } //Show "Save" Button on page
     function DLFile() {
         console.group("JSZip");
+        var pc = document.getElementById('bndl-progress');
+        pc.classList.toggle('zip');
         var zip = new JSZip();
         console.groupCollapsed("Insert");
         for(var i in ba) {
             console.log("<-- [%s] %i bytes", pad(i,5) +".jpg", ba[i].size);
             zip.file(pad(i,5) +".jpg", ba[i], {base64: true});
         }
+        console.log('xxx Clean up canvas caches xxx');
+        ba = null;
         console.groupEnd();
-        zip.generateAsync({type:"blob"})
-            .then(function (blob) {
+        console.log('==> Generating %s.zip...', fn);
+        pc.setAttribute("data-label", "Generating "+ fn +".zip...");
+        pc.setAttribute("min", 0);
+        pc.setAttribute("max", 200);
+        console.groupCollapsed('Zip progress');
+        zip.generateAsync({type:"blob"}, function updateCallback(metadata) {
+            console.log(metadata.percent.toFixed(2)+'%');
+            var pc = document.getElementById('bndl-progress');
+            pc.setAttribute("value", 100 + (metadata.percent.toFixed(2)*1));
+        }).then(function (blob) {
+            console.groupEnd();
             var Url = window.URL.createObjectURL(blob);
             console.log("URL: %s", Url);
             console.groupEnd();
-            var e = document.createEvent('MouseEvents');
+            var e = new MouseEvent("click");
             var a = document.createElement('a');
             a.download = fn +".zip";
             a.href = Url;
-            e.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null)
-            a.dispatchEvent(e)
+            a.dispatchEvent(e);
+            pc.setAttribute("data-label", "Completed. Pushing zip to download.");
+            setTimeout(function() {
+                pc.classList.toggle('start');
+            }, 5000);
+            ss.pause();
         });
     } //Zip Canvas and Download archive
     function saveFile() {
@@ -204,11 +226,8 @@
         if(job) {
             clearInterval(job);
             job = 0;
-            pc.classList.toggle("start");
-            pc.setAttribute("data-label", '');
             obj.innerText = "BNDL";
             DLFile();
-            ss.pause();
             return console.log('Stopped');
         }
         pc.classList.toggle("start");
@@ -242,29 +261,35 @@
                 }
                 console.groupEnd();
                 obj.innerText = "Stop";
-                pc.setAttribute("data-label", curp +"/"+ totp);
+                pc.setAttribute("data-label", "Capture Canvas: "+curp +"/"+ totp);
                 pc.setAttribute("value", curp);
                 var img;
-                var skip=16;
+                var skip=48;
                 var fuzz=10;
                 if(!ba.length) {
-                    skip=1;
+                    skip=4;
                 }
                 img = trimCanvas(c, [255,255,255], fuzz, skip, [cx,cy,cw,ch]);
                 if(img.width < cw || img.height < ch) {
                     img = chopCanvas(c, cx, cy, cw, ch);
                 }
                 ba[curp] = dataURItoBlob(img.toDataURL('image/jpeg'));
-                var trimBlack = (dataURItoBlob(trimCanvas(img, [0,0,0], 10, 10).toDataURL('image/jpeg'))).size;
-                console.log("[%i] size: %i bytes", curp, ba[curp].size);
-                console.log("[B%i] size: %i bytes", curp, trimBlack);
-                if(ba[curp].size < 20000 && trimBlack < 1000 && tmpS < 5) {
-                    console.log("[%i] too small(< 20000 bytes), retrying %i times for capture canvas", curp, tmpS+1);
+                var trimBlack = (dataURItoBlob(trimCanvas(img, [0,0,0], 10, 48).toDataURL('image/jpeg'))).size;
+                console.debug("[%i] size: %i bytes", curp, ba[curp].size);
+                console.debug("[B%i] size: %i bytes", curp, trimBlack);
+                if(ba[curp].size < 20000 && trimBlack < 1000 && tmpS < 10) {
+                    console.warn("[%i] too small(< 20000 bytes), retrying %i times for capture canvas", curp, tmpS+1);
                     tmpS++;
-                } else if(trimBlack < 1000) {
-                    console.log("[B%i] too small(< 1000 bytes), retrying %i times for capture canvas", curp, tmpS+1);
+                } else if(trimBlack < 1000 && tmpS < 10) {
+                    console.warn("[B%i] too small(< 1000 bytes), retrying %i times for capture canvas", curp, tmpS+1);
                     tmpS++;
                 } else {
+                    if(tmpS) {
+                        console.error("Error occured by too many retries when triming canvas\n \
+                                        Seems first page we want to trim almost whitespace...\n \
+                                         original canvas will be stored, proceeding to next page...");
+                        ba[curp] = dataURItoBlob(c.toDataURL('image/jpeg'));
+                    }
                     tmpS = 0;
                     fireKey(document.getElementById('renderer'), 34);
                 }
@@ -272,15 +297,13 @@
             } else console.log("Still loading...");
             if(curp == totp && tmpS == 0) {
                 clearInterval(job);
+                console.log("completed");
                 job = 0;
-                pc.classList.toggle("start");
                 DLFile();
-                pc.setAttribute("data-label", '');
                 obj.innerText = "BNDL";
-                ss.pause();
-                return console.log("completed");
+                return true;
             }
-        },1000);
+        },500);
     } //Store canvas to memory
     window.onLoad = setTimeout(wait_for_canvas_loaded, 50);
 })();
