@@ -155,8 +155,8 @@
         btn.id = 'bndl';
         btn.ob = new MutationObserver(ProgressBarCallback);
         btn.addEventListener('dblclick', function() {
-            btn.style.display='none';
-            btn.classList.toggle('min');
+            //btn.style.display='none';
+            btn.classList.toggle('close');
         });
         btn.classList.add('open');
         const pc = document.createElement('div');
