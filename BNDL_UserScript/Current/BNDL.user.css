@@ -14,22 +14,16 @@
 }
 
 #bndl:hover {
-	opacity: .7;
-	z-index: 9998;
+	opacity:.7;
+	z-index:9998;
 }
 
 #bndl.close {
 	top:95%;
 	left:90%;
 	width:10%;
-	height:5%
-}
-
-#bndl.open {
-	top:40%;
-	left:35%;
-	width:30%;
-	height:20%
+	height:5%;
+	opacity:.1;
 }
 
 #bndl.extend {
