@@ -124,7 +124,7 @@
             eventObj.which = key;
             el.dispatchEvent(eventObj);
         }
-        console.log("KEY", key, "fired");
+        console.log(key, "fired");
     } //simulate keyboard-key fire
     function dataURItoBlob(dataURI) {
         let byteString;
@@ -202,15 +202,13 @@
         pc.setAttribute("max", 200);
         console.groupCollapsed('Zip progress');
         zip.generateAsync({type:"blob"}, function updateCallback(metadata) {
-            console.debug(metadata.percent.toFixed(2)+'%');
+            console.log(metadata.percent.toFixed(2)+'%');
             const pc = document.getElementById('bndl-progress');
             pc.setAttribute("value", 100 + (metadata.percent.toFixed(2)*1));
         }).then(function (blob) {
             console.groupEnd();
             const Url = window.URL.createObjectURL(blob);
-            console.group("Zip URL")
-            console.log(Url);
-            console.groupEnd();
+            console.log("URL: %s", Url);
             console.groupEnd();
             const e = new MouseEvent("click");
             const a = document.createElement('a');
@@ -250,8 +248,7 @@
         ba = new Array();
         ss.play();
         job = setInterval(function() {
-            let load = 0;
-            let jump = 0;
+            let load = 0
             const load_lst = document.getElementsByClassName("loading");
             if(load_lst.length) {
                 for(let i in load_lst) {
@@ -274,51 +271,48 @@
                 pc.setAttribute("value", curp);
                 let skip=48;
                 let fuzz=10;
-                let img;
                 if(!ba.length) {
                     skip=4;
-                    img = trimCanvas(c, [255,255,255], fuzz, skip, [cx,cy,cw,ch]);
-                    if(false) {
+                    let img = trimCanvas(c, [255,255,255], fuzz, skip, [cx,cy,cw,ch]);
+                    if(gA) {
                         fireKey(document.getElementById('renderer'), 36);
-                        jump = 1;
+                        continue;
                     }
                 } else {
                     img = chopCanvas(c, cx, cy, cw, ch);
                 }
-                if(!jump) {
-                    ba[curp] = dataURItoBlob(img.toDataURL('image/jpeg'));
-                    const trimBlack = (dataURItoBlob(trimCanvas(img, [0,0,0], 10, 48).toDataURL('image/jpeg'))).size;
-                    console.debug("[%i] size: %i bytes", curp, ba[curp].size);
-                    console.debug("[B%i] size: %i bytes", curp, trimBlack);
-                    if(ba[curp].size < 20000 && trimBlack < 1000 && tmpS < 10) {
-                        console.warn("[%i] too small(< 20000 bytes), retrying %i times for capture canvas", curp, tmpS+1);
-                        tmpS++;
-                        if(curp == 0) [cx, cy, cw, ch] = [-1, -1, -1, -1];
-                    } else if(trimBlack < 1000 && tmpS < 10) {
-                        console.warn("[B%i] too small(< 1000 bytes), retrying %i times for capture canvas", curp, tmpS+1);
-                        tmpS++;
-                    } else {
-                        if(tmpS >= 10) {
-                            console.error("Error occured by too many retries when triming canvas\n Seems first page we want to trim almost whitespace...\n original canvas will be stored, proceeding to next page...");
-                            if(curp == 0) {
-                                ba[curp] = dataURItoBlob(c.toDataURL('image/jpeg'));
-                            } else {
-                                ba[curp] = chopCanvas(c, cx, cy, cw, ch);
-                            }
+                ba[curp] = dataURItoBlob(img.toDataURL('image/jpeg'));
+                const trimBlack = (dataURItoBlob(trimCanvas(img, [0,0,0], 10, 48).toDataURL('image/jpeg'))).size;
+                console.debug("[%i] size: %i bytes", curp, ba[curp].size);
+                console.debug("[B%i] size: %i bytes", curp, trimBlack);
+                if(ba[curp].size < 20000 && trimBlack < 1000 && tmpS < 10) {
+                    console.warn("[%i] too small(< 20000 bytes), retrying %i times for capture canvas", curp, tmpS+1);
+                    tmpS++;
+                    if(curp == 0) [cx, cy, cw, ch] = [-1, -1, -1, -1];
+                } else if(trimBlack < 1000 && tmpS < 10) {
+                    console.warn("[B%i] too small(< 1000 bytes), retrying %i times for capture canvas", curp, tmpS+1);
+                    tmpS++;
+                } else {
+                    if(tmpS >= 10) {
+                        console.error("Error occured by too many retries when triming canvas\n Seems first page we want to trim almost whitespace...\n original canvas will be stored, proceeding to next page...");
+                        if(curp == 0) {
+                            ba[curp] = dataURItoBlob(c.toDataURL('image/jpeg'));
+                        } else {
+                            ba[curp] = chopCanvas(c, cx, cy, cw, ch);
                         }
-                        tmpS = 0;
-                        fireKey(document.getElementById('renderer'), 34);
                     }
-                    console.groupEnd();
-                } else console.log("Still loading...");
-                if(curp == totp && tmpS == 0) {
-                    clearInterval(job);
-                    console.log("Captrue Completed");
-                    job = 0;
-                    DLFile();
-                    obj.innerText = "BNDL";
-                    return true;
+                    tmpS = 0;
+                    fireKey(document.getElementById('renderer'), 34);
                 }
+                console.groupEnd();
+            } else console.log("Still loading...");
+            if(curp == totp && tmpS == 0) {
+                clearInterval(job);
+                console.log("Captrue Completed");
+                job = 0;
+                DLFile();
+                obj.innerText = "BNDL";
+                return true;
             }
         },500);
     } //Store canvas to memory
