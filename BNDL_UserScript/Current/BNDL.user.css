@@ -49,6 +49,13 @@ button .bndl-btn {
 	font-size: 16px;
 	box-shadow: 0 5px 5px rgba(0,0,0,0.4);
 }
+
+.bndl-opts::after {
+	content: attr(label);
+	position: relative;
+	user-select: none;
+}
+
 .bndl-progress {
 	background-color: whitesmoke;
 	position: relative;
