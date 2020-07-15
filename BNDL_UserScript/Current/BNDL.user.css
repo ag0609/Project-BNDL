@@ -51,7 +51,7 @@ button .bndl-btn {
 }
 
 .bndl-opts::after {
-	content: attr(label);
+	content: attr(data-label);
 	position: relative;
 	user-select: none;
 }
