@@ -53,7 +53,13 @@ button .bndl-btn {
 .bndl-opts::after {
 	content: attr(data-label);
 	position: relative;
+	display: block;
+	text-align: center;
+    left: 15px;
+	width: 150px;
+	font-size: .7rem;
 	user-select: none;
+	text-overflow: clip;
 }
 
 .bndl-progress {
