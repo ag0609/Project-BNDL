@@ -55,6 +55,7 @@ button .bndl-btn {
 	position: relative;
 	display: block;
 	text-align: center;
+	white-space: nowrap;
     left: 15px;
 	width: 150px;
 	font-size: .7rem;
