@@ -45,4 +45,18 @@ known issue
 0.49, 0.50(11/05/2020)
 -Add slient sound loop for keep BNDL active when tab/browser inactive
 -CSS file
+
+0.51
+
+0.52
+
+0.53
+
+0.54
+
+0.55
+-Add page resolution sampling option(For book have a huge white-space in edge, find the most filled page for filtering)
 */
+
+0.57
+-Add Favico.js to show progress on favicon
