@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.57
+// @version      0.59
 // @description  try to take copy of yours books! Book-worm!
 // @author       ag0609
 // @include      https://*.bookwalker.jp/*/viewer.html?*
@@ -37,6 +37,17 @@
         t = t * 1 ? t * 1 : Math.max(t.length,3);
         return ('0'.repeat(99) + n).slice(t * -1);
     } //padding for tidy sortable filename
+    function drawdp(c, x, y, w, h) {
+        console.log("drawdp:", x, y, w, h);
+        if(c.tagName != "CANVAS") return false;
+        if(c.ctx == undefined) c.ctx = c.getContext("2d");
+        let ctx = c.ctx;
+        ctx.clearRect(0, 0, c.width, c.height);
+        ctx.strokeStyle = "red";
+        ctx.fillStyle = "rgba(255, 0, 0, .3)";
+        ctx.strokeRect(x, y, w, h);
+        ctx.fillRect(x/2, y/2, w/2, h/2);
+    }
     function chopCanvas(canvas, x, y, w, h) {
         x = x ? x : 0;
         y = y ? y : 0;
@@ -59,6 +70,7 @@
         color = typeof(color) == typeof([]) ? color : [255, 255, 255];
         skip = skip ? skip : 1;
         let [bx, by ,bw, bh] = typeof(border) == typeof([]) ? border : [-1,-1,-1,-1];
+
         console.log("border:", [bx, by, bw, bh]);
         let borderFlag = true;
         if(bw < 0) borderFlag = false;
@@ -161,6 +173,9 @@
         v.style.width = ((p.getAttribute('value') - p.getAttribute('min')) * 100 / p.getAttribute('max')) + "%";
     } //Progress bar uses
     function create_btn() {
+        const dragpad = document.createElement('canvas');
+        dragpad.id = 'bndl-dp';
+        document.body.appendChild(dragpad);
         const btn = document.createElement('div');
         btn.id = 'bndl';
         btn.ob = new MutationObserver(ProgressBarCallback);
@@ -282,6 +297,7 @@
                 }
             }
             const curp = (document.getElementById('pageSliderCounter').innerText).split('/')[0] * 1;
+            const dragpad = document.getElementById('bndl-dp');
             if(!load) {
                 console.group("Progress: %i/%i", curp, totp);
                 console.groupCollapsed("Zooming...");
@@ -304,6 +320,13 @@
                 } else {
                     img = chopCanvas(c, cx, cy, cw, ch);
                 }
+                dragpad.width = c.width;
+                dragpad.height = c.height;
+                dragpad.style.width = c.style.width;
+                dragpad.style.height = c.style.height;
+                dragpad.ctx = dragpad.getContext("2d");
+                dragpad.ctx.drawImage(c, 0, 0);
+                drawdp(dragpad, cx, cy, cw, ch);
                 ba[curp] = dataURItoBlob(img.toDataURL('image/jpeg'));
                 const trimBlack = (dataURItoBlob(trimCanvas(img, [0,0,0], 10, 48).toDataURL('image/jpeg'))).size;
                 console.debug("[%i] size: %i bytes", curp, ba[curp].size);
@@ -335,6 +358,7 @@
                 fireKey(document.getElementById('renderer'), 36);
             } else if(curp == totp && tmpS == 0) {
                 clearInterval(job);
+                dragpad.ctx.clearRect(0, 0, c.width, c.height);
                 console.log("Captrue Completed");
                 job = 0;
                 DLFile();
@@ -343,7 +367,7 @@
             }
         },500);
     } //Store canvas to memory
-    let favicon=new Favico({
+    let favicon = new Favico({
         animation:'none'
     });
     window.onLoad = setTimeout(wait_for_canvas_loaded, 50);

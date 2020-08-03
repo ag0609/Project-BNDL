@@ -60,3 +60,6 @@ known issue
 
 0.57
 -Add Favico.js to show progress on favicon
+
+0.59
+-Show area that canvas will trim out
