@@ -3,3 +3,7 @@
 
 0.2
 - Add Progress Monitor
+
+0.3
+- Fix black border appear by using dummy resolution instead imagebits
+- Critical Fix repeating zip file download after zip generated
