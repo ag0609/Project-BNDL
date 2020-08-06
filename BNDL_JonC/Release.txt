@@ -7,3 +7,6 @@
 0.3
 - Fix black border appear by using dummy resolution instead imagebits
 - Critical Fix repeating zip file download after zip generated
+
+0.4
+- Add Quality button for user control
