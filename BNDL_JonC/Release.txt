@@ -10,3 +10,6 @@
 
 0.4
 - Add Quality button for user control
+
+0.5
+- fix skipped page and repeated page occurs
