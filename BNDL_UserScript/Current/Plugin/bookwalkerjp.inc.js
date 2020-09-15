@@ -36,7 +36,7 @@ const getDetail = async function(bn, st=5, on="") {
 								let h = reS.responseText;
 								let parser = new DOMParser();
 								let html = parser.parseFromString(h, "text/html");
-								let auuid = document.evaluate(".//a[text()='"+ on +"']", html, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.getAttribute('data-uuid');
+								let auuid = document.evaluate(".//div[@title='"+ on +"']", html, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.getAttribute('data-uuid');
 								resolve('de' + auuid);
 							}
 						});
@@ -69,7 +69,7 @@ const getDetail = async function(bn, st=5, on="") {
 					//bd.author = [].slice.call(html.getElementsByClassName('author-name')).map(e => e.innerHTML).join('×');
 					let authors = html.getElementsByClassName('author');
 					bd.author = [];
-					for(let i=0;i<Math.min(authors.length,2);i++) {
+					for(let i=0;(i<authors.length||authors.length>2);i++) {
 						try {
 							const at = authors[i].getElementsByClassName('author-head')[0].innerText;
 							const an = authors[i].getElementsByClassName('author-name')[0].innerText.replace(/(（.*?）|\s)/g, "");
@@ -77,7 +77,7 @@ const getDetail = async function(bn, st=5, on="") {
 								let wt = document.createElementNS(null, 'Writer');
 								wt.innerHTML = an;
 								Ci.appendChild(wt);
-								bd.author.push({'p':0, 'type':at, 'name':an});
+								if(bd.author.filter(x => x.p == 0).length < 2) bd.author.push({'p':0, 'type':at, 'name':an});
 							} else if(/(作画|漫画|イラスト)/g.test(at)) {
 								let pcl = document.createElementNS(null, 'Penciller');
 								pcl.innerHTML = an;
@@ -96,7 +96,11 @@ const getDetail = async function(bn, st=5, on="") {
 					bd.author.sort(function(a,b) { if(a.an < b.an) { return -1 } else if(a.an > b.an) { return 1 } return 0; }); //sort by name
 					bd.author.sort(function(a,b) { return a.p - b.p; }); //sort by priority
 					console.debug(bd.author);
-					fn = '[' + bd.author.map(e=>e.name).join('×') + '] ' + fn;
+					if(bd.author.length <= 3) {
+						fn = '[' + bd.author.map(e=>e.name).join('×') + '] ' + fn;
+					} else {
+						fn = '[' + bd.author.splice(0,3).map(e=>e.name).join('×') + '] ' + fn;	
+					}
 					const pD = document.evaluate("//dt[text()='配信開始日']", html, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.nextElementSibling.innerText;
 					let Yt = document.createElementNS(null, 'Year');
 					let Mt = document.createElementNS(null, 'Month');
