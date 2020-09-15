@@ -257,7 +257,7 @@ function main() {
 		return backup.apply(this, [targetCanvas, page, image, drawRect, flag]);
 	}
 }
-const _$IfuBW_NFBR$_ = await setInterval(function() {
+const _$IfuBW_NFBR$_ = setInterval(function() {
 	if(unsafeWindow.NFBR.a6G && unsafeWindow.NFBR.a6G.a5x.prototype.b9b) {
 		clearInterval(_$IfuBW_NFBR$_);
 		_page_time = _job_time = new Date();
