@@ -69,7 +69,7 @@ const getDetail = async function(bn, st=5, on="") {
 					//bd.author = [].slice.call(html.getElementsByClassName('author-name')).map(e => e.innerHTML).join('×');
 					let authors = html.getElementsByClassName('author');
 					bd.author = [];
-					for(let i=0;(i<authors.length||authors.length>2);i++) {
+					for(let i=0;(i<authors.length && authors.length>2);i++) {
 						try {
 							const at = authors[i].getElementsByClassName('author-head')[0].innerText;
 							const an = authors[i].getElementsByClassName('author-name')[0].innerText.replace(/(（.*?）|\s)/g, "");
