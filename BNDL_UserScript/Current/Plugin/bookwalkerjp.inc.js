@@ -93,7 +93,7 @@ const getDetail = async function(bn, st=5, on="") {
 							};
 						} catch(e){};
 					}
-					bd.author.sort(function(a,b) { if(a.an < b.an) { return -1 } else if(a.an > b.an) { return 1 } return 0; }); //sort by name
+					bd.author.sort(function(a,b) { if(a.name < b.name) { return -1 } else if(a.name > b.name) { return 1 } return 0; }); //sort by name
 					bd.author.sort(function(a,b) { return a.p - b.p; }); //sort by priority
 					console.debug(bd.author);
 					if(bd.author.length <= 3) {
