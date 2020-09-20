@@ -1,6 +1,6 @@
 //Reference Discramer
 console.log("Reference: https://blog.jixun.moe/intercept-bookwalker-tw-image by JiXun");
-const getDetail = async function(bn, st=5, on="") {
+const getDetail = async function(bn, st=5, on="", ta=0) {
 	console.debug("getDetail()", bn, st, on);
 	let cty = parseInt((new URLSearchParams(window.location.search)).get('cty'));
 	let bwhp = "https://bookwalker.jp/";
@@ -16,10 +16,10 @@ const getDetail = async function(bn, st=5, on="") {
 			let f;
 			if(j.contents) { //type 1 = Series, 2 = Artist, 3 = Company, 4 = Label, 5 = Book
 				console.debug("getDetail(contents)", "auto_result:", j.contents.length);
-				f= j.contents.filter(v => (new RegExp(escape(bn)+"(?:%(?:[0-9A-F]{2}|u[0-9A-F]{4})|$)+","i")).test(escape(v.value))).find(v => (v.type == st && !(/(期間限定|お試し|試し読み)/.test(v.value))));
+				f= j.contents.filter(v => (new RegExp(escape(bn)+"(?:%(?:[0-9A-F]{2}|u[0-9A-F]{4})|$)+","i")).test(escape(v.value))).find(v => (v.type == st && (ta || !(/(期間限定|お試し|試し読み)/.test(v.value)))));
 			} else {
 				console.debug("getDetail()", "auto_result:", j.length);
-				f = j.filter(v => (new RegExp(escape(bn)+"(?:%(?:[0-9A-F]{2}|u[0-9A-F]{4})|$)+","i")).test(escape(v.value))).find(v => (v.type == st && !(/(期間限定|お試し|試し読み)/.test(v.value))));
+				f = j.filter(v => (new RegExp(escape(bn)+"(?:%(?:[0-9A-F]{2}|u[0-9A-F]{4})|$)+","i")).test(escape(v.value))).find(v => (v.type == st && (ta || !(/(期間限定|お試し|試し読み)/.test(v.value)))));
 			}
 			console.debug("getDetail()", "find_result:", f != undefined ? true : false);
 			let bid;
@@ -40,7 +40,7 @@ const getDetail = async function(bn, st=5, on="") {
 								try {
 									let auuid = document.evaluate(".//div[@title='"+ on +"']", html, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.getAttribute('data-uuid');
 									resolve('de' + auuid);
-								} catch(e) { return getDetail(document.title, 5, document.title) } //The name pattern changed!! maybe will add a blur search in future
+								} catch(e) { return getDetail(document.title, 5, document.title, 1) } //The name pattern changed!! maybe will add a blur search in future
 							}
 						});
 					});
