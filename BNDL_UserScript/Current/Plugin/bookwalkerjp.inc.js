@@ -27,7 +27,7 @@ const getDetail = async function(bn, st=5, on="") {
 				if(st == 5) {
 					bid = "de" + f.typeId;
 				} else {
-					console.debug("getDetail()", bwhp + "Series/"+ f.typeId +"/list/");
+					console.debug("getDetail()", bwhp + "series/"+ f.typeId +"/list/");
 					bid = await new Promise((resolve) => {
 						GM.xmlHttpRequest({
 							method: "GET",
