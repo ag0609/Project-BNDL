@@ -73,7 +73,7 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 					let parser = new DOMParser();
 					let html = parser.parseFromString(h, "text/html")
 					//bd.author = [].slice.call(html.getElementsByClassName('author-name')).map(e => e.innerHTML).join('×');
-					let authors = html.getElementsByClassName('author');
+					let authors = html.querySelectorAll("div.authors");
 					bd.author = [];
 					for(let i=0;(i<authors.length && authors.length>2);i++) {
 						try {
