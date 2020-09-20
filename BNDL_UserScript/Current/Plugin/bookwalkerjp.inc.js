@@ -44,9 +44,11 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 										case 1: //clean out whitespace
 											non = on.replace(/\s/g, "");
 											console.debug("getDetail()", on, "=>", non);
+											break;
 										case 2: //convert full-widthed character to half-widthed
 											non = halfwidthValue(on);
 											console.debug("getDetail()", on, "=>", non);
+											break;
 										default: //no retry or looped?
 											non = on;
 									}
@@ -57,6 +59,7 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 										case 2: //Free-in-Period books? let's try using full-tagged original title
 											console.debug("getDetail()", "use document.title");
 											return getDetail(document.title, 5, document.title, 999) 
+											break;
 										default:
 											_detail$retry_++;
 											return getDetail(bn, st, on);
