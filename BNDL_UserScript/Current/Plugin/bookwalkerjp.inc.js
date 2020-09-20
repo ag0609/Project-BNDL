@@ -23,10 +23,11 @@ const getDetail = async function(bn, st=5, on="") {
 			}
 			console.debug("getDetail()", "find_result:", f != undefined ? true : false);
 			let bid;
-			if(f) {
-				if(st == 5) {
+			let askhelp = 0;
+			if(f) { //have matched records
+				if(st == 5) { //congrates! exact match found
 					bid = "de" + f.typeId;
-				} else {
+				} else { //Series search
 					console.debug("getDetail()", bwhp + "series/"+ f.typeId +"/list/");
 					bid = await new Promise((resolve) => {
 						GM.xmlHttpRequest({
@@ -36,15 +37,20 @@ const getDetail = async function(bn, st=5, on="") {
 								let h = reS.responseText;
 								let parser = new DOMParser();
 								let html = parser.parseFromString(h, "text/html");
-								let auuid = document.evaluate(".//div[@title='"+ on +"']", html, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.getAttribute('data-uuid');
-								resolve('de' + auuid);
+								try {
+									let auuid = document.evaluate(".//div[@title='"+ on +"']", html, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.getAttribute('data-uuid');
+									resolve('de' + auuid);
+								} catch(e) { return getDetail(document.title, 5, document.title) } //The name pattern changed!! maybe will add a blur search in future
 							}
 						});
 					});
 				}
 			} else if(st == 5 && (j.length || j.contents)) { //Try search by series
-				return getDetail(bn.replace(/^\s?(.*?)\s?(?:[：\:]{0,1}\s?[\d０-９]+|[（\(][\d０-９]+[\)）]|[第]?[\d０-９]+[巻話]?)$/g, "$1"), 1, bn);
-			} else { //Try ask user for help
+				return await getDetail(bn.replace(/^\s?(.*?)\s?(?:[：\:]{0,1}\s?[\d０-９]+|[（\(][\d０-９]+[\)）]|[第]?[\d０-９]+[巻話]?)$/g, "$1"), 1, bn);
+			} else { //Strange... nothing found
+				askhelp = 1;
+			}
+			if(askhelp) { //Try ask user for help
 				let userbid = prompt("Sorry, Record not found. Please help search "+ bn +" at bookwalker.jp and paste bookID or detail page link here");
 				if(/^[\/]?de/.test(userbid)) {
 					bid = userbid.match(/de[0-9a-z\-]+/);
