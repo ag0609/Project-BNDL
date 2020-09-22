@@ -99,30 +99,30 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 					//bd.author = [].slice.call(html.getElementsByClassName('author-name')).map(e => e.innerHTML).join('×');
 					let authors = html.querySelectorAll("dl.author");
 					bd.author = [];
+					let wt, pcl;
 					for(let i=0;i<authors.length;i++) {
 						try {
 							const at = authors[i].getElementsByClassName('author-head')[0].innerText;
 							const an = authors[i].getElementsByClassName('author-name')[0].innerText.replace(/(（.*?）|\s)/g, "");
 							if(/(作画|漫画|マンガ|イラスト)/g.test(at)) {
-								let pcl = document.createElementNS(null, 'Penciller');
-								pcl.innerHTML = an;
-								Ci.appendChild(pcl);
+								if(pcl == undefined) pcl = document.createElementNS(null, 'Penciller');
+								pcl.innerHTML = pcl.innerHTML ? pcl.innerHTML +", "+ an : an;								
 								bd.author.push({'p':1, 'type':at, 'name':an});
 							} else if(/キャラ/.test(at)) {
 								//
 							} else if(/(原作|著)/g.test(at)) {
-								let wt = document.createElementNS(null, 'Writer');
-								wt.innerHTML = an;
-								Ci.appendChild(wt);
+								if(wt == undefined) wt = document.createElementNS(null, 'Writer');
+								wt.innerHTML = wt.innerHTML ? wt.innerHTML +", "+ an : an;								
 								if(bd.author.filter(x => x.p == 0).length < 2) bd.author.push({'p':0, 'type':at, 'name':an});
 							} else if(at != "") {
-								let wt = document.createElementNS(null, 'Writer');
-								wt.innerHTML = an;
-								Ci.appendChild(wt);
+								if(wt == undefined) wt = document.createElementNS(null, 'Writer');
+								wt.innerHTML = wt.innerHTML ? wt.innerHTML +", "+ an : an;
 								bd.author.push({'p':4, 'type':at, 'name':an});
 							};
 						} catch(e){};
 					}
+					Ci.appendChild(wt);
+					Ci.appendChild(pcl);
 					bd.author.sort(function(a,b) { if(a.name < b.name) { return -1 } else if(a.name > b.name) { return 1 } return 0; }); //sort by name
 					bd.author.sort(function(a,b) { return a.p - b.p; }); //sort by priority
 					console.debug(bd.author);
