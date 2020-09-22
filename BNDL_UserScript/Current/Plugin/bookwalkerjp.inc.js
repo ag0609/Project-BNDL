@@ -108,7 +108,7 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 								wt.innerHTML = an;
 								Ci.appendChild(wt);
 								if(bd.author.filter(x => x.p == 0).length < 2) bd.author.push({'p':0, 'type':at, 'name':an});
-							} else if(/(作画|漫画|イラスト)/g.test(at)) {
+							} else if(/(作画|漫画|マンガ|イラスト)/g.test(at)) {
 								let pcl = document.createElementNS(null, 'Penciller');
 								pcl.innerHTML = an;
 								Ci.appendChild(pcl);
