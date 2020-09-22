@@ -148,7 +148,7 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 const halfwidthValue = (value) => {return value.replace(/[\uff01-\uff5e]/g, fullwidthChar => String.fromCharCode(fullwidthChar.charCodeAt(0) - 0xfee0)).replace(/\u3000/g, '\u0020')}
 function main() {
 	const backup = window.NFBR.a6G.a5x.prototype.b9b;
-	window.NFBR.a6G.a5x.prototype.b9b = function () {
+	unsafeWindow.NFBR.a6G.a5x.prototype.b9b = function () {
 		let [targetCanvas, page, image, drawRect, flag] = arguments;
 		const totp = (document.getElementById('pageSliderCounter').innerHTML).split('/')[1] * 1;
 		let curp = page.index+1;
