@@ -154,7 +154,7 @@ function main() {
 		let curp = page.index+1;
 		if(_$canvas[curp] == undefined) {
 			_$canvas[curp] = [];
-			if(!start && curp > 1) return firekey(document.getElementById('renderer'), 36); //Home
+			if(!startf && curp > 1) return firekey(document.getElementById('renderer'), 36); //Home
 		} else {
 			if(retry && img$size[curp]) return firekey(document.getElementById('renderer'), 34); //Page Down
 			if(curp > 1 && !img$size[curp-1]) return firekey(document.getElementById('renderer'), 33); //Page Up
@@ -187,7 +187,7 @@ function main() {
 				page.setAttribute('ImageSize', v.size);
 				page.setAttribute('Image', curp-1);
 				pages.appendChild(page);
-				if(curp >= totp && start) {
+				if(curp >= totp && startf) {
 					Ci.appendChild(scan);
 					Ci.appendChild(pages);
 					let serializer = new XMLSerializer();
@@ -213,7 +213,7 @@ function main() {
 					}).then(function (blob) {
 						clearInterval(bchk);
 						console.groupEnd();
-						start = 0;
+						startf = 0;
 						const Url = window.URL.createObjectURL(blob);
 						console.group("Zip URL(Debug Uses)")
 						console.debug(Url);
@@ -237,7 +237,7 @@ function main() {
 				} else {
 					_$timer = 0;
 				}
-				if(start) {
+				if(startf) {
 					window.document.title = "["+curp+"/"+totp+"] "+on;
 					firekey(document.getElementById('renderer'), 34);
 				} else {
