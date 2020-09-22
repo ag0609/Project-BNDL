@@ -288,7 +288,7 @@ function main() {
 	}
 }
 const _$IfuBW_NFBR$_ = setInterval(function() {
-	if(unsafeWindow.NFBR.a6G && unsafeWindow.NFBR.a6G.a5x.prototype.b9b) {
+	if(window.NFBR.a6G && window.NFBR.a6G.a5x.prototype.b9b) {
 		clearInterval(_$IfuBW_NFBR$_);
 		_page_time = _job_time = new Date();
 		main();
