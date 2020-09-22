@@ -97,24 +97,24 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 					let parser = new DOMParser();
 					let html = parser.parseFromString(h, "text/html")
 					//bd.author = [].slice.call(html.getElementsByClassName('author-name')).map(e => e.innerHTML).join('×');
-					let authors = html.querySelectorAll("div.authors");
+					let authors = html.querySelectorAll("dl.author");
 					bd.author = [];
 					for(let i=0;i<authors.length;i++) {
 						try {
 							const at = authors[i].getElementsByClassName('author-head')[0].innerText;
 							const an = authors[i].getElementsByClassName('author-name')[0].innerText.replace(/(（.*?）|\s)/g, "");
-							if(/(原作|著)/g.test(at)) {
-								let wt = document.createElementNS(null, 'Writer');
-								wt.innerHTML = an;
-								Ci.appendChild(wt);
-								if(bd.author.filter(x => x.p == 0).length < 2) bd.author.push({'p':0, 'type':at, 'name':an});
-							} else if(/(作画|漫画|マンガ|イラスト)/g.test(at)) {
+							if(/(作画|漫画|マンガ|イラスト)/g.test(at)) {
 								let pcl = document.createElementNS(null, 'Penciller');
 								pcl.innerHTML = an;
 								Ci.appendChild(pcl);
 								bd.author.push({'p':1, 'type':at, 'name':an});
 							} else if(/キャラ/.test(at)) {
 								//
+							} else if(/(原作|著)/g.test(at)) {
+								let wt = document.createElementNS(null, 'Writer');
+								wt.innerHTML = an;
+								Ci.appendChild(wt);
+								if(bd.author.filter(x => x.p == 0).length < 2) bd.author.push({'p':0, 'type':at, 'name':an});
 							} else if(at != "") {
 								let wt = document.createElementNS(null, 'Writer');
 								wt.innerHTML = an;
