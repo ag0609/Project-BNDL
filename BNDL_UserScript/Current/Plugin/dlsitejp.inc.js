@@ -1,58 +1,64 @@
 //Reference Discramer
 console.log("Dlsite Play Japan");
 
-let zip;
-let quality = 0.92;
-
-// Your code here...
 let cache_size = 10;
 let cl, tp;
 let cc;
 let zt;
 let to;
-//let oldpopstat = window.onpopstate;
-const hashcheck = setInterval(function() {
-	if(cl != window.location.hash) {
-		cl = window.location.hash;
-		console.log("currentHash:", cl);
-		if(/(tree|view)\/\S+/.test(cl)) {
-			if(/view/.test(cl)) {
-				let tpa = cl.split("%2F");
-				tp = decodeURIComponent(tpa.splice(0,tpa.length-1).join("%2F").split(/view/)[1].substr(1));
-			} else {
-				tp = decodeURIComponent(cl.split(/tree/)[1].substr(1));
-			}
-			console.log("treePath:", tp);
-			if(zt) {
-				loadcache();
-			} else {
-				console.log("zt not ready");
-			}
-		}
-	}
-}, 50);
+
 function loadcache() {
 	let cpobj = searchinJSON(zt.tree, tp, "path")[0].children;
-	for(let i=0; i<Math.min(cpobj.length, cache_size); i++) {
-		let idx = i - (cache_size / 2);
+	let fcs = Math.min(cache_size, cpobj.length);
+	for(let i=0; i<Math.min(cpobj.length, fcs); i++) {
+		let idx = i - Math.floor(fcs / 2);
 		if(idx < 0) {
 			idx += cpobj.length;
 		}
 		let hn = cpobj[idx].hashname;
-		if(img_list[hn].blob == null) {
-			GM.xmlHttpRequest({
-				method: "GET",
-				url: img_list[hn].url,
-				responseType: "blob",
-				onload: function(res) {
-					img_list[hn].blob = URL.createObjectURL(res.response);
-					img_list[hn].img.onload = function() {
-						//URL.revokeObject(img_list[hn].blob);
-						console.log("cached", hn);
+		let hne = cpobj[idx].hashname.replace(/^.*(\..*?)$/, "$1");
+		if(/(?:jp[e]?g|png|gif)/.test(hne)) { //Image
+			if(img_list[hn].blob == null) {
+				GM.xmlHttpRequest({
+					method: "GET",
+					url: img_list[hn].url,
+					responseType: "blob",
+					onload: function(res) {
+						img_list[hn].blob = URL.createObjectURL(res.response);
+						img_list[hn].img.onload = function() {
+							//URL.revokeObject(img_list[hn].blob);
+							console.log("cached", hn);
+						}
+						img_list[hn].img.src = img_list[hn].blob;
 					}
-					img_list[hn].img.src = img_list[hn].blob;
+				});
+			}
+		} else if(/pdf/.test(hne)) { //pdf
+			let pdfroot = zt.playfile[hn].pdf.page;
+			let fpcs = Math.min(cache_size, pdfroot.length);
+			for(let p =0; p < fpcs; p++) {
+				let idx = p - Math.floor(fpcs /2);
+				if(idx < 0) {
+					idx += pdfroot.length;
 				}
-			});
+				let hn = pdfroot[idx].optimized.name;
+				let hne = pdfroot[idx].optimized.name.replace(/^.*(\..*?)$/, "$1");
+				if(img_list[hn].blob == null && /(?:jp[e]?g|png|gif)/.test(hne)) { //Image
+					GM.xmlHttpRequest({
+						method: "GET",
+						url: img_list[hn].url,
+						responseType: "blob",
+						onload: function(res) {
+							img_list[hn].blob = URL.createObjectURL(res.response);
+							img_list[hn].img.onload = function() {
+								//URL.revokeObject(img_list[hn].blob);
+								console.log("cached", hn);
+							}
+							img_list[hn].img.src = img_list[hn].blob;
+						}
+					});
+				}
+			}
 		} else {
 			console.log("skipped", hn);
 		}
@@ -87,19 +93,42 @@ XMLHttpRequest.prototype.send = function() {
 						if(imgarr == undefined) {
 							//console.log(searchinJSON(zt.tree, "hashname", hn));
 						}
-						img_list[hn] = {
-							"fn":searchinJSON(zt.tree, hn, "hashname")[0].name,
-							"count":1,
-							"maxcount":Math.ceil(zt.playfile[hn].image.optimized.width/128)*Math.ceil(zt.playfile[hn].image.optimized.height/128),
-							"canvas":document.createElement('canvas'),
-							"img":new Image(),
-							"url":"https://play.dl.dlsite.com/content/work/"+type+"/"+bjs[0]+"/"+zt.workno+"/optimized/"+hn+"?px-time="+pt+"&px-hash="+ph,
-							"blob":null
-						};
-						img_list[hn].canvas.width = zt.playfile[hn].image.optimized.width;
-						img_list[hn].canvas.height = zt.playfile[hn].image.optimized.height;
-						img_list[hn].img.classList.add("pswp__preload");
-						img_list[hn].img.crossOrigin = "anonymous";
+						if(/\.pdf$/.test(hn)) {
+							console.log("pdf file", hn, "detected");
+							let pdfroot = zt.playfile[hn].pdf.page;
+							for(let p =0; p < pdfroot.length; p++) {
+								let phn = pdfroot[p].optimized.name;
+								let phne = pdfroot[p].optimized.name.replace(/^.*(\..*?)$/, "$1");
+								img_list[phn] = {
+									//"fn": pad(p+1, 5) + phne,
+									"fn": p + phne,
+									"count": 1,
+									"maxcount":Math.ceil(pdfroot[p].optimized.width/128)*Math.ceil(pdfroot[p].optimized.height/128),
+									"canvas":document.createElement('canvas'),
+									"img":new Image(),
+									"url":"https://play.dl.dlsite.com/content/work/"+type+"/"+bjs[0]+"/"+zt.workno+"/optimized/"+phn+"?px-time="+pt+"&px-hash="+ph,
+									"blob":null
+								};
+								img_list[phn].canvas.width = pdfroot[p].optimized.width;
+								img_list[phn].canvas.height = pdfroot[p].optimized.height;
+								img_list[phn].img.classList.add("pswp__preload");
+								img_list[phn].img.crossOrigin = "anonymous";
+							}
+						} else {
+							img_list[hn] = {
+								"fn":searchinJSON(zt.tree, hn, "hashname")[0].name,
+								"count":1,
+								"maxcount":Math.ceil(zt.playfile[hn].image.optimized.width/128)*Math.ceil(zt.playfile[hn].image.optimized.height/128),
+								"canvas":document.createElement('canvas'),
+								"img":new Image(),
+								"url":"https://play.dl.dlsite.com/content/work/"+type+"/"+bjs[0]+"/"+zt.workno+"/optimized/"+hn+"?px-time="+pt+"&px-hash="+ph,
+								"blob":null
+							};
+							img_list[hn].canvas.width = zt.playfile[hn].image.optimized.width;
+							img_list[hn].canvas.height = zt.playfile[hn].image.optimized.height;
+							img_list[hn].img.classList.add("pswp__preload");
+							img_list[hn].img.crossOrigin = "anonymous";
+						}
 					} catch(e) {};
 				}
 				console.log(img_list);
@@ -187,4 +216,37 @@ function getCurrentCanvas() {
 	let tf = cc.style.transform.replace(/\-/g, "");
 	return document.evaluate("//div[@class='pswp__item'][contains(@style, '"+tf+"')]//canvas", cc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
 }
+const start = function() {
+	startf=1;
+}
+const cancel = function() {
+	if(startf) {
+		bndlBTN.disabled=false;
+		startf=0;
+	} else {
+		CanvasRenderingContext2D.prototype.drawImage = CanvasRenderingContext2D.prototype.odI;
+		XMLHttpRequest.prototype.send = XMLHttpRequest.prototype.osend;
+		document.body.removeChild(btn);
+	}
+}
 let img_list = [];
+const hashcheck = setInterval(function() {
+	if(cl != window.location.hash) {
+		cl = window.location.hash;
+		console.log("currentHash:", cl);
+		if(/(tree|view)\/\S+/.test(cl)) {
+			if(/view/.test(cl)) {
+				let tpa = cl.split("%2F");
+				tp = decodeURIComponent(tpa.splice(0,tpa.length-1).join("%2F").split(/view/)[1].substr(1));
+			} else {
+				tp = decodeURIComponent(cl.split(/tree/)[1].substr(1));
+			}
+			console.log("treePath:", tp);
+			if(zt) {
+				loadcache();
+			} else {
+				console.log("zt not ready");
+			}
+		}
+	}
+}, 50);
