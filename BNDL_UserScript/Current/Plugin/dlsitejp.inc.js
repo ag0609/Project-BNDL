@@ -282,6 +282,7 @@ const hashcheck = setInterval(function() {
 		console.log("currentHash:", cl);
 		if(/(tree|view)\/\S+/.test(cl)) {
 			if(/view/.test(cl)) {
+				btn.style.display = "block";
 				let tpa = cl.split("%2F");
 				if(tpa.length > 1) {
 					tp = decodeURIComponent(tpa.splice(0,tpa.length-1).join("%2F").split(/view/)[1].substr(1));
@@ -289,6 +290,7 @@ const hashcheck = setInterval(function() {
 					tp = "";
 				}
 			} else {
+				btn.style.display = "none";
 				tp = decodeURIComponent(cl.split(/tree/)[1].substr(1));
 			}
 			console.log("treePath:", tp);
@@ -300,7 +302,7 @@ const hashcheck = setInterval(function() {
 		}
 	}
 }, 50);
-	const butcheck = setInterval(function() {
+const butcheck = setInterval(function() {
 	if($(".view-controls").length) {
 		autoplay = $(".toggle-autoplay").detach();
 		spread = $(".toggle-spread-pages").detach();
