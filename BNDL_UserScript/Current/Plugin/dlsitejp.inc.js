@@ -1,24 +1,41 @@
 //Reference Discramer
 console.log("Dlsite Play Japan");
 
-let cache_size = 10;
+let cache_size = 10, cache_used = 0;
 let cl, tp;
 let cc;
 let zt;
 let to;
 
-function loadcache() {
-	let cpobj = searchinJSON(zt.tree, tp, "path")[0].children;
-	let fcs = Math.min(cache_size, cpobj.length);
-	for(let i=0; i<Math.min(cpobj.length, fcs); i++) {
-		let idx = i - Math.floor(fcs / 2);
-		if(idx < 0) {
-			idx += cpobj.length;
+let URL = window.webkitURL ? window.webkitURL : window.URL;
+let autoplay, spread;
+
+function loadcache(startidx=0, path=tp) {
+	let cpobj;
+	try {
+		cpobj = searchinJSON(zt.tree, path, "path")[0].children;
+	} catch(e) {
+		console.warn("loadcache()", "path", path, "invaild, using current tree path.");
+		if(tp && tp != "") {
+			cpobj = searchinJSON(zt.tree, tp, "path")[0].children;
+		} else {
+			cpobj = zt.tree;
 		}
+	}
+	let fcs = Math.min(cache_size, cpobj.length - startidx);
+	let skipped=0;
+	for(let i=0; (i<fcs && skipped+startidx<cpobj.length);) {
+		let idx = (startidx+skipped) + Math.ceil(i%2 ? (i/2) : -(i/2));
+		//console.log("treeidx:", idx);
+		idx = idx < 0 ? (idx%cpobj.length)+cpobj.length : idx >= cpobj.length ? (idx%cpobj.length) : idx;
 		let hn = cpobj[idx].hashname;
 		let hne = cpobj[idx].hashname.replace(/^.*(\..*?)$/, "$1");
 		if(/(?:jp[e]?g|png|gif)/.test(hne)) { //Image
-			if(img_list[hn].blob == null) {
+			if(img_list[hn].blob == null && !img_list[hn].caching && fcs - cache_used > 0) {
+				i++;
+				cache_used++;
+				img_list[hn].caching = 1;
+				console.log("loadcache()", "start cache", hn, fcs, cache_used, img_list[hn].fn);
 				GM.xmlHttpRequest({
 					method: "GET",
 					url: img_list[hn].url,
@@ -26,41 +43,58 @@ function loadcache() {
 					onload: function(res) {
 						img_list[hn].blob = URL.createObjectURL(res.response);
 						img_list[hn].img.onload = function() {
-							//URL.revokeObject(img_list[hn].blob);
-							console.log("cached", hn);
+							img_list[hn].caching = 0;
+							console.log("loadcache()", "file cached", hn);
 						}
 						img_list[hn].img.src = img_list[hn].blob;
 					}
 				});
+			} else {
+				//console.log("loadcache()", "cache exsits - skipped", hn);
+				skipped++;
 			}
 		} else if(/pdf/.test(hne)) { //pdf
+			i++;
+			let pskipped = 0;
 			let pdfroot = zt.playfile[hn].pdf.page;
-			let fpcs = Math.min(cache_size, pdfroot.length);
-			for(let p =0; p < fpcs; p++) {
-				let idx = p - Math.floor(fpcs /2);
-				if(idx < 0) {
-					idx += pdfroot.length;
-				}
+			let fpcs = Math.min(cache_size, pdfroot.length - startidx);
+			for(let p =0; p < fpcs && pskipped+startidx<pdfroot.length;) {
+				let idx = (startidx+pskipped) +Math.ceil(p%2 ? (p/2) : -(p/2));
+				//console.log("pidx:", idx);
+				idx = idx < 0 ? (idx%pdfroot.length)+pdfroot.length : idx >= pdfroot.length ? (idx%pdfroot.length) : idx;
 				let hn = pdfroot[idx].optimized.name;
 				let hne = pdfroot[idx].optimized.name.replace(/^.*(\..*?)$/, "$1");
-				if(img_list[hn].blob == null && /(?:jp[e]?g|png|gif)/.test(hne)) { //Image
-					GM.xmlHttpRequest({
-						method: "GET",
-						url: img_list[hn].url,
-						responseType: "blob",
-						onload: function(res) {
-							img_list[hn].blob = URL.createObjectURL(res.response);
-							img_list[hn].img.onload = function() {
-								//URL.revokeObject(img_list[hn].blob);
-								console.log("cached", hn);
+				if(/(?:jp[e]?g|png|gif)/.test(hne)) { //Image
+					if(img_list[hn].blob == null && !img_list[hn].caching && fpcs - cache_used > 0) {
+						p++;
+						cache_used++;
+						img_list[hn].caching = 1;
+						console.log("loadcache()", "start cache", hn, fpcs, cache_used, img_list[hn].fn);
+						GM.xmlHttpRequest({
+							method: "GET",
+							url: img_list[hn].url,
+							responseType: "blob",
+							onload: function(res) {
+								img_list[hn].blob = URL.createObjectURL(res.response);
+								img_list[hn].img.onload = function() {
+									img_list[hn].caching = 0;
+									console.log("loadcache()", "file cached", hn);
+								}
+								img_list[hn].img.src = img_list[hn].blob;
 							}
-							img_list[hn].img.src = img_list[hn].blob;
-						}
-					});
+						});
+					} else {
+						pskipped++;
+						//console.log("loadcache()", "cache exsits - skipped", hn);
+					}
+				} else {
+					pskipped++;
+					console.debug("loadcache()", "unsupported extension - skipped", hn);
 				}
 			}
 		} else {
-			console.log("skipped", hn);
+			skipped++;
+			console.debug("loadcache()", "unsupported extension - skipped", hn);
 		}
 	}
 }
@@ -100,13 +134,15 @@ XMLHttpRequest.prototype.send = function() {
 								let phn = pdfroot[p].optimized.name;
 								let phne = pdfroot[p].optimized.name.replace(/^.*(\..*?)$/, "$1");
 								img_list[phn] = {
-									//"fn": pad(p+1, 5) + phne,
-									"fn": p + phne,
+									"fn": pad(p+1, 5) + phne,
+									//"fn": (p+1) + phne,
+									"path": tp,
 									"count": 1,
 									"maxcount":Math.ceil(pdfroot[p].optimized.width/128)*Math.ceil(pdfroot[p].optimized.height/128),
 									"canvas":document.createElement('canvas'),
 									"img":new Image(),
 									"url":"https://play.dl.dlsite.com/content/work/"+type+"/"+bjs[0]+"/"+zt.workno+"/optimized/"+phn+"?px-time="+pt+"&px-hash="+ph,
+									"caching":0,
 									"blob":null
 								};
 								img_list[phn].canvas.width = pdfroot[p].optimized.width;
@@ -118,10 +154,12 @@ XMLHttpRequest.prototype.send = function() {
 							img_list[hn] = {
 								"fn":searchinJSON(zt.tree, hn, "hashname")[0].name,
 								"count":1,
+								"path": tp,
 								"maxcount":Math.ceil(zt.playfile[hn].image.optimized.width/128)*Math.ceil(zt.playfile[hn].image.optimized.height/128),
 								"canvas":document.createElement('canvas'),
 								"img":new Image(),
 								"url":"https://play.dl.dlsite.com/content/work/"+type+"/"+bjs[0]+"/"+zt.workno+"/optimized/"+hn+"?px-time="+pt+"&px-hash="+ph,
+								"caching":0,
 								"blob":null
 							};
 							img_list[hn].canvas.width = zt.playfile[hn].image.optimized.width;
@@ -132,7 +170,7 @@ XMLHttpRequest.prototype.send = function() {
 					} catch(e) {};
 				}
 				console.log(img_list);
-				if(tp) {
+				if(tp != null) {
 					await loadcache();
 				} else {
 					console.log("tp not ready");
@@ -148,7 +186,7 @@ CanvasRenderingContext2D.prototype.drawImage = function() {
 	let thisobj = this;
 	let args = arguments;
 	let hn = args[0].src.match(/[0-9a-z]+\.(?:jp[e]?g|png|gif)/)[0];
-	if(img_list[hn].fn != null) {
+	if(img_list[hn].blob != null) {
 		let ctx = img_list[hn].canvas.getContext('2d');
 		let wait = setInterval(()=>{
 			clearInterval(wait);
@@ -162,12 +200,14 @@ CanvasRenderingContext2D.prototype.drawImage = function() {
 				img_list[hn].count = 0;
 				setTimeout(function() {
 					img_list[hn].canvas.toBlob(async(blob) => {
-						zip.file(img_list[hn].fn, blob);
+						zip.folder(img_list[hn].path).file(img_list[hn].fn, blob);
 						URL.revokeObjectURL(blob);
-						console.log(zip.file(/(.*)\.(.*)/).length+1, Object.keys(img_list).length);
+						console.log(zip.folder(img_list[hn].path).file(/(.*)\.(.*)/).length, Object.keys(img_list).length);
 						console.log("zipped file:", img_list[hn].fn);
-						if(zip.file(/(.*)\.(.*)/).length >= Object.keys(img_list).length) {
-							console.log(zip.file(/(.*)\.(.*)/).length, "/", zt.tree.length);
+						cache_used--;
+						loadcache(0, img_list[hn].path);
+						if(zip.folder(img_list[hn].path).file(/(.*)\.(.*)/).length >= Object.keys(img_list).length) {
+							console.log(zip.folder(img_list[hn].path).file(/(.*)\.(.*)/).length, "/", zt.tree.length);
 							if(!to) {
 								to = setTimeout(function() {
 									zip.generateAsync({type:"blob"})
@@ -188,6 +228,10 @@ CanvasRenderingContext2D.prototype.drawImage = function() {
 				}, 1000);
 			}
 		}, 1000); //too small may got result drawImage cannot finish its job before launch
+	} else {
+		setTimeout(function() {
+			CanvasRenderingContext2D.prototype.drawImage.apply(this, args);
+		}, 100);
 	}
 }
 function clearBlob() {
@@ -218,18 +262,20 @@ function getCurrentCanvas() {
 }
 const start = function() {
 	startf=1;
+	if(autoplay.length) autoplay[0].click();
 }
 const cancel = function() {
 	if(startf) {
 		bndlBTN.disabled=false;
 		startf=0;
+		if(autoplay.length) autoplay[0].click();
 	} else {
 		CanvasRenderingContext2D.prototype.drawImage = CanvasRenderingContext2D.prototype.odI;
 		XMLHttpRequest.prototype.send = XMLHttpRequest.prototype.osend;
 		document.body.removeChild(btn);
 	}
 }
-let img_list = [];
+var img_list = [];
 const hashcheck = setInterval(function() {
 	if(cl != window.location.hash) {
 		cl = window.location.hash;
@@ -237,7 +283,11 @@ const hashcheck = setInterval(function() {
 		if(/(tree|view)\/\S+/.test(cl)) {
 			if(/view/.test(cl)) {
 				let tpa = cl.split("%2F");
-				tp = decodeURIComponent(tpa.splice(0,tpa.length-1).join("%2F").split(/view/)[1].substr(1));
+				if(tpa.length > 1) {
+					tp = decodeURIComponent(tpa.splice(0,tpa.length-1).join("%2F").split(/view/)[1].substr(1));
+				} else {
+					tp = "";
+				}
 			} else {
 				tp = decodeURIComponent(cl.split(/tree/)[1].substr(1));
 			}
@@ -250,3 +300,12 @@ const hashcheck = setInterval(function() {
 		}
 	}
 }, 50);
+	const butcheck = setInterval(function() {
+	if($(".view-controls").length) {
+		autoplay = $(".toggle-autoplay").detach();
+		spread = $(".toggle-spread-pages").detach();
+		console.log("controls catcha:", autoplay, spread);
+		if(spread[0].classList.contains("on")) { spread.click(); }
+		clearInterval(butcheck);
+	}
+}, 100);
