@@ -44,7 +44,7 @@
         mode = 1;
     }
     //Initialization
-    const zip = new JSZip();
+    let zip = new JSZip();
     let _init_time, _job_time, _page_time;
     _init_time = _job_time = _page_time = new Date();
     let _overflow_ = 0;
