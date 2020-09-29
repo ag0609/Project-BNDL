@@ -105,6 +105,7 @@ XMLHttpRequest.prototype.send = function() {
 	let orsc = this.onreadystatechange;
 	//console.log("XHR.send", this.__sentry_xhr__.url, arguments);
 	if(/ziptree/ig.test(this.__sentry_xhr__.url)) {
+        console.debug("XHR.send", "ziptree found");
 		img_list = [];
 		zip = new JSZip();
 		let tmpa = this.__sentry_xhr__.url.split('=');
@@ -136,7 +137,7 @@ XMLHttpRequest.prototype.send = function() {
 								img_list[phn] = {
 									"fn": pad(p+1, 5) + phne,
 									//"fn": (p+1) + phne,
-									"path": tp,
+									"path": tp + "/" + searchinJSON(zt.tree, hn, "hashname")[0].name,
 									"count": 1,
 									"maxcount":Math.ceil(pdfroot[p].optimized.width/128)*Math.ceil(pdfroot[p].optimized.height/128),
 									"canvas":document.createElement('canvas'),
@@ -193,7 +194,7 @@ CanvasRenderingContext2D.prototype.drawImage = function() {
 			img_list[hn].count++;
 			args[0] = img_list[hn].img;
 			CanvasRenderingContext2D.prototype.odI.apply(ctx, args);
-			if(document.getElementById('bndl-debug') && document.getElementById('bndl-debug').getAttribute("showorg") == "1") {
+			if($("#bndl-debug").length && $("#bndl-debug")[0].getAttribute("showorg") == "1") {
 				CanvasRenderingContext2D.prototype.odI.apply(thisobj, args);
 			}
 			if(img_list[hn].count >= img_list[hn].maxcount) {
@@ -276,6 +277,7 @@ const cancel = function() {
 	}
 }
 var img_list = [];
+let hideimg;
 const hashcheck = setInterval(function() {
 	if(cl != window.location.hash) {
 		cl = window.location.hash;
@@ -291,6 +293,18 @@ const hashcheck = setInterval(function() {
 				}
 			} else {
 				btn.style.display = "none";
+				clearInterval(hideimg);
+				if($("#bndl-debug").length && $("#bndl-debug")[0].getAttribute("showorg") == "1") {
+					hideimg = setInterval(function() {
+						if($("div.thumbnail").length) {
+							for(let t=0; t<$("div.thumbnail").length; t++) {
+								//console.log($("div.thumbnail")[t]);
+								$("div.thumbnail")[t].style.opacity = 0;
+							}
+							clearInterval(hideimg);
+						}
+					}, 100);
+				}
 				tp = decodeURIComponent(cl.split(/tree/)[1].substr(1));
 			}
 			console.log("treePath:", tp);
@@ -299,7 +313,20 @@ const hashcheck = setInterval(function() {
 			} else {
 				console.log("zt not ready");
 			}
-		}
+		} else {
+            		clearInterval(hideimg);
+			if($("#bndl-debug").length && $("#bndl-debug")[0].getAttribute("showorg") == "1") {
+				hideimg = setInterval(function() {
+					if($("div.thumbnail").length) {
+					    for(let t=0; t<$("div.thumbnail").length; t++) {
+						//console.log($("div.thumbnail")[t]);
+						$("div.thumbnail")[t].style.opacity = 0;
+					    }
+					    clearInterval(hideimg);
+					}
+				}, 100);
+			}
+        	}
 	}
 }, 50);
 const butcheck = setInterval(function() {
