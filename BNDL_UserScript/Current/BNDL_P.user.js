@@ -1,14 +1,18 @@
 // ==UserScript==
 // @name         BNDL collector(Plugin version)
-// @namespace    http://tampermonkey.net/
+// @namespace    https://github.com/ag0609/Project-BNDL
 // @version      0.1
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://viewer.bookwalker.jp/*
+// @match        https://play.dlsite.com/*
+// @require      tampermonkey://vendor/jquery.js
 // @require      tampermonkey://vendor/jszip/jszip.js
 // @resource     customCSS https://raw.githubusercontent.com/ag0609/Project-BNDL/master/css/BNDL.user.css
 // @resource	 BWJP https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/bookwalkerjp.inc.js
+// @resource	 DLJP https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/dlsitejp.inc.js
 // @connect      bookwalker.jp
+// @connect      play.dlsite.fun
 // @grant        GM.xmlHttpRequest
 // @grant        GM.setValue
 // @grant        GM.getValue
@@ -45,7 +49,7 @@
     _init_time = _job_time = _page_time = new Date();
     let _overflow_ = 0;
     let _$timer = 0;
-    let start = 0;
+    let startf = 0;
     let _$canvas = [];
     let img$size = [];
     let _$c_wh = {w:0, h:0};
@@ -85,7 +89,6 @@
     bndlBTN.className = 'bndl-btn';
     bndlBTN.style.backgroundColor = 'white';
     bndlBTN.innerHTML = 'BNDL';
-    bndlBTN.onclick = ()=>{bndlBTN.disabled=true; start=1; _job_time = new Date(); firekey(document.getElementById('renderer'), 34);};
     bndlBTN.disabled = true;
     const quaBTN = btn_obj.cloneNode();
     quaBTN.className = 'bndl-btn';
@@ -96,7 +99,6 @@
     canBTN.className = 'bndl-btn';
     canBTN.style.backgroundColor = 'white';
     canBTN.innerHTML = "Stop";
-    canBTN.onclick = ()=>{start=0;CanvasRenderingContext2D.prototype.drawImage=CanvasRenderingContext2D.prototype.odI;document.removeChild(btn)};
     btn.appendChild(document.createElement('tr'));
     btn.appendChild(pc);
     btn.appendChild(quaBTN);
@@ -180,11 +182,12 @@
         }
         console.debug("KEY", key, "fired");
     } //simulate keyboard-key fire
-	let jsMain = document.createElement("script");
-	if(/bookwalker\.jp/i.test(window.location.href)) jsMain.innerHTML = GM_getResourceText("BWJP");
+	let jsMain;
+	if(/bookwalker\.jp/i.test(window.location.href)) jsMain = GM_getResourceText("BWJP");
 	//if(/bookwalker\.tw/i.test(window.location.href)) jsMain.innerHTML = GM_getResourceText("BWTW");
 	//if(/booklive\.jp/i.test(window.location.href)) jsMain.innerHTML = GM_getResourceText("BLJP");
-	//if(/dlsite\.com/i.test(window.location.href)) jsMain.innerHTML = GM_getResourceText("DLJP");
-	document.body.appendChild(jsMain);
-	
+	if(/dlsite\.com/i.test(window.location.href)) jsMain = GM_getResourceText("DLJP");
+	eval(jsMain);
+    bndlBTN.onclick = ()=>{start()};
+    canBTN.onclick = ()=>{cancal()};
 })();
