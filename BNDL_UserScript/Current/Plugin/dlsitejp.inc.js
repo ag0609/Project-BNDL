@@ -284,7 +284,7 @@ const hashcheck = setInterval(function() {
 		console.log("currentHash:", cl);
 		if(/(tree|view)\/\S+/.test(cl)) {
 			if(/view/.test(cl)) {
-				btn.style.display = "block";
+				btn.style.visibility = "visible";
 				let tpa = cl.split("%2F");
 				if(tpa.length > 1) {
 					tp = decodeURIComponent(tpa.splice(0,tpa.length-1).join("%2F").split(/view/)[1].substr(1));
@@ -292,7 +292,7 @@ const hashcheck = setInterval(function() {
 					tp = "";
 				}
 			} else {
-				btn.style.display = "none";
+				btn.style.display = "hidden";
 				clearInterval(hideimg);
 				if($("#bndl-debug").length && $("#bndl-debug")[0].getAttribute("showorg") == "1") {
 					hideimg = setInterval(function() {
@@ -336,5 +336,6 @@ const butcheck = setInterval(function() {
 		console.log("controls catcha:", autoplay, spread);
 		if(spread[0].classList.contains("on")) { spread.click(); }
 		clearInterval(butcheck);
+		bndlBTN.disabled=false;
 	}
 }, 100);
