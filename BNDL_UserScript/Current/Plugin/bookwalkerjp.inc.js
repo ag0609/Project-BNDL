@@ -54,11 +54,11 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 									}
 									let auuid = document.evaluate(".//div[@title='"+ non +"']", html, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.getAttribute('data-uuid');
 									resolve('de' + auuid);
-								} catch(e) { 
+								} catch(e) {
 									switch(_detail$retry_) {
 										case 2: //Free-in-Period books? let's try using full-tagged original title
 											console.debug("getDetail()", "use document.title");
-											return getDetail(document.title, 5, document.title, 999) 
+											return getDetail(document.title, 5, document.title, 999);
 											break;
 										default:
 											_detail$retry_++;
@@ -134,7 +134,7 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 					if(bd.author.length <= 3) {
 						fn = '[' + bd.author.map(e=>e.name).join('×') + '] ' + fn;
 					} else {
-						fn = '[' + bd.author.splice(0,3).map(e=>e.name).join('×') + '] ' + fn;	
+						fn = '[' + bd.author.splice(0,3).map(e=>e.name).join('×') + '] ' + fn;
 					}
 					const pD = document.evaluate("//dt[text()='配信開始日']", html, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.nextElementSibling.innerText;
 					let Yt = document.createElementNS(null, 'Year');
