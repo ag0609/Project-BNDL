@@ -1,6 +1,7 @@
 //Reference Discramer
 console.log("Reference: https://blog.jixun.moe/intercept-bookwalker-tw-image by JiXun");
 let _detail$retry_ = 0;
+let backup;
 const getDetail = async function(bn, st=5, on="", ta=0) {
 	console.debug("getDetail()", bn, st, on);
 	let cty = parseInt((new URLSearchParams(window.location.search)).get('cty'));
@@ -152,7 +153,7 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 } // Get Detail of Book
 const halfwidthValue = (value) => {return value.replace(/[\uff01-\uff5e]/g, fullwidthChar => String.fromCharCode(fullwidthChar.charCodeAt(0) - 0xfee0)).replace(/\u3000/g, '\u0020')}
 function main() {
-	const backup = unsafeWindow.NFBR.a6G.a5x.prototype.b9b;
+	backup = unsafeWindow.NFBR.a6G.a5x.prototype.b9b;
 	unsafeWindow.NFBR.a6G.a5x.prototype.b9b = function () {
 		let [targetCanvas, page, image, drawRect, flag] = arguments;
 		const totp = (document.getElementById('pageSliderCounter').innerHTML).split('/')[1] * 1;
@@ -290,6 +291,19 @@ function main() {
 		}
 		if(!show_org) targetCanvas = document.createElement('canvas');
 		return backup.apply(this, [targetCanvas, page, image, drawRect, flag]);
+	}
+}
+start = function() {
+	bndlBTN.disabled = true;
+	startf = true;
+}
+cancel = function() {
+	if(startf) {
+		bndlBTN.disabled = false;
+		startf = false;
+	} else {
+		unsafeWindow.NFBR.a6G.a5x.prototype.b9b = backup;
+		document.body.removeChild(btn);
 	}
 }
 const _$IfuBW_NFBR$_ = setInterval(function() {
