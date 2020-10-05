@@ -95,7 +95,7 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 				onload: function(res) {
 					let h = res.responseText;
 					let parser = new DOMParser();
-					let html = parser.parseFromString(h, "text/html")
+					let html = parser.parseFromString(h, "text/html");
 					//bd.author = [].slice.call(html.getElementsByClassName('author-name')).map(e => e.innerHTML).join('×');
 					let authors = html.querySelectorAll("dl.author");
 					bd.author = [];
@@ -104,15 +104,15 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 						try {
 							const at = authors[i].getElementsByClassName('author-head')[0].innerText;
 							const an = authors[i].getElementsByClassName('author-name')[0].innerText.replace(/(（.*?）|\s)/g, "");
-							if(/(作画|漫画|マンガ|イラスト)/g.test(at)) {
-								if(pcl == undefined) pcl = document.createElementNS(null, 'Penciller');
-								pcl.innerHTML = pcl.innerHTML ? pcl.innerHTML +", "+ an : an;								
-								bd.author.push({'p':1, 'type':at, 'name':an});
-							} else if(/キャラ/.test(at)) {
+							if(/キャラ/.test(at)) {
 								//
-							} else if(/(原作|著)/g.test(at)) {
+							} else if(/(画|マンガ|イラスト)/g.test(at)) {
+								if(pcl == undefined) pcl = document.createElementNS(null, 'Penciller');
+								pcl.innerHTML = pcl.innerHTML ? pcl.innerHTML +", "+ an : an;
+								bd.author.push({'p':1, 'type':at, 'name':an});
+							} else if(/(作|著)/g.test(at)) {
 								if(wt == undefined) wt = document.createElementNS(null, 'Writer');
-								wt.innerHTML = wt.innerHTML ? wt.innerHTML +", "+ an : an;								
+								wt.innerHTML = wt.innerHTML ? wt.innerHTML +", "+ an : an;
 								if(bd.author.filter(x => x.p == 0).length < 2) bd.author.push({'p':0, 'type':at, 'name':an});
 							} else if(at != "") {
 								if(wt == undefined) wt = document.createElementNS(null, 'Writer');
@@ -121,8 +121,13 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 							};
 						} catch(e){};
 					}
-					Ci.appendChild(wt);
-					Ci.appendChild(pcl);
+					if(wt) { 
+						Ci.appendChild(wt);
+						if(pcl) Ci.appendChild(pcl);
+					} else if(pcl) {
+						pcl.outerHTML = pcl.outerHTML.replace("penceller", "writer");
+						Ci.appendChild(pcl);
+					}
 					bd.author.sort(function(a,b) { if(a.name < b.name) { return -1 } else if(a.name > b.name) { return 1 } return 0; }); //sort by name
 					bd.author.sort(function(a,b) { return a.p - b.p; }); //sort by priority
 					console.debug(bd.author);
