@@ -296,6 +296,7 @@ function main() {
 start = function() {
 	bndlBTN.disabled = true;
 	startf = true;
+	firekey(document.getElementById('renderer'), 34);
 }
 cancel = function() {
 	if(startf) {
