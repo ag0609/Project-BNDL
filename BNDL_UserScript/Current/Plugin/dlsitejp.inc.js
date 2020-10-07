@@ -136,8 +136,7 @@ XMLHttpRequest.prototype.send = function() {
 								let phne = pdfroot[p].optimized.name.replace(/^.*(\..*?)$/, "$1");
 								img_list[phn] = {
 									"fn": pad(p+1, 5) + phne,
-									//"fn": (p+1) + phne,
-									"path": tp + "/" + searchinJSON(zt.tree, hn, "hashname")[0].name,
+									"path": searchPath(zt.tree, hn, "hashname") ? searchPath(zt.tree, hn, "hashname") + "/" + searchinJSON(zt.tree, hn, "hashname")[0].name : searchinJSON(zt.tree, hn, "hashname")[0].name,
 									"count": 1,
 									"maxcount":Math.ceil(pdfroot[p].optimized.width/128)*Math.ceil(pdfroot[p].optimized.height/128),
 									"canvas":document.createElement('canvas'),
@@ -155,7 +154,7 @@ XMLHttpRequest.prototype.send = function() {
 							img_list[hn] = {
 								"fn":searchinJSON(zt.tree, hn, "hashname")[0].name,
 								"count":1,
-								"path": tp,
+								"path": searchPath(zt.tree, hn, "hashname"),
 								"maxcount":Math.ceil(zt.playfile[hn].image.optimized.width/128)*Math.ceil(zt.playfile[hn].image.optimized.height/128),
 								"canvas":document.createElement('canvas'),
 								"img":new Image(),
@@ -256,6 +255,15 @@ function searchinJSON(root, value, key="",res=[]) {
 		}
 	}
 	return res;
+}
+function searchPath(root, value, key="") {
+    let res;
+	if(key=="") {
+		res = new RegExp("%22path%22%3A%22(.*?)%22.*?"+encodeURIComponent(":\""+value+"\""), "").exec(encodeURIComponent(JSON.stringify(root)))[1];
+	} else {
+        	res = new RegExp("%22path%22%3A%22(.*?)%22.*?"+encodeURIComponent("\""+key+"\":\""+value+"\""), "").exec(encodeURIComponent(JSON.stringify(root)))[1];
+	}
+    return res ? res : "";
 }
 function getCurrentCanvas() {
 	let tf = cc.style.transform.replace(/\-/g, "");
