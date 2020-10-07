@@ -25,6 +25,10 @@ function loadcache(startidx=0, path=tp) {
     let fcs = Math.min(cache_size, cpobj.length - startidx);
     let skipped=0;
     for(let i=0; (i<fcs && skipped+startidx<cpobj.length);) {
+        if(cpobj[idx].type != "file") {
+            i++;
+            continue;
+        }
         let idx = (startidx+skipped) + Math.ceil(i%2 ? (i/2) : -(i/2));
         //console.log("treeidx:", idx);
         idx = idx < 0 ? (idx%cpobj.length)+cpobj.length : idx >= cpobj.length ? (idx%cpobj.length) : idx;
