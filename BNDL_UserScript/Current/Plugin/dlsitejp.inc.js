@@ -306,7 +306,7 @@ const hashcheck = setInterval(function() {
         cl = window.location.hash;
         console.log("currentHash:", cl);
         let bjs = cl.split('/').filter(v => /^(BJ|RJ)/.test(v));
-        if(wn != bjs[0]) { console.log("workno changed, resetting tree", "(", wn, "=>", bjs[0], ")"); wn = bjs[0]; tp = ""; }
+        if(wn != bjs[0]) { console.log("workno changed, resetting tree", "(", wn, "=>", bjs[0], ")"); wn = bjs[0]; tp = ""; clearBlob(); }
         if(/(tree|view)\/\S+/.test(cl)) {
             if(/view/.test(cl)) {
                 btn.style.display = "flex";
