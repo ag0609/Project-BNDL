@@ -19,7 +19,7 @@ function loadcache(startidx=0, path=tp) {
     } catch(e) {
         console.warn("loadcache()", "path", path, "invaild, using current tree path.");
         if(tp && tp != "") {
-            cpobj = searchinJSON(zt.tree, tp, "path")[0].children;
+            cpobj = /\.pdf/i.test(tp) ? (/\//.test(tp) ? searchPath(zt.tree, tp, "name").children : zt.tree) : searchinJSON(zt.tree, tp, "path")[0].children;
             if(cache[tp] == undefined) cache[tp] = {"used":0};
             cp = cache[tp];
         } else {
