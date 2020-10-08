@@ -7,7 +7,7 @@ let cc;
 let zt;
 let to;
 
-let URL = window.webkitURL ? window.webkitURL : window.URL;
+let URL = window.webkitURL || window.URL;
 let autoplay, spread;
 
 function loadcache(startidx=0, path=tp) {
@@ -312,7 +312,11 @@ const hashcheck = setInterval(function() {
                 btn.style.display = "flex";
                 let tpa = cl.split("%2F");
                 if(tpa.length > 1) {
-                    tp = decodeURIComponent(tpa.splice(0,tpa.length-1).join("%2F").split(/view/)[1].substr(1));
+                    if(tpa[tpa.length-1] == "pdf") {
+                        tp = decodeURIComponent(tpa.splice(0,tpa.length).join("%2F").split(/view/)[1].substr(1));
+                    } else {
+                        tp = decodeURIComponent(tpa.splice(0,tpa.length-1).join("%2F").split(/view/)[1].substr(1));
+                    }
                 } else {
                     tp = "";
                 }
