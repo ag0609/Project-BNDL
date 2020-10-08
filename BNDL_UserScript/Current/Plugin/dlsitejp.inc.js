@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan");
+console.log("Dlsite Play Japan ver20201008");
 
 let cache_size = 10, cache = {};
 let cl, tp;
