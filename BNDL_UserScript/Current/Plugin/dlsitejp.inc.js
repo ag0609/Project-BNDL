@@ -1,7 +1,7 @@
 //Reference Discramer
 console.log("Dlsite Play Japan");
 
-let cache_size = 10, cache_used = 0;
+let cache_size = 10, cache = {};
 let cl, tp;
 let cc;
 let zt;
@@ -11,35 +11,41 @@ let URL = window.webkitURL ? window.webkitURL : window.URL;
 let autoplay, spread;
 
 function loadcache(startidx=0, path=tp) {
-    let cpobj;
+    let cpobj, cp;
     try {
         cpobj = searchinJSON(zt.tree, path, "path")[0].children;
+        if(cache[path] == undefined) cache[path] = {"used":0};
+        cp = cache[path];
     } catch(e) {
         console.warn("loadcache()", "path", path, "invaild, using current tree path.");
         if(tp && tp != "") {
             cpobj = searchinJSON(zt.tree, tp, "path")[0].children;
+            if(cache[tp] == undefined) cache[tp] = {"used":0};
+            cp = cache[tp];
         } else {
             cpobj = zt.tree;
+            if(cache["tree"] == undefined) cache["tree"] = {"used":0};
+            cp = cache["tree"];
         }
     }
     let fcs = Math.min(cache_size, cpobj.length - startidx);
     let skipped=0;
     for(let i=0; (i<fcs && skipped+startidx<cpobj.length);) {
+        let idx = (startidx+skipped) + Math.ceil(i%2 ? (i/2) : -(i/2));
+        //console.log("treeidx:", idx);
+        idx = idx < 0 ? (idx%cpobj.length)+cpobj.length : idx >= cpobj.length ? (idx%cpobj.length) : idx;
         if(cpobj[idx].type != "file") {
             i++;
             continue;
         }
-        let idx = (startidx+skipped) + Math.ceil(i%2 ? (i/2) : -(i/2));
-        //console.log("treeidx:", idx);
-        idx = idx < 0 ? (idx%cpobj.length)+cpobj.length : idx >= cpobj.length ? (idx%cpobj.length) : idx;
         let hn = cpobj[idx].hashname;
         let hne = cpobj[idx].hashname.replace(/^.*(\..*?)$/, "$1");
         if(/(?:jp[e]?g|png|gif)/.test(hne)) { //Image
-            if(img_list[hn].blob == null && !img_list[hn].caching && fcs - cache_used > 0) {
+            if(img_list[hn].blob == null && !img_list[hn].caching && fcs - cp.used > 0) {
                 i++;
-                cache_used++;
+                cp.used++;
                 img_list[hn].caching = 1;
-                console.log("loadcache()", "start cache", hn, fcs, cache_used, img_list[hn].fn);
+                console.log("loadcache()", "start cache", hn, fcs, cp.used, img_list[hn].fn);
                 GM.xmlHttpRequest({
                     method: "GET",
                     url: img_list[hn].url,
@@ -69,11 +75,11 @@ function loadcache(startidx=0, path=tp) {
                 let hn = pdfroot[idx].optimized.name;
                 let hne = pdfroot[idx].optimized.name.replace(/^.*(\..*?)$/, "$1");
                 if(/(?:jp[e]?g|png|gif)/.test(hne)) { //Image
-                    if(img_list[hn].blob == null && !img_list[hn].caching && fpcs - cache_used > 0) {
+                    if(img_list[hn].blob == null && !img_list[hn].caching && fpcs - cp.used > 0) {
                         p++;
-                        cache_used++;
+                        cp.used++;
                         img_list[hn].caching = 1;
-                        console.log("loadcache()", "start cache", hn, fpcs, cache_used, img_list[hn].fn);
+                        console.log("loadcache()", "start cache", hn, fpcs, cp.used, img_list[hn].fn);
                         GM.xmlHttpRequest({
                             method: "GET",
                             url: img_list[hn].url,
@@ -112,9 +118,8 @@ XMLHttpRequest.prototype.send = function() {
         console.debug("XHR.send", "ziptree found");
         img_list = [];
         zip = new JSZip();
-        let tmpa = this.__sentry_xhr__.url.split('=');
-        let ph = tmpa[tmpa.length-1];
-        let pt = tmpa[tmpa.length-2].split('&')[0] *1;
+        let tmpa = this.__sentry_xhr__.url.split('?');
+        let query = tmpa[1];
         let bjs = tmpa[0].split('/').filter(v => /^(BJ|RJ)/.test(v));
         let type = "books";
         if(/RJ/.test(bjs[0])) {
@@ -145,7 +150,7 @@ XMLHttpRequest.prototype.send = function() {
                                     "maxcount":Math.ceil(pdfroot[p].optimized.width/128)*Math.ceil(pdfroot[p].optimized.height/128),
                                     "canvas":document.createElement('canvas'),
                                     "img":new Image(),
-                                    "url":"https://play.dl.dlsite.com/content/work/"+type+"/"+bjs[0]+"/"+zt.workno+"/optimized/"+phn+"?px-time="+pt+"&px-hash="+ph,
+                                    "url":"https://play.dl.dlsite.com/content/work/"+type+"/"+bjs[0]+"/"+zt.workno+"/optimized/"+phn+"?"+query,
                                     "caching":0,
                                     "blob":null
                                 };
@@ -162,7 +167,7 @@ XMLHttpRequest.prototype.send = function() {
                                 "maxcount":Math.ceil(zt.playfile[hn].image.optimized.width/128)*Math.ceil(zt.playfile[hn].image.optimized.height/128),
                                 "canvas":document.createElement('canvas'),
                                 "img":new Image(),
-                                "url":"https://play.dl.dlsite.com/content/work/"+type+"/"+bjs[0]+"/"+zt.workno+"/optimized/"+hn+"?px-time="+pt+"&px-hash="+ph,
+                                "url":"https://play.dl.dlsite.com/content/work/"+type+"/"+bjs[0]+"/"+zt.workno+"/optimized/"+hn+"?"+query,
                                 "caching":0,
                                 "blob":null
                             };
@@ -197,7 +202,7 @@ CanvasRenderingContext2D.prototype.drawImage = function() {
             img_list[hn].count++;
             args[0] = img_list[hn].img;
             CanvasRenderingContext2D.prototype.odI.apply(ctx, args);
-            if($("#bndl-debug").length && $("#bndl-debug")[0].getAttribute("showorg") == "1") {
+            if($("#bndl-debug").length && $("#bndl-debug")[0].getAttribute("showorg")) {
                 CanvasRenderingContext2D.prototype.odI.apply(thisobj, args);
             }
             if(img_list[hn].count >= img_list[hn].maxcount) {
@@ -208,7 +213,7 @@ CanvasRenderingContext2D.prototype.drawImage = function() {
                         URL.revokeObjectURL(blob);
                         console.log(zip.folder(img_list[hn].path).file(/(.*)\.(.*)/).length, Object.keys(img_list).length);
                         console.log("zipped file:", img_list[hn].fn);
-                        cache_used--;
+                        cache[img_list[hn].path].used--;
                         loadcache(0, img_list[hn].path);
                         if(zip.folder(img_list[hn].path).file(/(.*)\.(.*)/).length >= Object.keys(img_list).length) {
                             console.log(zip.folder(img_list[hn].path).file(/(.*)\.(.*)/).length, "/", zt.tree.length);
@@ -238,13 +243,7 @@ CanvasRenderingContext2D.prototype.drawImage = function() {
         }, 100);
     }
 }
-function clearBlob() {
-    for(let k in img_list) {
-        if(img_list[k].blob != undefined) {
-            URL.revokeObject(img_list[k].blob);
-        }
-    }
-}
+
 function searchinJSON(root, value, key="",res=[]) {
     if(key && encodeURIComponent(root[key]) == encodeURIComponent(value)) {
         res.push(root);
@@ -273,13 +272,24 @@ function getCurrentCanvas() {
     let tf = cc.style.transform.replace(/\-/g, "");
     return document.evaluate("//div[@class='pswp__item'][contains(@style, '"+tf+"')]//canvas", cc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
 }
-const start = function() {
+function clearBlob() {
+    for(let k in img_list) {
+        if(img_list[k].blob != undefined) {
+            URL.revokeObject(img_list[k].blob);
+        }
+    }
+}
+start = function() {
     startf=1;
+    btn.classList.add('extend');
+    btn.classList.add('start');
     if(autoplay.length) autoplay[0].click();
 }
-const cancel = function() {
+cancel = function() {
     if(startf) {
         bndlBTN.disabled=false;
+        btn.classList.remove('extend');
+        btn.classList.remove('start');
         startf=0;
         if(autoplay.length) autoplay[0].click();
     } else {
@@ -296,7 +306,7 @@ const hashcheck = setInterval(function() {
         console.log("currentHash:", cl);
         if(/(tree|view)\/\S+/.test(cl)) {
             if(/view/.test(cl)) {
-                btn.style.visibility = "visible";
+                btn.style.display = "flex";
                 let tpa = cl.split("%2F");
                 if(tpa.length > 1) {
                     tp = decodeURIComponent(tpa.splice(0,tpa.length-1).join("%2F").split(/view/)[1].substr(1));
@@ -304,9 +314,9 @@ const hashcheck = setInterval(function() {
                     tp = "";
                 }
             } else {
-                btn.style.display = "hidden";
+                btn.style.display = "none";
                 clearInterval(hideimg);
-                if($("#bndl-debug").length && $("#bndl-debug")[0].getAttribute("showorg") == "1") {
+                if(!$("#bndl-debug").length && $("#bndl-debug")[0].getAttribute("showorg")) {
                     hideimg = setInterval(function() {
                         if($("div.thumbnail").length) {
                             for(let t=0; t<$("div.thumbnail").length; t++) {
@@ -327,7 +337,7 @@ const hashcheck = setInterval(function() {
             }
         } else {
             clearInterval(hideimg);
-            if($("#bndl-debug").length && $("#bndl-debug")[0].getAttribute("showorg") == "1") {
+            if(!$("#bndl-debug").length && $("#bndl-debug")[0].getAttribute("showorg") == 0) {
                 hideimg = setInterval(function() {
                     if($("div.thumbnail").length) {
                         for(let t=0; t<$("div.thumbnail").length; t++) {
