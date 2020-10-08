@@ -19,6 +19,7 @@
 // @grant        GM_addStyle
 // @grant        GM_getResourceText
 // @grant        unsafeWindow
+// @run-at       document-body
 // ==/UserScript==
 
 (async function() {
