@@ -3,9 +3,10 @@ console.log("Dlsite Play Japan ver20201008");
 
 let cache_size = 10, cache = {};
 let cl, tp, wn;
-let cc;
+let cc, cn;
 let zt;
 let to;
+let pm;
 
 let URL = window.webkitURL || window.URL;
 let autoplay, spread;
@@ -162,7 +163,7 @@ XMLHttpRequest.prototype.send = function() {
                             }
                         } else {
                             img_list[hn] = {
-                                "fn":searchinJSON(zt.tree, hn, "hashname")[0].name,
+                                "fn": searchinJSON(zt.tree, hn, "hashname")[0].name,
                                 "count":1,
                                 "path": searchPath(zt.tree, hn, "hashname"),
                                 "maxcount":Math.ceil(zt.playfile[hn].image.optimized.width/128)*Math.ceil(zt.playfile[hn].image.optimized.height/128),
@@ -206,18 +207,19 @@ CanvasRenderingContext2D.prototype.drawImage = function() {
             if($("#bndl-debug").length && $("#bndl-debug")[0].getAttribute("showorg")) {
                 CanvasRenderingContext2D.prototype.odI.apply(thisobj, args);
             }
-            if(img_list[hn].count >= img_list[hn].maxcount) {
-                img_list[hn].count = 0;
+            if(img_list[hn].count >= img_list[hn].maxcount && img_list[hn].count < 1000) {
+                img_list[hn].count = 999;
                 setTimeout(function() {
                     img_list[hn].canvas.toBlob(async(blob) => {
                         zip.folder(img_list[hn].path).file(img_list[hn].fn, blob);
                         URL.revokeObjectURL(blob);
-                        console.log(zip.folder(img_list[hn].path).file(/(.*)\.(.*)/).length, Object.keys(img_list).length);
+                        let pm = searchinJSON(zt.tree, img_list[hn].path, "path")[0].children || zt.tree;
+                        console.log(zip.folder(img_list[hn].path).file(/(.*)\.(.*)/).length, pm.length);
                         console.log("zipped file:", img_list[hn].fn);
                         cache[img_list[hn].path].used--;
                         loadcache(0, img_list[hn].path);
-                        if(zip.folder(img_list[hn].path).file(/(.*)\.(.*)/).length >= Object.keys(img_list).length) {
-                            console.log(zip.folder(img_list[hn].path).file(/(.*)\.(.*)/).length, "/", zt.tree.length);
+                        if(zip.folder(img_list[hn].path).file(/(.*)\.(.*)/).length >= pm.length) {
+                            console.log(zip.folder(img_list[hn].path).file(/(.*)\.(.*)/).length, pm.length);
                             if(!to) {
                                 to = setTimeout(function() {
                                     zip.generateAsync({type:"blob"})
@@ -263,11 +265,11 @@ function searchinJSON(root, value, key="",res=[]) {
 function searchPath(root, value, key="") {
     let res;
     if(key=="") {
-        res = new RegExp("%22path%22%3A%22(.*?)%22.*?"+encodeURIComponent(":\""+value+"\""), "").exec(encodeURIComponent(JSON.stringify(root)));
+        res = new RegExp(".+%22path%22%3A%22(.*?)%22.*?"+encodeURIComponent(":\""+value+"\""), "").exec(encodeURIComponent(JSON.stringify(root)));
     } else {
-        res = new RegExp("%22path%22%3A%22(.*?)%22.*?"+encodeURIComponent("\""+key+"\":\""+value+"\""), "").exec(encodeURIComponent(JSON.stringify(root)));
+        res = new RegExp(".+%22path%22%3A%22(.*?)%22.*?"+encodeURIComponent("\""+key+"\":\""+value+"\""), "").exec(encodeURIComponent(JSON.stringify(root)));
     }
-    return res ? res[1] : "";
+    return res ? decodeURIComponent(res[1]) : "";
 }
 function getCurrentCanvas() {
     let tf = cc.style.transform.replace(/\-/g, "");
