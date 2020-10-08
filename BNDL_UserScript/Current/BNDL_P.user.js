@@ -12,14 +12,13 @@
 // @resource	 BWJP https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/bookwalkerjp.inc.js
 // @resource	 DLJP https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/dlsitejp.inc.js
 // @connect      bookwalker.jp
-// @connect      play.dlsite.fun
+// @connect      play.dl.dlsite.com
 // @grant        GM.xmlHttpRequest
 // @grant        GM.setValue
 // @grant        GM.getValue
 // @grant        GM_addStyle
 // @grant        GM_getResourceText
 // @grant        unsafeWindow
-// @run-at       document-body
 // ==/UserScript==
 
 (async function() {
