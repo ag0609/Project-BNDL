@@ -2,7 +2,7 @@
 console.log("Dlsite Play Japan ver20201008");
 
 let cache_size = 10, cache = {};
-let cl, tp;
+let cl, tp, wn;
 let cc;
 let zt;
 let to;
@@ -125,6 +125,7 @@ XMLHttpRequest.prototype.send = function() {
         if(/RJ/.test(bjs[0])) {
             type = "doujin";
         }
+        console.log("Content Type:", type);
         this.onreadystatechange = async function() {
             //console.log("orsc", arguments);
             if(arguments[0].target.readyState == 4 && arguments[0].target.status == 200) {
@@ -176,7 +177,7 @@ XMLHttpRequest.prototype.send = function() {
                             img_list[hn].img.classList.add("pswp__preload");
                             img_list[hn].img.crossOrigin = "anonymous";
                         }
-                    } catch(e) {};
+                    } catch(e) { console.warn(e.message); };
                 }
                 console.log(img_list);
                 if(tp != null) {
@@ -262,11 +263,11 @@ function searchinJSON(root, value, key="",res=[]) {
 function searchPath(root, value, key="") {
     let res;
     if(key=="") {
-        res = new RegExp("%22path%22%3A%22(.*?)%22.*?"+encodeURIComponent(":\""+value+"\""), "").exec(encodeURIComponent(JSON.stringify(root)))[1];
+        res = new RegExp("%22path%22%3A%22(.*?)%22.*?"+encodeURIComponent(":\""+value+"\""), "").exec(encodeURIComponent(JSON.stringify(root)));
     } else {
-        res = new RegExp("%22path%22%3A%22(.*?)%22.*?"+encodeURIComponent("\""+key+"\":\""+value+"\""), "").exec(encodeURIComponent(JSON.stringify(root)))[1];
+        res = new RegExp("%22path%22%3A%22(.*?)%22.*?"+encodeURIComponent("\""+key+"\":\""+value+"\""), "").exec(encodeURIComponent(JSON.stringify(root)));
     }
-    return res ? res : "";
+    return res ? res[1] : "";
 }
 function getCurrentCanvas() {
     let tf = cc.style.transform.replace(/\-/g, "");
@@ -304,6 +305,8 @@ const hashcheck = setInterval(function() {
     if(cl != window.location.hash) {
         cl = window.location.hash;
         console.log("currentHash:", cl);
+        let bjs = cl.split('/').filter(v => /^(BJ|RJ)/.test(v));
+        if(wn != bjs[0]) { console.log("workno changed, resetting tree", "(", wn, "=>", bjs[0], ")"); wn = bjs[0]; tp = ""; }
         if(/(tree|view)\/\S+/.test(cl)) {
             if(/view/.test(cl)) {
                 btn.style.display = "flex";
