@@ -188,6 +188,7 @@
 	//if(/booklive\.jp/i.test(window.location.href)) jsMain.innerHTML = GM_getResourceText("BLJP");
 	if(/dlsite\.com/i.test(window.location.href)) jsMain = GM_getResourceText("DLJP");
 	eval(jsMain);
+    let start = ()=>{}, cancel = ()=>{};
     bndlBTN.onclick = ()=>{start()};
     canBTN.onclick = ()=>{cancal()};
 })();
