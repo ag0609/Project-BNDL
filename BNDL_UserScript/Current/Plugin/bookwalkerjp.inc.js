@@ -107,11 +107,11 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 							const an = authors[i].getElementsByClassName('author-name')[0].innerText.replace(/(（.*?）|\s)/g, "");
 							if(/キャラ/.test(at)) {
 								//
-							} else if(/(画|マンガ|イラスト)/g.test(at)) {
+							} else if(/(著|画|マンガ|イラスト)/g.test(at)) {
 								if(pcl == undefined) pcl = document.createElementNS(null, 'Penciller');
 								pcl.innerHTML = pcl.innerHTML ? pcl.innerHTML +", "+ an : an;
 								bd.author.push({'p':1, 'type':at, 'name':an});
-							} else if(/(作|著)/g.test(at)) {
+							} else if(/(作|原著)/g.test(at)) {
 								if(wt == undefined) wt = document.createElementNS(null, 'Writer');
 								wt.innerHTML = wt.innerHTML ? wt.innerHTML +", "+ an : an;
 								if(bd.author.filter(x => x.p == 0).length < 2) bd.author.push({'p':0, 'type':at, 'name':an});
@@ -133,11 +133,14 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 					bd.author.sort(function(a,b) { if(a.name < b.name) { return -1 } else if(a.name > b.name) { return 1 } return 0; }); //sort by name
 					bd.author.sort(function(a,b) { return a.p - b.p; }); //sort by priority
 					console.debug(bd.author);
-					if(bd.author.length <= 3) {
-						fn = '[' + bd.author.map(e=>e.name).join('×') + '] ' + fn;
+					let author_filtered = bd.author.filter(e=>e.p<2);
+					if(author_filter.length) {
+					        fn = '[' + author_filtered.splice(0,Math.min(author_filtered.length,3)).map(e=>e.name).join('×') + '] ' + fn;
 					} else {
-						fn = '[' + bd.author.splice(0,3).map(e=>e.name).join('×') + '] ' + fn;
+					        fn = '[' + bd.author.splice(0,Math.min(bd.author.length,3)).map(e=>e.name).join('×') + '] ' + fn;
 					}
+					console.log(fn);
+					document.title = fn;
 					const pD = document.evaluate("//dt[text()='配信開始日']", html, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.nextElementSibling.innerText;
 					let Yt = document.createElementNS(null, 'Year');
 					let Mt = document.createElementNS(null, 'Month');
