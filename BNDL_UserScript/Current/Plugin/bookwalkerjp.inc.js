@@ -126,7 +126,7 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 						Ci.appendChild(wt);
 						if(pcl) Ci.appendChild(pcl);
 					} else if(pcl) {
-						pcl.outerHTML = pcl.outerHTML.replace("penceller", "writer");
+						pcl.outerHTML = pcl.outerHTML.replace("Penceller", "Writer");
 						Ci.appendChild(pcl);
 					}
 					bd.author.sort(function(a,b) { if(a.name < b.name) { return -1 } else if(a.name > b.name) { return 1 } return 0; }); //sort by name
