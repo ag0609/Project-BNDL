@@ -126,8 +126,9 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 						Ci.appendChild(wt);
 						if(pcl) Ci.appendChild(pcl);
 					} else if(pcl) {
-						pcl.outerHTML = pcl.outerHTML.replace("Penciller", "Writer");
-						Ci.appendChild(pcl);
+						wt = document.createElementNS(null, 'Writer');
+						wt.innerHTML = pcl.innerHTML;
+						Ci.appendChild(wt);
 					}
 					bd.author.sort(function(a,b) { if(a.name < b.name) { return -1 } else if(a.name > b.name) { return 1 } return 0; }); //sort by name
 					bd.author.sort(function(a,b) { return a.p - b.p; }); //sort by priority
