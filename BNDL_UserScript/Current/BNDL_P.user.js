@@ -5,6 +5,7 @@
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://viewer.bookwalker.jp/*
+// @match        https://viewer-trial.bookwalker.jp/*
 // @match        https://play.dlsite.com/*
 // @require      tampermonkey://vendor/jquery.js
 // @require      tampermonkey://vendor/jszip/jszip.js
@@ -48,6 +49,7 @@
     let _$canvas = [];
     let img$size = [];
     let _$c_wh = {w:0, h:0};
+    let start, cancel;
     let fn, on, retry, wait;
     let bd = {};
     let xml = document.implementation.createDocument(null, 'ComicInfo'); //Build XML class for ComicInfo.xml(which mainly used by Comic Reader)
