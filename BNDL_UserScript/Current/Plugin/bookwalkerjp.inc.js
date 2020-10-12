@@ -1,7 +1,14 @@
 //Reference Discramer
-console.log("Reference: https://blog.jixun.moe/intercept-bookwalker-tw-image by JiXun");
+console.log("Bookwalker Japan", "v202010112");
+console.log("Reference:", "https://blog.jixun.moe/intercept-bookwalker-tw-image", "by JiXun");
 let _detail$retry_ = 0;
 let backup;
+//Check if reading a trial version of a book
+let mode = 0;
+if(window.location.href.match(/viewer-trial/)) {
+	console.warn("Trial viewer mode is running, this book is not a full version!!");
+	mode = 1;
+}
 const getDetail = async function(bn, st=5, on="", ta=0) {
 	console.debug("getDetail()", bn, st, on);
 	let cty = parseInt((new URLSearchParams(window.location.search)).get('cty'));
@@ -198,8 +205,10 @@ function main() {
 				page.setAttribute('Image', curp-1);
 				pages.appendChild(page);
 				if(curp >= totp && startf) {
-					Ci.appendChild(scan);
-					Ci.appendChild(pages);
+					if(!mode) {
+						Ci.appendChild(scan);
+						Ci.appendChild(pages);
+					}
 					let serializer = new XMLSerializer();
 					let xmlStr = '<?xml version="1.0"?>\n' + serializer.serializeToString(xml);
 					zip.file("ComicInfo.xml", xmlStr, {type: "text/xml"});
@@ -279,7 +288,7 @@ function main() {
 						Ci.appendChild(st);
 						let pct = document.createElementNS(null, 'PageCount');
 						pct.innerHTML = totp;
-						Ci.appendChild(pct);
+						if(!mode) Ci.appendChild(pct);
 						bndlBTN.disabled = false;
 						btn.classList.add('extend');
 						pc.classList.add("start");
