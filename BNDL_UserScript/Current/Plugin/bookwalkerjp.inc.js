@@ -5,13 +5,13 @@ let _detail$retry_ = 0;
 let backup;
 //Check if reading a trial version of a book
 let mode = 0;
-if(window.location.href.match(/viewer-trial/)) {
+if(window.location.hostname.match(/viewer-trial/)) {
 	console.warn("Trial viewer mode is running, this book is not a full version!!");
 	mode = 1;
 }
 const getDetail = async function(bn, st=5, on="", ta=0) {
 	console.debug("getDetail()", bn, st, on);
-	let cty = parseInt((new URLSearchParams(window.location.search)).get('cty'));
+	let cty = parseInt(getQuery("cty"));
 	let bwhp = "https://bookwalker.jp/";
 	let eventapi = "https://eventapi.bookwalker.jp/api/";
 	let autocom = "https://bookwalker.jp/louis-api/autocomplete/";
