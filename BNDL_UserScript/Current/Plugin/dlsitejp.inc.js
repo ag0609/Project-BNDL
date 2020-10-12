@@ -214,16 +214,33 @@ CanvasRenderingContext2D.prototype.drawImage = function() {
                         zip.folder(img_list[hn].path).file(img_list[hn].fn, blob);
                         URL.revokeObjectURL(blob);
                         let pm = searchinJSON(zt.tree, img_list[hn].path, "path")[0].children || zt.tree;
-                        console.log(zip.folder(img_list[hn].path).file(/(.*)\.(.*)/).length, pm.length);
+                        let curp = zip.folder(img_list[hn].path).file(/(.*)\.(.*)/).length;
+                        let totp = pm.length;
+                        console.log(curp+"/"+totp);
+                        pc.setAttribute("max", totp);
+			            pc.setAttribute("value", curp);
                         console.log("zipped file:", img_list[hn].fn);
                         cache[img_list[hn].path].used--;
                         loadcache(0, img_list[hn].path);
                         if(zip.folder(img_list[hn].path).file(/(.*)\.(.*)/).length >= pm.length) {
                             console.log(zip.folder(img_list[hn].path).file(/(.*)\.(.*)/).length, pm.length);
+                            pc.classList.add('zip');
+                            pc.setAttribute("min", 0);
+                            pc.setAttribute("max", 100);
+                            console.groupCollapsed('Zip progress');
+                            let pchk = 0;
+                            let bchk = setInterval(function() {
+                                console.debug(pchk+'%');
+                                pc.setAttribute("data-label", "Generating zip...("+ pchk +"%)");
+                                window.document.title = "["+Math.ceil(pchk)+"%] "+on;
+                                //favicon.badge(Math.ceil(pchk), {'bgColor':'#6a7'});
+                            }, 1000);
                             if(!to) {
                                 to = setTimeout(function() {
-                                    zip.generateAsync({type:"blob"})
-                                        .then(function(blob) {
+                                    zip.generateAsync({type:"blob"}, function updateCallback(metadata) {
+                                        pchk = metadata.percent.toFixed(2);
+                                        pc.setAttribute('value', pchk);
+					                }).then(function(blob) {
                                         const Url = window.URL.createObjectURL(blob);
                                         const e = new MouseEvent("click");
                                         const a = document.createElement('a');
@@ -286,6 +303,8 @@ start = function() {
     startf=1;
     btn.classList.add('extend');
     btn.classList.add('start');
+    pc.classList.add('start');
+    ss.play();
     if(autoplay.length) autoplay[0].click();
 }
 cancel = function() {
@@ -294,6 +313,7 @@ cancel = function() {
         btn.classList.remove('extend');
         btn.classList.remove('start');
         startf=0;
+        ss.pause();
         if(autoplay.length) autoplay[0].click();
     } else {
         CanvasRenderingContext2D.prototype.drawImage = CanvasRenderingContext2D.prototype.odI;
