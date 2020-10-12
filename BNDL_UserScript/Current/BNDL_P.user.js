@@ -37,12 +37,7 @@
     ss.loop = true;
     //Read Last quality setting
     let quality = await GM.getValue('quality', 0.92);
-    //Check if reading a trial version of a book
-    let mode = 0;
-    if(window.location.href.match(/viewer-trial/)) {
-        console.warn("Trial viewer mode is running, this book is not a full version!!");
-        mode = 1;
-    }
+
     //Initialization
     let zip = new JSZip();
     let _init_time, _job_time, _page_time;
