@@ -162,6 +162,19 @@
         t = Math.max(n.length, t);
         return ('0'.repeat(99) + n).slice(t * -1);
     } //padding for tidy sortable filename
+    function getQuery(v) {
+        if(URLSearchParams) {
+            return ((new URLSearchParams(window.location.search)).get(v) || null);
+        } else {
+            var results = new RegExp('[\?&]' + v + '=([^&#]*)').exec(window.location.search);
+            if (results == null){
+               return null;
+            }
+            else {
+               return decodeURI(results[1]) || 0;
+            }
+        }
+    }
     function firekey(el, key) {
         key = key != null ? key : 34;
         let eventObj;
