@@ -10,8 +10,8 @@
 // @require      tampermonkey://vendor/jquery.js
 // @require      tampermonkey://vendor/jszip/jszip.js
 // @resource     customCSS https://raw.githubusercontent.com/ag0609/Project-BNDL/master/css/BNDL.user.css
-// @resource	 BWJP https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/bookwalkerjp.inc.js
-// @resource	 DLJP https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/dlsitejp.inc.js
+// @resource     BWJP https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/bookwalkerjp.inc.js
+// @resource     DLJP https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/dlsitejp.inc.js
 // @connect      bookwalker.jp
 // @connect      play.dl.dlsite.com
 // @grant        GM.xmlHttpRequest
@@ -49,7 +49,6 @@
     let _$canvas = [];
     let img$size = [];
     let _$c_wh = {w:0, h:0};
-    let start, cancel;
     let fn, on, retry, wait;
     let bd = {};
     let xml = document.implementation.createDocument(null, 'ComicInfo'); //Build XML class for ComicInfo.xml(which mainly used by Comic Reader)
@@ -118,10 +117,34 @@
             img$size[i] = 0;
             console.groupEnd();
         }
-        bndl_d.dlcanv = (i)=> {
+        bndl_d.listzip = (i)=> {
+            console.group("listzip:", "List Zip", i);
+            if(i) {
+                console.debug(zip.folder(i).file(/(.*)\.(.*)/));
+            } else {
+                console.debug(zip.file(/(.*)\.(.*)/));
+            }
+            console.groupEnd();
+        }
+        bndl_d.dlcanv = (i, j="")=> {
             console.group("dlcanv: Download Canvas" , i);
+            let lfn, lf;
+            if(isNaN(parseInt(i))) {
+                //is string
+                lf = j;
+                lfn = i;
+            } else {
+                //is integer
+                lfn = "P" + pad(i,5) + ".jpg";
+            }
             try {
-                zip.file("P" + pad(i,5) + ".jpg").async("blob").then(function(blob) {
+                let mzip;
+                if(lf) {
+                    mzip = zip.folder(lf);
+                } else {
+                    mzip = zip;
+                }
+                mzip.file(lfn).async("blob").then(function(blob) {
                     console.debug(blob);
                     const Url = window.URL.createObjectURL(blob.slice(0, blob.size, "image/jpeg"));
                     console.log(Url);
@@ -142,6 +165,24 @@
                 console.debug('files in zip', ziperr);
             }
             console.groupEnd();
+        }
+        bndl_d.dlzip = () => {
+            console.group("dlzip:", "DL Current Zip");
+            zip.generateAsync({type:"blob"}, function updateCallback(metadata) {
+                //Do nothing
+            }).then(function(blob) {
+                console.debug("Size:", blob.size);
+                const Url = window.URL.createObjectURL(blob);
+                const e = new MouseEvent("click");
+                const a = document.createElement('a');
+                a.innerHTML = 'Download';
+                a.download = fn ? fn : "BNDL" + (new Date().getTime()) + ".zip";
+                a.href = Url;
+                a.dispatchEvent(e);
+                URL.revokeObjectURL(blob);
+                console.debug("Done");
+                console.groupEnd();
+            });
         }
         bndl_d.comicInfo = () => {
             console.group("comicInfo: show comicInfo.xml");
