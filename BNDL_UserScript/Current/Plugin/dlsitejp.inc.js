@@ -134,6 +134,7 @@ XMLHttpRequest.prototype.send = function() {
             //console.log("orsc", arguments);
             if(arguments[0].target.readyState == 4 && arguments[0].target.status == 200) {
                 zt = JSON.parse(arguments[0].target.responseText);
+                fn = zt.workno + ".zip";
                 let imgarr;
                 console.log("ziptree", zt);
                 for(let i in zt.playfile) {
@@ -217,9 +218,9 @@ CanvasRenderingContext2D.prototype.drawImage = function() {
             }
             if(img_list[hn].count == img_list[hn].maxcount && img_list[hn].fn.length) {
                 img_list[hn].count = 0;
-                let fn = img_list[hn].fn.shift();
+                let ffn = img_list[hn].fn.shift();
                 img_list[hn].canvas.toBlob(async(blob) => {
-                    zip.folder(img_list[hn].path).file(fn, blob);
+                    zip.folder(img_list[hn].path).file(ffn, blob);
                     URL.revokeObjectURL(blob);
                     let pm = /\.pdf$/.test(window.location.hash) ? zt.playfile[img_list[hn].pdf].pdf.page : searchinJSON(zt.tree, img_list[hn].path, "path")[0].children || zt.tree;
                     let zm = zip.folder(img_list[hn].path).file(/(.*)\.(.*)/);
@@ -229,7 +230,7 @@ CanvasRenderingContext2D.prototype.drawImage = function() {
                     pc.setAttribute("value", curp);
                     console.log(curp+"/"+totp);
                     console.debug(zm);
-                    console.log("zipped file:", fn);
+                    console.log("zipped file:", ffn);
                     cache[img_list[hn].path].used--;
                     loadcache(0, img_list[hn].path);
                     if(curp >= totp) {
@@ -254,7 +255,7 @@ CanvasRenderingContext2D.prototype.drawImage = function() {
                                     const e = new MouseEvent("click");
                                     const a = document.createElement('a');
                                     a.innerHTML = 'Download';
-                                    a.download = zt.workno + ".zip";
+                                    a.download = fn;
                                     a.href = Url;
                                     a.dispatchEvent(e);
                                     URL.revokeObjectURL(blob);
