@@ -374,6 +374,7 @@ const hashcheck = setInterval(function() {
                 console.log("zt not ready");
             }
         } else {
+            btn.style.display = "none";
             clearInterval(hideimg);
             if(!$("#bndl-debug").length && $("#bndl-debug")[0].getAttribute("showorg") == 0) {
                 hideimg = setInterval(function() {
