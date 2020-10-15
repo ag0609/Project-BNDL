@@ -157,6 +157,7 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 					Ci.appendChild(Yt);
 					Ci.appendChild(Mt);
 					Ci.appendChild(Dt);
+					popout("Collector Ready.", fn, "https://viewer.bookwalker.jp/favicon.ico");
 				}
 			});
 		}
@@ -245,6 +246,7 @@ function main() {
 						a.dispatchEvent(e);
 						btn.appendChild(a);
 						window.document.title = "\u2705" + on;
+						popout("Collect Completed.", fn, "https://viewer.bookwalker.jp/favicon.ico");
 						_job_time = new Date() - _job_time;
 						console.log("Book Download Time:", _job_time/1000, "sec");
 						setTimeout(function() {
