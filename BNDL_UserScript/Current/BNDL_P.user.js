@@ -19,6 +19,7 @@
 // @grant        GM.getValue
 // @grant        GM_addStyle
 // @grant        GM_getResourceText
+// @grant        GM.notification
 // @grant        unsafeWindow
 // ==/UserScript==
 
@@ -233,6 +234,10 @@
         }
         console.debug("KEY", key, "fired");
     } //simulate keyboard-key fire
+    function popout() {
+        let args = arguments;
+        GM.notification({text:args[0], title:args[1], image:args[2], onclick:()=>{window.focus()}});
+    }
     let jsMain;
     let start = ()=>{}, cancel = ()=>{};
     if(/bookwalker\.jp/i.test(window.location.href)) jsMain = GM_getResourceText("BWJP");
@@ -241,5 +246,5 @@
     if(/dlsite\.com/i.test(window.location.href)) jsMain = GM_getResourceText("DLJP");
     eval(jsMain);
     bndlBTN.onclick = ()=>{start()};
-    canBTN.onclick = ()=>{cancal()};
+    canBTN.onclick = ()=>{cancel()};
 })();
