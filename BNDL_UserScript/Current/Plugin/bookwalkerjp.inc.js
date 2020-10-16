@@ -157,7 +157,6 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 					Ci.appendChild(Yt);
 					Ci.appendChild(Mt);
 					Ci.appendChild(Dt);
-					popout("Collector Ready.", fn, "https://viewer.bookwalker.jp/favicon.ico");
 				}
 			});
 		}
