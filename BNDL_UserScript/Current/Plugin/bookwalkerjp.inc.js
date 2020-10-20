@@ -114,7 +114,7 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 							const an = authors[i].getElementsByClassName('author-name')[0].innerText.replace(/(（.*?）|\s)/g, "");
 							if(/キャラ/.test(at)) {
 								//
-							} else if(/(作|原著)/g.test(at)) {
+							} else if(/^([原]?[著|作])$/g.test(at)) {
 								if(wt == undefined) wt = document.createElementNS(null, 'Writer');
 								wt.innerHTML = wt.innerHTML ? wt.innerHTML +", "+ an : an;
 								if(bd.author.filter(x => x.p == 0).length < 2) bd.author.push({'p':0, 'type':at, 'name':an});
