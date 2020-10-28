@@ -255,11 +255,15 @@ CanvasRenderingContext2D.prototype.drawImage = function() {
                                     const Url = window.URL.createObjectURL(blob);
                                     const e = new MouseEvent("click");
                                     const a = document.createElement('a');
+                                    a.id = "bndl_dl";
                                     a.innerHTML = 'Download';
                                     a.download = fn;
                                     a.href = Url;
                                     a.dispatchEvent(e);
-                                    URL.revokeObjectURL(blob);
+                                    btn.appendChild(a);
+                                    //URL.revokeObjectURL(blob);
+                                    pc.classList.remove("start");
+                                    startf=0;
                                 });
                             }, 1000);
                         }
@@ -311,6 +315,7 @@ function clearBlob() {
 }
 start = function() {
     startf=1;
+    bndlBTN.disabled=true;
     btn.classList.add('extend');
     btn.classList.add('start');
     pc.classList.add('start');
@@ -343,6 +348,9 @@ const hashcheck = setInterval(function() {
         if(/(tree|view)\/\S+/.test(cl)) {
             if(/view/.test(cl)) {
                 btn.style.display = "flex";
+                btn.classList.remove("start");
+                btn.classList.remove("close");
+                if(btn.getElementById("bndl_dl")) { let a = btn.getElementById("bndl_dl"); URL.revokeObjectURL(a.href); btn.removeChild(a); }
                 let tpa = cl.split("%2F");
                 if(tpa.length >= 1) {
                     if(/\.pdf$/.test(tpa[tpa.length-1])) {
