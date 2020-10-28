@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20201012");
+console.log("Dlsite Play Japan ver20201028");
 
 let cache_size = 10, cache = {};
 let cl, tp, wn;
@@ -229,10 +229,11 @@ CanvasRenderingContext2D.prototype.drawImage = function() {
                     pc.setAttribute("max", totp);
                     pc.setAttribute("value", curp);
                     console.log(curp+"/"+totp);
-                    console.debug(zm);
+                    pc.setAttribute("data-label", curp+"/"+totp);
                     console.log("zipped file:", ffn);
                     cache[img_list[hn].path].used--;
                     loadcache(0, img_list[hn].path);
+                    if(startf) document.getElementsByClassName("pswp__button--arrow--left")[0].click();
                     if(curp >= totp) {
                         pc.classList.add('zip');
                         pc.setAttribute("min", 0);
@@ -314,7 +315,8 @@ start = function() {
     btn.classList.add('start');
     pc.classList.add('start');
     ss.play();
-    if(autoplay.length) autoplay[0].click();
+    //if(autoplay.length) autoplay[0].click();
+    document.getElementsByClassName("pswp__button--arrow--left")[0].click();
 }
 cancel = function() {
     if(startf) {
@@ -394,7 +396,7 @@ const butcheck = setInterval(function() {
     if($(".view-controls").length) {
         autoplay = $(".toggle-autoplay").detach();
         spread = $(".toggle-spread-pages").detach();
-        console.log("controls catcha:", autoplay, spread);
+        console.debug("controls catcha:", autoplay, spread);
         if(spread[0].classList.contains("on")) { spread.click(); }
         clearInterval(butcheck);
         bndlBTN.disabled=false;
