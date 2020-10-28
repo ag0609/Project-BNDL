@@ -263,7 +263,7 @@ CanvasRenderingContext2D.prototype.drawImage = function() {
                             }, 1000);
                         }
                     }
-                }, quality);
+                }, "image/jpeg", quality);
             }
         }, 500); //too small may got result drawImage cannot finish its job before launch
     } else {
