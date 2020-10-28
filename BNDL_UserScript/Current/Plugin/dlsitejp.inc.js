@@ -243,7 +243,7 @@ CanvasRenderingContext2D.prototype.drawImage = function() {
                         let bchk = setInterval(function() {
                             console.debug(pchk+'%');
                             pc.setAttribute("data-label", "Generating zip...("+ pchk +"%)");
-                            window.document.title = "["+Math.ceil(pchk)+"%] "+on;
+                            //window.document.title = "["+Math.ceil(pchk)+"%] "+on;
                             //favicon.badge(Math.ceil(pchk), {'bgColor':'#6a7'});
                         }, 1000);
                         if(!to) {
