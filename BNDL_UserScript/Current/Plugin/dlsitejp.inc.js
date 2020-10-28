@@ -350,7 +350,7 @@ const hashcheck = setInterval(function() {
                 btn.style.display = "flex";
                 btn.classList.remove("start");
                 btn.classList.remove("close");
-                if(btn.getElementById("bndl_dl")) { let a = btn.getElementById("bndl_dl"); URL.revokeObjectURL(a.href); btn.removeChild(a); }
+                if(document.getElementById("bndl_dl") != null) { let a = document.getElementById("bndl_dl"); URL.revokeObjectURL(a.href); btn.removeChild(a); }
                 let tpa = cl.split("%2F");
                 if(tpa.length >= 1) {
                     if(/\.pdf$/.test(tpa[tpa.length-1])) {
