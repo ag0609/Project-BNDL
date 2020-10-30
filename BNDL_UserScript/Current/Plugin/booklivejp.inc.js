@@ -209,17 +209,18 @@ XMLHttpRequest.prototype.send = function() {
 	}
 	XMLHttpRequest.prototype.osend.apply(this, arguments);
 }
-function wait(t) {
+function wait(v, t=0) { //t == type == [0:"plain value", 1:"array", 2:"object"]
 	return new Promise((resolve, reject) => {
 		let wait = setInterval(() => {
-			t.length && (clearInterval(wait) & resolve(t));
+			(t ? (t > 1 ? v.keys().length : v.length) : v) && (clearInterval(wait) & resolve(v));
 		}, 100);
 	});
 }
 async function contentChangeCallback($_a, __$) {
 	console.log("content changed");
-	let totp = parseInt(document.getElementById("menu_slidercaption").innerHTML.split("/")[1]);
-	pc.setAttribute("max", totp || 1);
+	wait(document.getElementById("menu_slidercaption"));
+	let totp = parseInt(document.getElementById("menu_slidercaption").innerHTML.split("/")[1]) || 1;
+	pc.setAttribute("max", totp);
 	let content_div = Array.prototype.slice.call(content_root.getElementsByTagName("div")).filter(v => /content\-p\d+/.test(v.id));
 	//console.log(content_div);
 	for(let d=0; d<content_div.length; d++) {
@@ -228,7 +229,7 @@ async function contentChangeCallback($_a, __$) {
 			console.warn(page_no, "duplicated!", "skipping...");
 			continue;
 		}
-		let img_list = await wait(content_div[d].getElementsByTagName("img"));
+		let img_list = await wait(content_div[d].getElementsByTagName("img"), 1);
 		let c = document.createElement("canvas");
 		let ctx = c.getContext("2d");
 		c.width = img_list[0].naturalWidth;
