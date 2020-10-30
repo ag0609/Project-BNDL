@@ -44,3 +44,24 @@ async function contentChangeCallback($_a, __$) {
 	}
 	console.log(page_blob);
 }
+start = () => {
+	startf=1;
+	BNDLbtn.disabled=true;
+	btn.classList.add("start");
+	btn.classList.add("extend");
+	pc.classList.add("start");
+	firekey(document.body, 37);
+}
+stop = () => {
+	if(startf) {
+		btn.classList.remove("start");
+		btn.classList.remove("extend");
+		BNDLbtn.disabled=false;
+		startf=0;
+	} else {
+		pc.classList.remove("start");
+		content_obv.disconnect();
+		content_obv = null;
+		document.body.removeChild(btn);
+	}
+}
