@@ -52,7 +52,7 @@ start = () => {
 	pc.classList.add("start");
 	firekey(document.body, 37);
 }
-stop = () => {
+cancel = () => {
 	if(startf) {
 		btn.classList.remove("start");
 		btn.classList.remove("extend");
