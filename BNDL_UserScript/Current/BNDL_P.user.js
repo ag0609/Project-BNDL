@@ -243,8 +243,8 @@
     let jsMain;
     let start = ()=>{}, cancel = ()=>{};
     if(/bookwalker\.jp/i.test(window.location.href)) jsMain = GM_getResourceText("BWJP");
-    //if(/bookwalker\.tw/i.test(window.location.href)) jsMain.innerHTML = GM_getResourceText("BWTW");
-    if(/booklive\.jp/i.test(window.location.href)) jsMain.innerHTML = GM_getResourceText("BLJP");
+    //if(/bookwalker\.tw/i.test(window.location.href)) jsMain = GM_getResourceText("BWTW");
+    if(/booklive\.jp/i.test(window.location.href)) jsMain = GM_getResourceText("BLJP");
     if(/dlsite\.com/i.test(window.location.href)) jsMain = GM_getResourceText("DLJP");
     eval(jsMain);
     bndlBTN.onclick = ()=>{start()};
