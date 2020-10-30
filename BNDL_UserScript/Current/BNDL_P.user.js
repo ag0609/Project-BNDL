@@ -7,11 +7,13 @@
 // @match        https://viewer.bookwalker.jp/*
 // @match        https://viewer-trial.bookwalker.jp/*
 // @match        https://play.dlsite.com/*
+// @match        https://booklive.jp/bviewer/s/*
 // @require      tampermonkey://vendor/jquery.js
 // @require      tampermonkey://vendor/jszip/jszip.js
 // @resource     customCSS https://raw.githubusercontent.com/ag0609/Project-BNDL/master/css/BNDL.user.css
 // @resource     BWJP https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/bookwalkerjp.inc.js
 // @resource     DLJP https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/dlsitejp.inc.js
+// @resource     BLJP https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/booklivejp.inc.js
 // @connect      bookwalker.jp
 // @connect      play.dl.dlsite.com
 // @grant        GM.xmlHttpRequest
@@ -242,7 +244,7 @@
     let start = ()=>{}, cancel = ()=>{};
     if(/bookwalker\.jp/i.test(window.location.href)) jsMain = GM_getResourceText("BWJP");
     //if(/bookwalker\.tw/i.test(window.location.href)) jsMain.innerHTML = GM_getResourceText("BWTW");
-    //if(/booklive\.jp/i.test(window.location.href)) jsMain.innerHTML = GM_getResourceText("BLJP");
+    if(/booklive\.jp/i.test(window.location.href)) jsMain.innerHTML = GM_getResourceText("BLJP");
     if(/dlsite\.com/i.test(window.location.href)) jsMain = GM_getResourceText("DLJP");
     eval(jsMain);
     bndlBTN.onclick = ()=>{start()};
