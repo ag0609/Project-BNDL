@@ -240,6 +240,7 @@
         let args = arguments;
         GM.notification({text:args[0], title:args[1], image:args[2], onclick:()=>{window.focus()}});
     }
+    const halfwidthValue = (value) => {return value.replace(/[\uff01-\uff5e]/g, fullwidthChar => String.fromCharCode(fullwidthChar.charCodeAt(0) - 0xfee0)).replace(/\u3000/g, '\u0020')}
     let jsMain;
     let start = ()=>{}, cancel = ()=>{};
     if(/bookwalker\.jp/i.test(window.location.href)) jsMain = GM_getResourceText("BWJP");
