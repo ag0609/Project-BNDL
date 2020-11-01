@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20201028");
+console.log("Dlsite Play Japan ver20201101");
 
 let cache_size = 10, cache = {};
 let cl, tp, wn;
@@ -46,6 +46,7 @@ function loadcache(startidx=0, path=tp) {
         let hn = cpobj[idx].hashname;
         let hne = cpobj[idx].hashname.replace(/^.*(\..*?)$/, "$1");
         if(/(?:jp[e]?g|png|gif)/.test(hne)) { //Image
+            if(!img_list[hn].path) img_list[hn].path = searchPath(zt.tree, hn, "hashname");
             if(img_list[hn].blob == null && !img_list[hn].caching && fcs - cp.used > 0) {
                 i++;
                 cp.used++;
@@ -79,6 +80,7 @@ function loadcache(startidx=0, path=tp) {
                 let hn = pdfroot[idx].optimized.name;
                 let hne = pdfroot[idx].optimized.name.replace(/^.*(\..*?)$/, "$1");
                 if(/(?:jp[e]?g|png|gif)/.test(hne)) { //Image
+                    if(img_list[hn].path ) img_list[hn].path = searchPath(zt.tree, hn, "hashname") ? searchPath(zt.tree, hn, "hashname") + "/" + searchinJSON(zt.tree, hn, "hashname")[0].name : searchinJSON(zt.tree, hn, "hashname")[0].name;
                     if(img_list[hn].blob == null && !img_list[hn].caching && fpcs - cp.used > 0) {
                         p++;
                         cp.used++;
@@ -154,7 +156,7 @@ XMLHttpRequest.prototype.send = function() {
                                 } else {
                                     img_list[phn] = {
                                         "fn": [pad(p+1,5) + phne],
-                                        "path": searchPath(zt.tree, hn, "hashname") ? searchPath(zt.tree, hn, "hashname") + "/" + searchinJSON(zt.tree, hn, "hashname")[0].name : searchinJSON(zt.tree, hn, "hashname")[0].name,
+                                        "path": null,
                                         "pdf" : hn,
                                         "count": 1,
                                         "maxcount":Math.ceil(pdfroot[p].optimized.width/128)*Math.ceil(pdfroot[p].optimized.height/128),
@@ -174,7 +176,7 @@ XMLHttpRequest.prototype.send = function() {
                             img_list[hn] = {
                                 "fn": [searchinJSON(zt.tree, hn, "hashname")[0].name],
                                 "count":1,
-                                "path": searchPath(zt.tree, hn, "hashname"),
+                                "path": null,
                                 "maxcount":Math.ceil(zt.playfile[hn].image.optimized.width/128)*Math.ceil(zt.playfile[hn].image.optimized.height/128),
                                 "canvas":document.createElement('canvas'),
                                 "img":new Image(),
