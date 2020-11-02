@@ -4,7 +4,7 @@ BNDL_P.user.js - Plugin supported BNDL. Support multiple HTML5 Reader(In Future.
 
 Plugin Status:
 
-bookwalkerjp - No R18 support yet, stable in normal store, will search and collect book detail(with accuracy 85%), then generate ComicInfo.xml(mainly used by ComicRack). using method 'b9b', because it is official method, it is super stable but quite easy to be obsoleted when they updated the script.
+bookwalkerjp - Stable. Plugin will search and collect book detail(with accuracy 85% and no R18 support yet), then generate ComicInfo.xml(mainly used by ComicRack). using method 'b9b', because it is official method, it is super stable but quite easy to be obsoleted when they updated the script.
 
 dlsitejp - Very unstable. add hook at XMLHttpRequest to parse ztree.json and override Canvas rendering, hijacking image source, high usage of system memory and only degraded image can be captured. Also it quite narrow range usage(only useful when DRM enabled)
 
