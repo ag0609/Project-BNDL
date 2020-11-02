@@ -1,11 +1,10 @@
 // ==UserScript==
 // @name         BNDL collector(Plugin version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.1
+// @version      0.2
 // @description  Don't use if you don't know what is this
 // @author       ag0609
-// @match        https://viewer.bookwalker.jp/*
-// @match        https://viewer-trial.bookwalker.jp/*
+// @match        https://*.bookwalker.jp/*
 // @match        https://play.dlsite.com/*
 // @match        https://booklive.jp/bviewer/s/*
 // @require      tampermonkey://vendor/jquery.js
@@ -69,6 +68,7 @@
         btn.classList.toggle('close');
         btn.classList.toggle('extend', !btn.classList.contains('close'));
     });
+    btn.style.display = "hidden";
     const pc = document.createElement('div');
     pc.id = 'bndl-progress';
     pc.classList.add("bndl-progress");
@@ -243,10 +243,10 @@
     const halfwidthValue = (value) => {return value.replace(/[\uff01-\uff5e]/g, fullwidthChar => String.fromCharCode(fullwidthChar.charCodeAt(0) - 0xfee0)).replace(/\u3000/g, '\u0020')}
     let jsMain;
     let start = ()=>{}, cancel = ()=>{};
-    if(/bookwalker\.jp/i.test(window.location.href)) jsMain = GM_getResourceText("BWJP");
+    if(/(?:(?=trail)trail|viewer)\.bookwalker\.jp/i.test(window.location.href)) jsMain = GM_getResourceText("BWJP");
     //if(/bookwalker\.tw/i.test(window.location.href)) jsMain = GM_getResourceText("BWTW");
     if(/booklive\.jp/i.test(window.location.href)) jsMain = GM_getResourceText("BLJP");
-    if(/dlsite\.com/i.test(window.location.href)) jsMain = GM_getResourceText("DLJP");
+    if(/play\.dlsite\.com/i.test(window.location.href)) jsMain = GM_getResourceText("DLJP");
     eval(jsMain);
     bndlBTN.onclick = ()=>{start()};
     canBTN.onclick = ()=>{cancel()};
