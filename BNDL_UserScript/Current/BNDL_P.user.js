@@ -22,10 +22,12 @@
 // @grant        GM_getResourceText
 // @grant        GM.notification
 // @grant        unsafeWindow
+// @run-at       document-body
 // ==/UserScript==
 
 (async function() {
     'use strict';
+    console.time("Initialization Time");
     let debug_enable = 1;
     //
     let debug = 0;
@@ -52,6 +54,7 @@
     let img$size = [];
     let _$c_wh = {w:0, h:0};
     let fn, on, retry, wait;
+    let bndl_d;
     let bd = {};
     let xml = document.implementation.createDocument(null, 'ComicInfo'); //Build XML class for ComicInfo.xml(which mainly used by Comic Reader)
     let Ci = xml.getElementsByTagName('ComicInfo')[0];
@@ -63,12 +66,12 @@
     //Main UI
     const btn = document.createElement('div');
     btn.id = 'bndl';
+    btn.style.display = "hidden";
     btn.ob = new MutationObserver(ProgressBarCallback);
     btn.addEventListener('dblclick', function() {
         btn.classList.toggle('close');
         btn.classList.toggle('extend', !btn.classList.contains('close'));
     });
-    btn.style.display = "hidden";
     const pc = document.createElement('div');
     pc.id = 'bndl-progress';
     pc.classList.add("bndl-progress");
@@ -106,7 +109,7 @@
     document.body.appendChild(btn);
     //For Debug
     if(debug_enable) {
-        let bndl_d = document.createElement('bndl-debug');
+        bndl_d = document.createElement('bndl-debug');
         bndl_d.type = 'hidden';
         bndl_d.id ='bndl-debug';
         bndl_d.setAttribute('debug', 0);
@@ -115,30 +118,30 @@
             debug = bndl_d.getAttribute('debug');
             show_org = bndl_d.getAttribute('show_org');
         }
-        bndl_d.clrcanv = (i)=> {
-            console.group("clrcanv: Clean Canvas", i);
-            img$size[i] = 0;
+        bndl_d.clrcanv = ($ef)=> {
+            console.group("clrcanv: Clean Canvas", $ef);
+            img$size[$ef] = 0;
             console.groupEnd();
         }
-        bndl_d.listzip = (i)=> {
-            console.group("listzip:", "List Zip", i);
-            if(i) {
-                console.debug(zip.folder(i).file(/(.*)\.(.*)/));
+        bndl_d.listzip = (__c)=> {
+            console.group("listzip:", "List Zip", __c);
+            if(__c) {
+                console.debug(zip.folder(__c).file(/(.*)\.(.*)/));
             } else {
                 console.debug(zip.file(/(.*)\.(.*)/));
             }
             console.groupEnd();
         }
-        bndl_d.dlcanv = (i, j="")=> {
-            console.group("dlcanv: Download Canvas" , i);
+        bndl_d.dlcanv = ($e_, f$j="")=> {
+            console.group("dlcanv: Download Canvas" , $e_);
             let lfn, lf;
-            if(isNaN(parseInt(i))) {
+            if(isNaN(parseInt($e_))) {
                 //is string
-                lf = j;
-                lfn = i;
+                lf = f$j;
+                lfn = $e_;
             } else {
                 //is integer
-                lfn = "P" + pad(i,5) + ".jpg";
+                lfn = "P" + pad($e_,5) + ".jpg";
             }
             try {
                 let mzip;
@@ -154,7 +157,7 @@
                     const e = new MouseEvent("click");
                     const a = document.createElement('a');
                     a.innerHTML = 'Download';
-                    a.download = "P" + pad(i,5) +".jpg";
+                    a.download = "P" + pad($e_,5) +".jpg";
                     a.href = Url;
                     a.dispatchEvent(e);
                     console.groupEnd();
@@ -192,6 +195,8 @@
             console.debug(Ci);
             console.groupEnd();
         }
+        bndl_d.next = () => { console.warn("no function yet"); }
+        bndl_d.prev = () => { console.warn("no function yet"); }
         bndl_d.ob = new MutationObserver(bndl_d.attrchg);
         bndl_d.ob.observe(bndl_d, {attributes:true});
         document.body.appendChild(bndl_d);
@@ -227,9 +232,12 @@
         if(document.createEventObject) {
             eventObj = document.createEventObject();
             eventObj.keyCode = key;
+            el.fireEvent("focus", eventObj);
             el.fireEvent("onkeydown", eventObj);
         } else if(document.createEvent) {
             eventObj = document.createEvent("Events");
+            eventObj.initEvent("focus", true, true);
+            el.dispatchEvent(eventObj);
             eventObj.initEvent("keydown", true, true);
             eventObj.which = key;
             el.dispatchEvent(eventObj);
@@ -241,7 +249,7 @@
         GM.notification({text:args[0], title:args[1], image:args[2], onclick:()=>{window.focus()}});
     }
     const halfwidthValue = (value) => {return value.replace(/[\uff01-\uff5e]/g, fullwidthChar => String.fromCharCode(fullwidthChar.charCodeAt(0) - 0xfee0)).replace(/\u3000/g, '\u0020')}
-    let jsMain;
+    let jsMain = "";
     let start = ()=>{}, cancel = ()=>{};
     if(/(?:(?=trail)trail|viewer)\.bookwalker\.jp/i.test(window.location.href)) jsMain = GM_getResourceText("BWJP");
     //if(/bookwalker\.tw/i.test(window.location.href)) jsMain = GM_getResourceText("BWTW");
