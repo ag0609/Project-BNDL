@@ -174,7 +174,7 @@ XMLHttpRequest.prototype.send = function() {
                             }
                         } else {
                             img_list[hn] = {
-                                "fn": [searchinJSON(zt.tree, hn, "hashname")[0].name],
+                                "fn": [searchinJSON(zt.tree, hn, "hashname").map(v=>v.name)],
                                 "count":1,
                                 "path": null,
                                 "maxcount":Math.ceil(zt.playfile[hn].image.optimized.width/128)*Math.ceil(zt.playfile[hn].image.optimized.height/128),
