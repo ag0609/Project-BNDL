@@ -408,9 +408,9 @@ const butcheck = setInterval(function() {
         spread = $(".toggle-spread-pages").detach();
         let next_but = $(".pswp__button--arrow--left")[0];
         next = () => { next_but.click() };
-        prev = () => { prev.click() }
         if(debug_enable) bndl_d.next = next;
         let prev_but = $(".pswp__button--arrow--right")[0];
+        prev = () => { prev_but.click() }
         if(debug_enable) bndl_d.prev = prev;
         console.debug("controls catcha:", autoplay, spread, next, prev);
         if(spread[0].classList.contains("on")) { spread.click(); }
