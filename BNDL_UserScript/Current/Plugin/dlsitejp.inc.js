@@ -9,7 +9,7 @@ let to;
 let pm;
 
 let URL = window.webkitURL || window.URL;
-let autoplay, spread;
+let autoplay, spread, next, prev;
 
 function loadcache(startidx=0, path=tp) {
     let cpobj, cp;
@@ -235,7 +235,7 @@ CanvasRenderingContext2D.prototype.drawImage = function() {
                     console.log("zipped file:", ffn);
                     cache[img_list[hn].path].used--;
                     loadcache(0, img_list[hn].path);
-                    if(startf) document.getElementsByClassName("pswp__button--arrow--left")[0].click();
+                    if(startf) next();
                     if(curp >= totp) {
                         pc.classList.add('zip');
                         pc.setAttribute("min", 0);
@@ -323,7 +323,7 @@ start = function() {
     pc.classList.add('start');
     ss.play();
     //if(autoplay.length) autoplay[0].click();
-    document.getElementsByClassName("pswp__button--arrow--left")[0].click();
+    if(next) next();
 }
 cancel = function() {
     if(startf) {
@@ -332,7 +332,7 @@ cancel = function() {
         btn.classList.remove('start');
         startf=0;
         ss.pause();
-        if(autoplay.length) autoplay[0].click();
+        //if(autoplay.length) autoplay[0].click();
     } else {
         CanvasRenderingContext2D.prototype.drawImage = CanvasRenderingContext2D.prototype.odI;
         XMLHttpRequest.prototype.send = XMLHttpRequest.prototype.osend;
@@ -354,7 +354,7 @@ const hashcheck = setInterval(function() {
                 btn.classList.remove("close");
                 if(document.getElementById("bndl_dl") != null) { let a = document.getElementById("bndl_dl"); URL.revokeObjectURL(a.href); btn.removeChild(a); }
                 let tpa = cl.split("%2F");
-                if(tpa.length >= 1) {
+                if(tpa.length > 1) {
                     if(/\.pdf$/.test(tpa[tpa.length-1])) {
                         tp = decodeURIComponent(tpa.splice(0,tpa.length).join("%2F").split(/view/)[1].substr(1));
                     } else {
@@ -406,7 +406,13 @@ const butcheck = setInterval(function() {
     if($(".view-controls").length) {
         autoplay = $(".toggle-autoplay").detach();
         spread = $(".toggle-spread-pages").detach();
-        console.debug("controls catcha:", autoplay, spread);
+        let next_but = $(".pswp__button--arrow--left")[0];
+        next = () => { next_but.click() };
+        prev = () => { prev.click() }
+        if(debug_enable) bndl_d.next = next;
+        let prev_but = $(".pswp__button--arrow--right")[0];
+        if(debug_enable) bndl_d.prev = prev;
+        console.debug("controls catcha:", autoplay, spread, next, prev);
         if(spread[0].classList.contains("on")) { spread.click(); }
         clearInterval(butcheck);
         bndlBTN.disabled=false;
