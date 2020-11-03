@@ -115,7 +115,7 @@
         bndl_d.setAttribute('debug', 0);
         bndl_d.setAttribute('show_org', 0);
         bndl_d.attrchg = new MutationObserver(($$e,_f_)=>{
-            debug = parseInt(bndl_d.getAttribute('debug')) || 0;
+            debug_enable = parseInt(bndl_d.getAttribute('debug')) || 0;
             show_org = parseInt(bndl_d.getAttribute('show_org')) || 0;
         });
         bndl_d.attrchg.observe(bndl_d, {attributes:true});
