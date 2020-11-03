@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20201102");
+console.log("Dlsite Play Japan ver20201103");
 
 let cache_size = 10, cache = {};
 let cl, tp, wn;
@@ -214,7 +214,7 @@ CanvasRenderingContext2D.prototype.drawImage = function() {
             img_list[hn].count++;
             args[0] = img_list[hn].img;
             CanvasRenderingContext2D.prototype.odI.apply(ctx, args);
-            if($("#bndl-debug").length && $("#bndl-debug")[0].getAttribute("showorg")) {
+            if($("#bndl-debug").length && $("#bndl-debug").getAttribute("show_org") == 1) {
                 CanvasRenderingContext2D.prototype.odI.apply(thisobj, args);
             }
             if(img_list[hn].count >= img_list[hn].maxcount && img_list[hn].fn.length) {
@@ -388,7 +388,7 @@ const hashcheck = setInterval(function() {
             } else {
                 btn.style.display = "none";
                 clearInterval(hideimg);
-                if(!$("#bndl-debug").length && $("#bndl-debug")[0].getAttribute("showorg")) {
+                if(!$("#bndl-debug").length && $("#bndl-debug").getAttribute("show_org") == "0") {
                     hideimg = setInterval(function() {
                         if($("div.thumbnail").length) {
                             for(let t=0; t<$("div.thumbnail").length; t++) {
@@ -410,7 +410,7 @@ const hashcheck = setInterval(function() {
         } else {
             btn.style.display = "none";
             clearInterval(hideimg);
-            if(!$("#bndl-debug").length && $("#bndl-debug")[0].getAttribute("showorg") == 0) {
+            if(!$("#bndl-debug").length && $("#bndl-debug").getAttribute("show_org") == "0") {
                 hideimg = setInterval(function() {
                     if($("div.thumbnail").length) {
                         for(let t=0; t<$("div.thumbnail").length; t++) {
