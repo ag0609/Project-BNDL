@@ -114,11 +114,10 @@
         bndl_d.id ='bndl-debug';
         bndl_d.setAttribute('debug', 0);
         bndl_d.setAttribute('show_org', 0);
-        bndl_d.attrchg = new MutationObserver(($$e,_f_)=>{
+        bndl_d.attrchg = ($$e,_f_)=>{
             debug_enable = parseInt(bndl_d.getAttribute('debug')) || 0;
             show_org = parseInt(bndl_d.getAttribute('show_org')) || 0;
-        });
-        bndl_d.attrchg.observe(bndl_d, {attributes:true});
+        };
         bndl_d.clrcanv = ($ef)=> {
             console.group("clrcanv: Clean Canvas", $ef);
             img$size[$ef] = 0;
