@@ -4,7 +4,7 @@ console.log("Dlsite Play Japan ver20201103");
 let cache_size = 10, cache = {};
 let cl, tp, wn;
 let cc, cn;
-let zt;
+let zt, dt, pl;
 let to, bc;
 let pm;
 
@@ -119,8 +119,35 @@ XMLHttpRequest.prototype.send = function() {
     let thisobj = this;
     let args = arguments;
     let orsc = this.onreadystatechange;
-    //console.log("XHR.send", this.__sentry_xhr__.url, arguments);
-    if(/ziptree/ig.test(this.__sentry_xhr__.url)) {
+    let params, url = "";
+    //console.log("XHR.send", this.__sentry_xhr__, arguments);
+    if(/download_token/.test(this.__sentry_xhr__.url)) {
+        console.debug("XHR send", "download_token found");
+        this.onreadystatechange = async function() {
+            if(arguments[0].target.readyState == 4 && arguments[0].target.status == 200) {
+                dt = JSON.parse(arguments[0].target.responseText);
+                console.debug(dt);
+                if(!pl) {
+                    GM.xmlHttpRequest({
+                        method: "GET",
+                        url: "https://play.dlsite.com/api/dlsite/purchases?sync=true&limit=1000",
+                        onload: function(res) {
+                            pl = JSON.parse(res.responseText);
+                            let pr = pl.works.find(x => x.workno == dt.workno);
+                            console.debug(pr);
+                            let tags = pr.tags;
+                            fn = "[" + pr.maker_name + "] " + pr.work_name+" ("+pr.workno+")";
+                            console.log(fn);
+                        }
+                    });
+                } else {
+                    let pr = pl.works.find(x => x.workno == dt.workno);
+                    console.debug(pr);
+                }
+                orsc.apply(this, arguments);
+            }
+        }
+    } else if(/ziptree/ig.test(this.__sentry_xhr__.url)) {
         console.debug("XHR.send", "ziptree found");
         img_list = [];
         zip = new JSZip();
@@ -155,14 +182,15 @@ XMLHttpRequest.prototype.send = function() {
                                     img_list[phn].fn.push(pad(p+1,5)+phne);
                                 } else {
                                     img_list[phn] = {
-                                        "fn": [pad(p+1,5) + phne],
-                                        "path": null,
-                                        "pdf" : hn,
-                                        "count": 0,
+                                        "fn":[pad(p+1,5) + phne],
+                                        "path":null,
+                                        "pdf" :hn,
+                                        "count":0,
                                         "maxcount":Math.ceil(pdfroot[p].optimized.width/128)*Math.ceil(pdfroot[p].optimized.height/128),
                                         "canvas":document.createElement('canvas'),
                                         "img":new Image(),
-                                        "url":"https://play.dl.dlsite.com/content/work/"+type+"/"+bjs[0]+"/"+zt.workno+"/optimized/"+phn+"?"+query,
+                                        "url":dt.url+"optimized/"+phn+"?token="+dt.params.token+"&expiration="+dt.params.expiration,
+                                        "params":dt.params,
                                         "caching":0,
                                         "blob":null
                                     };
@@ -174,13 +202,14 @@ XMLHttpRequest.prototype.send = function() {
                             }
                         } else {
                             img_list[hn] = {
-                                "fn": searchinJSON(zt.tree, hn, "hashname").map(v=>v.name),
-                                "count": 0,
-                                "path": null,
+                                "fn":searchinJSON(zt.tree, hn, "hashname").map(v=>v.name),
+                                "count":0,
+                                "path":null,
                                 "maxcount":Math.ceil(zt.playfile[hn].image.optimized.width/128)*Math.ceil(zt.playfile[hn].image.optimized.height/128),
                                 "canvas":document.createElement('canvas'),
                                 "img":new Image(),
-                                "url":"https://play.dl.dlsite.com/content/work/"+type+"/"+bjs[0]+"/"+zt.workno+"/optimized/"+hn+"?"+query,
+                                "url":dt.url+"optimized/"+hn+"?token="+dt.params.token+"&expiration="+dt.params.expiration,
+                                "params":dt.params,
                                 "caching":0,
                                 "blob":null
                             };
@@ -214,7 +243,7 @@ CanvasRenderingContext2D.prototype.drawImage = function() {
             img_list[hn].count++;
             args[0] = img_list[hn].img;
             CanvasRenderingContext2D.prototype.odI.apply(ctx, args);
-            if($("#bndl-debug").length && $("#bndl-debug").getAttribute("show_org") == 1) {
+            if(debug_enable && show_org) {
                 CanvasRenderingContext2D.prototype.odI.apply(thisobj, args);
             }
             if(img_list[hn].count >= img_list[hn].maxcount && img_list[hn].fn.length) {
@@ -388,7 +417,7 @@ const hashcheck = setInterval(function() {
             } else {
                 btn.style.display = "none";
                 clearInterval(hideimg);
-                if(!$("#bndl-debug").length && !show_org) {
+                if(debug_enable && !show_org) {
                     hideimg = setInterval(function() {
                         if($("div.thumbnail").length) {
                             for(let t=0; t<$("div.thumbnail").length; t++) {
@@ -410,7 +439,7 @@ const hashcheck = setInterval(function() {
         } else {
             btn.style.display = "none";
             clearInterval(hideimg);
-            if(!$("#bndl-debug").length && !show_org) {
+            if(debug_enable && !show_org) {
                 hideimg = setInterval(function() {
                     if($("div.thumbnail").length) {
                         for(let t=0; t<$("div.thumbnail").length; t++) {
