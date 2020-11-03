@@ -388,7 +388,7 @@ const hashcheck = setInterval(function() {
             } else {
                 btn.style.display = "none";
                 clearInterval(hideimg);
-                if(!$("#bndl-debug").length && $("#bndl-debug").getAttribute("show_org") == "0") {
+                if(!$("#bndl-debug").length && !show_org) {
                     hideimg = setInterval(function() {
                         if($("div.thumbnail").length) {
                             for(let t=0; t<$("div.thumbnail").length; t++) {
@@ -410,7 +410,7 @@ const hashcheck = setInterval(function() {
         } else {
             btn.style.display = "none";
             clearInterval(hideimg);
-            if(!$("#bndl-debug").length && $("#bndl-debug").getAttribute("show_org") == "0") {
+            if(!$("#bndl-debug").length && !show_org) {
                 hideimg = setInterval(function() {
                     if($("div.thumbnail").length) {
                         for(let t=0; t<$("div.thumbnail").length; t++) {
