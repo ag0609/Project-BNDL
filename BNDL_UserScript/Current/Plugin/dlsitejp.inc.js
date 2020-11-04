@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20201103");
+console.log("Dlsite Play Japan ver20201104");
 
 let cache_size = 10, cache = {};
 let cl, tp, wn;
@@ -122,12 +122,12 @@ XMLHttpRequest.prototype.send = function() {
     let params, url = "";
     //console.log("XHR.send", this.__sentry_xhr__, arguments);
     if(/download_token/.test(this.__sentry_xhr__.url)) {
-        console.debug("XHR send", "download_token found");
+        console.debug("%cXHR send %s", "background-color:lime, color:darkgreen", "download_token found");
         this.onreadystatechange = async function() {
             if(arguments[0].target.readyState == 4 && arguments[0].target.status == 200) {
                 dt = JSON.parse(arguments[0].target.responseText);
                 console.debug(dt);
-                if(!pl) {
+                if(!pl) { //purchase list not granted
                     GM.xmlHttpRequest({
                         method: "GET",
                         url: "https://play.dlsite.com/api/dlsite/purchases?sync=true&limit=1000",
@@ -137,18 +137,20 @@ XMLHttpRequest.prototype.send = function() {
                             console.debug(pr);
                             let tags = pr.tags;
                             fn = "[" + pr.maker_name + "] " + pr.work_name+" ("+pr.workno+")";
-                            console.log(fn);
                         }
                     });
                 } else {
                     let pr = pl.works.find(x => x.workno == dt.workno);
                     console.debug(pr);
+                    let tags = pr.tags;
+                    fn = "[" + pr.maker_name + "] " + pr.work_name+" ("+pr.workno+")";
                 }
+                fn = fn.replace(/\s?【[^【】]*(無料|お試し|試し読み)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,'').replace(/\s?【[^【】]*(期間限定|特典)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,'');
                 orsc.apply(this, arguments);
             }
         }
     } else if(/ziptree/ig.test(this.__sentry_xhr__.url)) {
-        console.debug("XHR.send", "ziptree found");
+        console.debug("%cXHR send %s", "background-color:lime, color:darkgreen", "ziptree found");
         img_list = [];
         zip = new JSZip();
         let tmpa = this.__sentry_xhr__.url.split('?');
@@ -307,6 +309,7 @@ CanvasRenderingContext2D.prototype.drawImage = function() {
                                         pc.classList.remove("start");
                                         console.timeEnd('Job Time');
                                         startf=0;
+                                        bndlBTN.disabled=false;
                                     }).catch(e => {
                                         console.error("JSZip generate zip failed");
                                         console.error(e.message);
@@ -415,6 +418,11 @@ const hashcheck = setInterval(function() {
                     tp = "";
                 }
             } else {
+                if(startf) {
+                    console.warn("%cExiting download page when downloading, job quit...", "color:red");
+                    cancel();
+                    clearblob();
+                }
                 btn.style.display = "none";
                 clearInterval(hideimg);
                 if(debug_enable && !show_org) {
