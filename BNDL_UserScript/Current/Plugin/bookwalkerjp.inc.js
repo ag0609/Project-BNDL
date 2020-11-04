@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v202010112");
+console.log("Bookwalker Japan", "v20201104");
 console.log("Reference:", "https://blog.jixun.moe/intercept-bookwalker-tw-image", "by JiXun");
 let _detail$retry_ = 0;
 let backup;
@@ -327,3 +327,4 @@ const _$IfuBW_NFBR$_ = setInterval(function() {
 		main();
 	}
 }, 100);
+btn.style.display = "flex";
