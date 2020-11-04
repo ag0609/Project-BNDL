@@ -137,6 +137,8 @@ XMLHttpRequest.prototype.send = function() {
                             console.debug(pr);
                             let tags = pr.tags;
                             fn = "[" + pr.maker_name + "] " + pr.work_name+" ("+pr.workno+")";
+                            fn = fn.replace(/\s?【[^【】]*(無料|お試し|試し読み)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,'').replace(/\s?【[^【】]*(期間限定|特典)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,'');
+                            console.log("%cFilename: %s", "background-color:azure", fn);
                         }
                     });
                 } else {
@@ -144,8 +146,9 @@ XMLHttpRequest.prototype.send = function() {
                     console.debug(pr);
                     let tags = pr.tags;
                     fn = "[" + pr.maker_name + "] " + pr.work_name+" ("+pr.workno+")";
+                    fn = fn.replace(/\s?【[^【】]*(無料|お試し|試し読み)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,'').replace(/\s?【[^【】]*(期間限定|特典)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,'');
+                    console.log("%cFilename: %s", "background-color:azure", fn);
                 }
-                fn = fn.replace(/\s?【[^【】]*(無料|お試し|試し読み)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,'').replace(/\s?【[^【】]*(期間限定|特典)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,'');
                 orsc.apply(this, arguments);
             }
         }
