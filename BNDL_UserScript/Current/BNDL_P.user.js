@@ -66,7 +66,7 @@
     //Main UI
     const btn = document.createElement('div');
     btn.id = 'bndl';
-    btn.style.display = "hidden";
+    btn.style.display = "none";
     btn.ob = new MutationObserver(ProgressBarCallback);
     btn.addEventListener('dblclick', function() {
         btn.classList.toggle('close');
