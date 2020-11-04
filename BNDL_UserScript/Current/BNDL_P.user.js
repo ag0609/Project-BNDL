@@ -251,7 +251,7 @@
     const halfwidthValue = (value) => {return value.replace(/[\uff01-\uff5e]/g, fullwidthChar => String.fromCharCode(fullwidthChar.charCodeAt(0) - 0xfee0)).replace(/\u3000/g, '\u0020')}
     let jsMain = "";
     let start = ()=>{}, cancel = ()=>{};
-    if(/(?:(?=trail)trail|viewer)\.bookwalker\.jp/i.test(window.location.href)) jsMain = GM_getResourceText("BWJP");
+    if(/viewer(?:\-trial)?\.bookwalker\.jp/i.test(window.location.href)) jsMain = GM_getResourceText("BWJP");
     //if(/bookwalker\.tw/i.test(window.location.href)) jsMain = GM_getResourceText("BWTW");
     if(/booklive\.jp/i.test(window.location.href)) jsMain = GM_getResourceText("BLJP");
     if(/play\.dlsite\.com/i.test(window.location.href)) jsMain = GM_getResourceText("DLJP");
