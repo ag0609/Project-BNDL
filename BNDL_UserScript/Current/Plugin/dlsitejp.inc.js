@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20201104");
+console.log("Dlsite Play Japan ver20201105");
 
 let cache_size = 10, cache = {};
 let cl, tp, wn;
@@ -168,7 +168,7 @@ XMLHttpRequest.prototype.send = function() {
             //console.log("orsc", arguments);
             if(arguments[0].target.readyState == 4 && arguments[0].target.status == 200) {
                 zt = JSON.parse(arguments[0].target.responseText);
-                fn = zt.workno + ".zip";
+                if(!pl) fn = zt.workno + ".zip";
                 let imgarr;
                 console.debug("ziptree:", zt);
                 for(let i in zt.playfile) {
