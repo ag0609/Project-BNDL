@@ -424,7 +424,7 @@ const hashcheck = setInterval(function() {
                 if(startf) {
                     console.warn("%cExiting download page when downloading, job quit...", "color:red");
                     cancel();
-                    clearblob();
+                    clearBlob();
                 }
                 btn.style.display = "none";
                 clearInterval(hideimg);
