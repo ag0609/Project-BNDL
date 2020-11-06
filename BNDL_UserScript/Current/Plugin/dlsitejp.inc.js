@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20201106");
+console.log("Dlsite Play Japan ver20201107");
 
 let cache_size = 10, cache = {};
 let cl, tp, wn;
@@ -150,7 +150,7 @@ XMLHttpRequest.prototype.send = function() {
                     Ci.appendChild(imprint);
                     Ci.appendChild(writer);
                     Ci.appendChild(web);
-                    fn = "[" + pr.maker_name + "] " + pr.work_name+" ("+pr.workno+")";
+                    fn = "[" + pr.author_name || (tags ? pr.maker_name + "(" + tags.find(v=>v.class == "created_by").name + ")" : null) || pr.maker_name + "] " + pr.work_name+" ("+pr.workno+")";
                     fn = fn.replace(/\s?【[^【】]*(無料|お試し|試し読み)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,'').replace(/\s?【[^【】]*(期間限定|特典)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,'');
                     console.log("%cFilename: %s", "background-color:azure", fn);
                 }
@@ -173,13 +173,6 @@ XMLHttpRequest.prototype.send = function() {
         console.debug("%cXHR send %s", "background-color:lime, color:darkgreen", "ziptree found");
         img_list = [];
         zip = new JSZip();
-        let tmpa = this.__sentry_xhr__.url.split('?');
-        let query = tmpa[1];
-        let bjs = tmpa[0].split('/').filter(v => /^(BJ|RJ)/.test(v));
-        let type = "books";
-        if(/RJ/.test(bjs[0])) {
-            type = "doujin";
-        }
         console.log("Content Type:", type);
         this.onreadystatechange = async function() {
             //console.log("orsc", arguments);
