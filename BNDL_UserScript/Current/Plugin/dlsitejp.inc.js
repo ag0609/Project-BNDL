@@ -222,7 +222,7 @@ XMLHttpRequest.prototype.send = function() {
                                     img_list[phn].img.crossOrigin = "anonymous";
                                 }
                             }
-                        } else {
+                        } else if(/\.(?:jp[e]?g|png|bmp)$/.test(hn)) {
                             img_list[hn] = {
                                 "fn":searchinJSON(zt.tree, hn, "hashname").map(v=>v.name),
                                 "count":0,
