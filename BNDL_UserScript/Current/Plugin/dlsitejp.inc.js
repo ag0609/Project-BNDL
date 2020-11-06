@@ -136,6 +136,23 @@ XMLHttpRequest.prototype.send = function() {
                             let pr = pl.works.find(x => x.workno == dt.workno);
                             console.debug(pr);
                             let tags = pr.tags;
+                            let ptime = new Date(pr.regist_date);
+                            let year = cENS("Year", ptime.getFullYear());
+                            let month = cENS("Month", ptime.getMonth()+1);
+                            let day = cENS("Day", ptime.getDate());
+                            let title = cENS("Title", pr.work_name);
+                            let series = cENS("Series", pr.work_name.replace(/^\s?(.*?)\s?(?:[：\:]{0,1}\s?([\d０-９]+)|[（\(]([\d０-９]+)[\)）]|[第]?([\d０-９]+)[巻話]?)$/, "$1"));
+                            let number = cENS("Number", halfwidthValue(pr.work_name).replace(/.*?[第\:]?(\d+)[巻話\)]?$/, "$1"))
+                            let imprint = cENS("Imprint", pr.maker_name);
+                            let writer = cENS("Writer", pr.author_name || tags.find(v=>v.class == "created_by").name || pr.maker_name);
+                            Ci.appendChild(series);
+                            Ci.appendChild(title);
+                            Ci.appendChild(number);
+                            Ci.appendChild(year);
+                            Ci.appendChild(month);
+                            Ci.appendChild(day);
+                            Ci.appendChild(imprint);
+                            Ci.appendChild(writer);
                             fn = "[" + pr.maker_name + "] " + pr.work_name+" ("+pr.workno+")";
                             fn = fn.replace(/\s?【[^【】]*(無料|お試し|試し読み)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,'').replace(/\s?【[^【】]*(期間限定|特典)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,'');
                             console.log("%cFilename: %s", "background-color:azure", fn);
@@ -145,6 +162,23 @@ XMLHttpRequest.prototype.send = function() {
                     let pr = pl.works.find(x => x.workno == dt.workno);
                     console.debug(pr);
                     let tags = pr.tags;
+                    let ptime = new Date(pr.regist_date);
+                    let year = cENS("Year", ptime.getFullYear());
+                    let month = cENS("Month", ptime.getMonth()+1);
+                    let day = cENS("Day", ptime.getDate());
+                    let title = cENS("Title", pr.work_name);
+                    let series = cENS("Series", pr.work_name.replace(/^\s?(.*?)\s?(?:[：\:]{0,1}\s?([\d０-９]+)|[（\(]([\d０-９]+)[\)）]|[第]?([\d０-９]+)[巻話]?)$/, "$1"));
+                    let number = cENS("Number", halfwidthValue(pr.work_name).replace(/.*?[第\:]?(\d+)[巻話\)]?$/, "$1"))
+                    let imprint = cENS("Imprint", pr.maker_name);
+                    let writer = cENS("Writer", pr.author_name || tags.find(v=>v.class == "created_by").name || pr.maker_name);
+                    Ci.appendChild(series);
+                    Ci.appendChild(title);
+                    Ci.appendChild(number);
+                    Ci.appendChild(year);
+                    Ci.appendChild(month);
+                    Ci.appendChild(day);
+                    Ci.appendChild(imprint);
+                    Ci.appendChild(writer);
                     fn = "[" + pr.maker_name + "] " + pr.work_name+" ("+pr.workno+")";
                     fn = fn.replace(/\s?【[^【】]*(無料|お試し|試し読み)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,'').replace(/\s?【[^【】]*(期間限定|特典)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,'');
                     console.log("%cFilename: %s", "background-color:azure", fn);
@@ -279,6 +313,9 @@ CanvasRenderingContext2D.prototype.drawImage = function() {
                                 pc.classList.add('zip');
                                 pc.setAttribute("min", 0);
                                 pc.setAttribute("max", 100);
+                                let serializer = new XMLSerializer();
+                            let xmlStr = '<?xml version="1.0"?>\n' + serializer.serializeToString(xml);
+                            zip.file("ComicInfo.xml", xmlStr, {type: "text/xml"});
                                 console.groupCollapsed('Zip progress');
                                 console.log("Progress will be hidden at debug level");
                                 let pchk = 0;
