@@ -1,10 +1,10 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20201107");
+console.log("Dlsite Play Japan ver20201107.2");
 
 let cache_size = 10, cache = {};
 let cl, tp, wn;
 let cc, cn;
-let zt, dt, pl;
+let zt, dt, pl, pr;
 let to, bc;
 let pm;
 
@@ -15,7 +15,7 @@ function loadcache(startidx=0, path=tp) {
     let cpobj, cp;
     try {
         if(/\.pdf$/.test()) {
-            cpobj = zt.playfile[searchinJSON(zt.tree, path, "path")[0].hashname].pdf.page;
+            cpobj = searchinJSON(zt.tree, path.split("/").slice(0, -1).join("/"), "path")[0].children;
         } else {
             cpobj = searchinJSON(zt.tree, path, "path")[0].children;
         }
@@ -128,7 +128,7 @@ XMLHttpRequest.prototype.send = function() {
                 dt = JSON.parse(arguments[0].target.responseText);
                 console.debug(dt);
                 const getDetail = () => {
-                    let pr = pl.works.find(x => x.workno == dt.workno);
+                    pr = pl.works.find(x => x.workno == dt.workno);
                     console.debug(pr);
                     let tags = pr.tags;
                     let ptime = new Date(pr.regist_date);
@@ -150,8 +150,8 @@ XMLHttpRequest.prototype.send = function() {
                     Ci.appendChild(imprint);
                     Ci.appendChild(writer);
                     Ci.appendChild(web);
-                    fn = "[" + pr.author_name || (tags ? pr.maker_name + "(" + tags.find(v=>v.class == "created_by").name + ")" : null) || pr.maker_name + "] " + pr.work_name+" ("+pr.workno+")";
-                    fn = fn.replace(/\s?【[^【】]*(無料|お試し|試し読み)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,'').replace(/\s?【[^【】]*(期間限定|特典)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,'');
+                    fn = "[" + pr.author_name || (tags != null ? pr.maker_name + " (" + tags.find(v=>v.class == "created_by").name + ")" : null) || pr.maker_name + "] " + pr.work_name+" ("+pr.workno+")";
+                    fn = fn.replace(/\s?【[^【】]*(無料|お試し|試し読み)[^【】]*】\s?/g, " ").replace(/\s?【[^【】]*(期間限定|特典)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm, '');
                     console.log("%cFilename: %s", "background-color:azure", fn);
                 }
                 if(!pl) { //purchase list not granted
@@ -263,8 +263,9 @@ CanvasRenderingContext2D.prototype.drawImage = function() {
             }
             if(img_list[hn].count >= img_list[hn].maxcount && img_list[hn].fn.length) {
                 if(img_list[hn].count == img_list[hn].maxcount) {
-                    cache[img_list[hn].path || "tree"].used--;
-                    loadcache(0, img_list[hn].path);
+                    let path = img_list[hn].path || tp || "tree";
+                    cache[path].used--;
+                    loadcache(0, path);
                 }
                 clearTimeout(img_list[hn].wait);
                 img_list[hn].wait = setTimeout(() => {
@@ -382,15 +383,19 @@ function clearBlob() {
     }
 }
 start = function() {
-    startf=1;
-    bndlBTN.disabled=true;
-    btn.classList.add('extend');
-    btn.classList.add('start');
-    pc.classList.add('start');
-    ss.play();
-    //if(autoplay.length) autoplay[0].click();
-    console.time('Job Time');
-    if(next) next();
+    if(pr && pr.dl_format == 0) {
+        if(confirm("This product is not DRM protected. Using HTML5 Downloader only collect down-scaled quality images.\nAre you sure want to continue?")) {
+            startf=1;
+            bndlBTN.disabled=true;
+            btn.classList.add('extend');
+            btn.classList.add('start');
+            pc.classList.add('start');
+            ss.play();
+            //if(autoplay.length) autoplay[0].click();
+            console.time('Job Time');
+            if(next) next();
+        }
+    }
 }
 cancel = function() {
     if(startf) {
