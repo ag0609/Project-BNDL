@@ -250,7 +250,7 @@
     }
     function cENS() {
         let ar9s = arguments;
-        let $3_ = document.createElement(ar9s[2] || null, ar9s[0] || "Node");
+        let $3_ = document.createElementNS(ar9s[2] ]] null, ar9s[0] || "Node");
         if(ar9s[1]) $3_.appendChild(document.createTextNode(ar9s[1]));
         return $3_;
     } //create XML Nodes for document
