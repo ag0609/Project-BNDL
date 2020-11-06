@@ -142,10 +142,9 @@ XMLHttpRequest.prototype.send = function() {
                             let day = cENS("Day", ptime.getDate());
                             let title = cENS("Title", pr.work_name);
                             let series = cENS("Series", pr.work_name.replace(/^\s?(.*?)\s?(?:[：\:]{0,1}\s?([\d０-９]+)|[（\(]([\d０-９]+)[\)）]|[第]?([\d０-９]+)[巻話]?)$/, "$1"));
-                            let number = cENS("Number", halfwidthValue(pr.work_name).replace(/.*?[第\:]?(\d+)[巻話\)]?$/, "$1"));
-                            cENS("Number", pad(halfwidthValue(pr.work_name).match(/[第\:]?\d+[巻話\)]?/g)[0].match(/\d+/g)[0] || 1, 2));
+                            let number = cENS("Number", pad(halfwidthValue(pr.work_name).match(/[第\:]?\d+[巻話\)]?/g)[0].match(/\d+/g)[0] || 1, 2));
                             let imprint = cENS("Imprint", pr.maker_name);
-                            let writer = cENS("Writer", pr.author_name || tags.find(v=>v.class == "created_by").name || pr.maker_name);
+                            let writer = cENS("Writer", pr.author_name || (tags ? tags.find(v=>v.class == "created_by").name : null) || pr.maker_name);
                             Ci.appendChild(series);
                             Ci.appendChild(title);
                             Ci.appendChild(number);
@@ -169,9 +168,9 @@ XMLHttpRequest.prototype.send = function() {
                     let day = cENS("Day", ptime.getDate());
                     let title = cENS("Title", pr.work_name);
                     let series = cENS("Series", pr.work_name.replace(/^\s?(.*?)\s?(?:[：\:]{0,1}\s?([\d０-９]+)|[（\(]([\d０-９]+)[\)）]|[第]?([\d０-９]+)[巻話]?)$/, "$1"));
-                    let number = cENS("Number", halfwidthValue(pr.work_name).replace(/.*?[第\:]?(\d+)[巻話\)]?$/, "$1"))
+                    let number = cENS("Number", pad(halfwidthValue(pr.work_name).match(/[第\:]?\d+[巻話\)]?/g)[0].match(/\d+/g)[0] || 1, 2));
                     let imprint = cENS("Imprint", pr.maker_name);
-                    let writer = cENS("Writer", pr.author_name || tags.find(v=>v.class == "created_by").name || pr.maker_name);
+                    let writer = cENS("Writer", pr.author_name || (tags ? tags.find(v=>v.class == "created_by").name : null) || pr.maker_name);
                     Ci.appendChild(series);
                     Ci.appendChild(title);
                     Ci.appendChild(number);
