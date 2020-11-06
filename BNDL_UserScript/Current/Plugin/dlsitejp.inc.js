@@ -127,61 +127,42 @@ XMLHttpRequest.prototype.send = function() {
             if(arguments[0].target.readyState == 4 && arguments[0].target.status == 200) {
                 dt = JSON.parse(arguments[0].target.responseText);
                 console.debug(dt);
+                const getDetail = () => {
+                        let pr = pl.works.find(x => x.workno == dt.workno);
+                        console.debug(pr);
+                        let tags = pr.tags;
+                        let ptime = new Date(pr.regist_date);
+                        let year = cENS("Year", ptime.getFullYear());
+                        let month = cENS("Month", ptime.getMonth()+1);
+                        let day = cENS("Day", ptime.getDate());
+                        let title = cENS("Title", pr.work_name);
+                        let series = cENS("Series", pr.work_name.replace(/^\s?(.*?)\s?(?:[：\:]{0,1}\s?([\d０-９]+)|[（\(]([\d０-９]+)[\)）]|[第]?([\d０-９]+)[巻話]?)$/, "$1"));
+                        let number = cENS("Number", pad((halfwidthValue(pr.work_name).match(/[第\:]?\d+[巻話\)]?/g) || [1])[0].match(/\d+/g)[0] || 1, 2));
+                        let imprint = cENS("Imprint", pr.maker_name);
+                        let writer = cENS("Writer", pr.author_name || (tags ? tags.find(v=>v.class == "created_by").name : null) || pr.maker_name);
+                        Ci.appendChild(series);
+                        Ci.appendChild(title);
+                        Ci.appendChild(number);
+                        Ci.appendChild(year);
+                        Ci.appendChild(month);
+                        Ci.appendChild(day);
+                        Ci.appendChild(imprint);
+                        Ci.appendChild(writer);
+                        fn = "[" + pr.maker_name + "] " + pr.work_name+" ("+pr.workno+")";
+                        fn = fn.replace(/\s?【[^【】]*(無料|お試し|試し読み)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,'').replace(/\s?【[^【】]*(期間限定|特典)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,'');
+                        console.log("%cFilename: %s", "background-color:azure", fn);
+                }
                 if(!pl) { //purchase list not granted
                     GM.xmlHttpRequest({
                         method: "GET",
                         url: "https://play.dlsite.com/api/dlsite/purchases?sync=true&limit=1000",
                         onload: function(res) {
                             pl = JSON.parse(res.responseText);
-                            let pr = pl.works.find(x => x.workno == dt.workno);
-                            console.debug(pr);
-                            let tags = pr.tags;
-                            let ptime = new Date(pr.regist_date);
-                            let year = cENS("Year", ptime.getFullYear());
-                            let month = cENS("Month", ptime.getMonth()+1);
-                            let day = cENS("Day", ptime.getDate());
-                            let title = cENS("Title", pr.work_name);
-                            let series = cENS("Series", pr.work_name.replace(/^\s?(.*?)\s?(?:[：\:]{0,1}\s?([\d０-９]+)|[（\(]([\d０-９]+)[\)）]|[第]?([\d０-９]+)[巻話]?)$/, "$1"));
-                            let number = cENS("Number", pad(halfwidthValue(pr.work_name).match(/[第\:]?\d+[巻話\)]?/g)[0].match(/\d+/g)[0] || 1, 2));
-                            let imprint = cENS("Imprint", pr.maker_name);
-                            let writer = cENS("Writer", pr.author_name || (tags ? tags.find(v=>v.class == "created_by").name : null) || pr.maker_name);
-                            Ci.appendChild(series);
-                            Ci.appendChild(title);
-                            Ci.appendChild(number);
-                            Ci.appendChild(year);
-                            Ci.appendChild(month);
-                            Ci.appendChild(day);
-                            Ci.appendChild(imprint);
-                            Ci.appendChild(writer);
-                            fn = "[" + pr.maker_name + "] " + pr.work_name+" ("+pr.workno+")";
-                            fn = fn.replace(/\s?【[^【】]*(無料|お試し|試し読み)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,'').replace(/\s?【[^【】]*(期間限定|特典)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,'');
-                            console.log("%cFilename: %s", "background-color:azure", fn);
+                            getDetail();
                         }
                     });
                 } else {
-                    let pr = pl.works.find(x => x.workno == dt.workno);
-                    console.debug(pr);
-                    let tags = pr.tags;
-                    let ptime = new Date(pr.regist_date);
-                    let year = cENS("Year", ptime.getFullYear());
-                    let month = cENS("Month", ptime.getMonth()+1);
-                    let day = cENS("Day", ptime.getDate());
-                    let title = cENS("Title", pr.work_name);
-                    let series = cENS("Series", pr.work_name.replace(/^\s?(.*?)\s?(?:[：\:]{0,1}\s?([\d０-９]+)|[（\(]([\d０-９]+)[\)）]|[第]?([\d０-９]+)[巻話]?)$/, "$1"));
-                    let number = cENS("Number", pad(halfwidthValue(pr.work_name).match(/[第\:]?\d+[巻話\)]?/g)[0].match(/\d+/g)[0] || 1, 2));
-                    let imprint = cENS("Imprint", pr.maker_name);
-                    let writer = cENS("Writer", pr.author_name || (tags ? tags.find(v=>v.class == "created_by").name : null) || pr.maker_name);
-                    Ci.appendChild(series);
-                    Ci.appendChild(title);
-                    Ci.appendChild(number);
-                    Ci.appendChild(year);
-                    Ci.appendChild(month);
-                    Ci.appendChild(day);
-                    Ci.appendChild(imprint);
-                    Ci.appendChild(writer);
-                    fn = "[" + pr.maker_name + "] " + pr.work_name+" ("+pr.workno+")";
-                    fn = fn.replace(/\s?【[^【】]*(無料|お試し|試し読み)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,'').replace(/\s?【[^【】]*(期間限定|特典)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,'');
-                    console.log("%cFilename: %s", "background-color:azure", fn);
+                    getDetail();
                 }
                 orsc.apply(this, arguments);
             }
