@@ -131,6 +131,8 @@ XMLHttpRequest.prototype.send = function() {
                     pr = pl.works.find(x => x.workno == dt.workno);
                     console.debug(pr);
                     let tags = pr.tags;
+                    const packtype = ["Raw",,,,,,,,,"DLST (DRM)","CPD (CypherGuard)"];
+                    console.log("%cPackage Type: %s - %s", (pr.dl_format?"background-color:LemonChiffon; color:DarkOrange":"background-color:PaleGreen; color:Green"), pr.file_type, packtype[pr.dl_format]);
                     let ptime = new Date(pr.regist_date);
                     let year = cENS("Year", ptime.getFullYear());
                     let month = cENS("Month", ptime.getMonth()+1);
