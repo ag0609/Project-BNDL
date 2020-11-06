@@ -248,6 +248,12 @@
         let args = arguments;
         GM.notification({text:args[0], title:args[1], image:args[2], onclick:()=>{window.focus()}});
     }
+    function cENS() {
+        let ar9s = arguments;
+        let $3_ = document.createElement(ar9s[2] || null, ar9s[0] || "Node");
+        if(ar9s[1]) $3_.appendChild(document.createTextNode(ar9s[1]));
+        return $3_;
+    } //create XML Nodes for document
     const halfwidthValue = (value) => {return value.replace(/[\uff01-\uff5e]/g, fullwidthChar => String.fromCharCode(fullwidthChar.charCodeAt(0) - 0xfee0)).replace(/\u3000/g, '\u0020')}
     let jsMain = "";
     let start = ()=>{}, cancel = ()=>{};
