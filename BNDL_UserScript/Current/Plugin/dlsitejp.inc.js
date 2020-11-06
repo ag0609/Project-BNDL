@@ -421,7 +421,7 @@ const hashcheck = setInterval(function() {
         console.log("currentHash:", cl);
         let bjs = cl.split('/').filter(v => /^(BJ|RJ)/.test(v));
         if(wn && wn != bjs[0]) { console.groupEnd(); }
-        if(wn != bjs[0]) { console.log("workno changed, resetting tree", "(", wn, "=>", bjs[0], ")"); wn = bjs[0]; zt=null; tp = null; clearBlob(); if(bjs[0]) console.group(wn); }
+        if(wn != bjs[0]) { console.log("workno changed, resetting tree", "(", wn, "=>", bjs[0], ")"); wn = bjs[0]; Ci.innerHTML=""; zt=null; tp = null; clearBlob(); if(bjs[0]) console.group(wn); }
         if(/(tree|view)\/\S+/.test(cl)) {
             if(/view/.test(cl)) {
                 butcheck();
