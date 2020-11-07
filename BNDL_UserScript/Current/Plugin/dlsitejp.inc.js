@@ -1,5 +1,11 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20201107.2");
+console.log("Dlsite Play Japan ver20201107.3");
+
+const packtype = [];
+packtype[0] = "Raw";
+packtype[9] = "DLST (DRM)";
+packtype[10] = "CPD (CypherGuard)";
+packtype[17] = "DLSite Play Only";
 
 let cache_size = 10, cache = {};
 let cl, tp, wn;
@@ -131,7 +137,6 @@ XMLHttpRequest.prototype.send = function() {
                     pr = pl.works.find(x => x.workno == dt.workno);
                     console.debug(pr);
                     let tags = pr.tags;
-                    const packtype = ["Raw",,,,,,,,,"DLST (DRM)","CPD (CypherGuard)"];
                     console.log("%cPackage Type: %s - %s", (pr.dl_format?"background-color:LemonChiffon; color:DarkOrange":"background-color:PaleGreen; color:Green"), pr.file_type, packtype[pr.dl_format]);
                     let ptime = new Date(pr.regist_date);
                     let year = cENS("Year", ptime.getFullYear());
