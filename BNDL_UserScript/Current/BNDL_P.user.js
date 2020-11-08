@@ -190,10 +190,10 @@
                 console.groupEnd();
             });
         }
-        bndl_d.comicInfo = () => {
+        bndl_d.comicInfo = ($a_) => {
             console.group("comicInfo: show comicInfo.xml");
             console.debug(Ci);
-            if(arguments[0]) {
+            if($a_) {
                 let serializer = new XMLSerializer();
                 let xmlStr = '<?xml version="1.0"?>\n' + serializer.serializeToString(xml);
                 let blob = new Blob([xmlStr], {type: "text/xml"});
