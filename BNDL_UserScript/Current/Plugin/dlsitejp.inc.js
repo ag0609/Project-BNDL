@@ -180,7 +180,6 @@ XMLHttpRequest.prototype.send = function() {
         console.debug("%cXHR send %s", "background-color:lime, color:darkgreen", "ziptree found");
         img_list = [];
         zip = new JSZip();
-        console.log("Content Type:", type);
         this.onreadystatechange = async function() {
             //console.log("orsc", arguments);
             if(arguments[0].target.readyState == 4 && arguments[0].target.status == 200) {
