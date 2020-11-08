@@ -157,7 +157,7 @@ XMLHttpRequest.prototype.send = function() {
                     Ci.appendChild(imprint);
                     Ci.appendChild(writer);
                     Ci.appendChild(web);
-                    fn = "[" + pr.author_name || (tags != null ? pr.maker_name + " (" + tags.find(v=>v.class == "created_by").name + ")" : null) || pr.maker_name + "] " + pr.work_name+" ("+pr.workno+")";
+                    fn = "[" + (pr.author_name || (tags != null ? pr.maker_name + " (" + tags.find(v=>v.class == "created_by").name + ")" : null) || pr.maker_name) + "] " + pr.work_name+" ("+pr.workno+")";
                     fn = fn.replace(/\s?【[^【】]*(無料|お試し|試し読み)[^【】]*】\s?/g, " ").replace(/\s?【[^【】]*(期間限定|特典)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm, '');
                     console.log("%cFilename: %s", "background-color:azure", fn);
                 }
