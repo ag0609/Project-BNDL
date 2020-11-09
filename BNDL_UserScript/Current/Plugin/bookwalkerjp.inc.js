@@ -333,7 +333,7 @@ const ___$nospeard = setInterval(async function() {
 	if(!nospreadinit) {
 		if($("#menu")[0].classList.contains("show")) {
 			$("#showSettingPanel")[0].click();
-			let nospreadinit = await document.getElementById("spread_false");
+			let nospreadinit = document.getElementById("spread_false");
 		}
 	} else {
 		console.log(nospeardinit);
