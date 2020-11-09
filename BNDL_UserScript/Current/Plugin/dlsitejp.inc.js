@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20201107.3");
+console.log("Dlsite Play Japan ver20201109");
 
 const packtype = [];
 packtype[0] = "Raw";
@@ -16,6 +16,9 @@ let pm;
 
 let URL = window.webkitURL || window.URL;
 let autoplay, spread, next, prev;
+
+if(pdfjsLib)
+    pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
 
 function loadcache(startidx=0, path=tp) {
     let cpobj, cp;
@@ -388,6 +391,55 @@ function clearBlob() {
         }
     }
 }
+function zip2pdf2img(url=null) {
+    if(!url) {
+        //download zip
+        console.debug("start downloading", "https://play.dlsite.com/api/download?workno=" + pr.workno);
+        console.groupCollapsed("Download Progress");
+        GM.xmlHttpRequest({
+            method: "GET",
+            responseType: 'arraybuffer',
+            url: "https://play.dlsite.com/api/download?workno=" + pr.workno,
+            onprogress: function(p) {
+                console.debug("%.2d%", (p.loaded / p.total)*100);
+            },
+            onload: function(res) {
+                console.groupEnd();
+                console.debug("Download Completed");
+                console.debug(res);
+                JSZip.loadAsync(res.response).then((zip)=> {
+                    return zip.file(/.*\.pdf$/)[0].async("base64");
+                }).then((v) => {
+                    console.debug("passing data to PDF.js");
+                    let p = pdfjsLib.getDocument({data:v});
+                    console.log("p", p);
+                    p.promise.then(async function(d) {
+                        console.log("d", d);
+                        let curp = 1;
+                        function pageRen(f) {
+                            console.log("f", f);
+                            let vp = f.getViewport({'scale':1});
+                            console.log('vp', vp);
+                            let canvas = document.createElement('canvas');
+                            let ctx = canvas.getContext('2d');
+                            canvas.width = vp.width;
+                            canvas.height = vp.height;
+                            f.render({canvasContext: ctx, viewport: vp});
+                            document.body.appendChild(canvas);
+                            if(curp < d.numPages) {
+                                d.getPage(++curp).then(pageRen);
+                            }
+                        }
+                        d.getPage(curp).then(pageRen);
+                    });
+                });
+            }
+        });
+    } else {
+        //use local file?
+    }
+}
+if(pdfjsLib) debug.zip2img = zip2pdf2img;
 start = function() {
     if(pr && pr.dl_format == 0) {
         if(confirm("This product is not DRM protected. Using HTML5 Downloader only collect down-scaled quality images.\nAre you sure want to continue?")) {
