@@ -13,6 +13,7 @@ let cc, cn;
 let zt, dt, pl, pr;
 let to, bc;
 let pm;
+let dIdelay = 250;
 
 let URL = window.webkitURL || window.URL;
 let autoplay, spread, next, prev;
@@ -23,7 +24,7 @@ if(pdfjsLib)
 function loadcache(startidx=0, path=tp) {
     let cpobj, cp;
     try {
-        if(/\.pdf$/.test()) {
+        if(/\.pdf$/.test(path)) {
             cpobj = searchinJSON(zt.tree, path.split("/").slice(0, -1).join("/"), "path")[0].children;
         } else {
             cpobj = searchinJSON(zt.tree, path, "path")[0].children;
@@ -411,68 +412,68 @@ function zip2pdf2img(url=null) {
                 }).then((v) => {
                     console.debug("passing data to PDF.js");
                     let p = pdfjsLib.getDocument({data:atob(v)});
-                    console.log("p", p);
-                    p.promise.then(async function(d) {
-                        console.log("d", d);
+                    p.promise.then(async(d)=>{
                         let curp = 1;
                         function pageRen(f) {
-                            console.log("f", f);
-                            let vp = f.getViewport({'scale':1.5});
-                            console.log('vp', vp);
+                            console.group(curp, "/", d.numPages);
+                            let vp = f.getViewport({'scale':2,});
                             let canvas = document.createElement('canvas');
                             let ctx = canvas.getContext('2d');
                             canvas.width = vp.width;
                             canvas.height = vp.height;
-                            f.render({canvasContext: ctx, viewport: vp});
                             //document.body.appendChild(canvas);
-                            canvas.toBlob((blob) => {
-                                zip.file("P"+pad(curp, 5)+".jpg", blob);
-                                console.log("zipped", "P"+pad(curp, 5)+".jpg");
-                                if(curp < d.numPages) {
-                                    d.getPage(++curp).then(pageRen);
-                                } else {
-                                    console.time("Zip Generate");
-                                    let serializer = new XMLSerializer();
-                                    let xmlStr = '<?xml version="1.0"?>\n' + serializer.serializeToString(xml);
-                                    zip.file("ComicInfo.xml", xmlStr, {type: "text/xml"});
-                                    console.groupCollapsed('Zip progress');
-                                    console.log("Progress will be hidden at debug level");
-                                    let pchk = 0;
-                                    let bchk = setInterval(function() {
-                                        console.debug(pchk+'%');
-                                        pc.setAttribute("data-label", "Generating zip...("+ pchk +"%)");
-                                        //window.document.title = "["+Math.ceil(pchk)+"%] "+on;
-                                        //favicon.badge(Math.ceil(pchk), {'bgColor':'#6a7'});
-                                    }, 1000);
-                                    zip.generateAsync({type:"blob"}, function updateCallback(metadata) {
-                                        pchk = metadata.percent.toFixed(2);
-                                        pc.setAttribute('value', pchk);
-                                    }).then(function(blob) {
-                                        clearInterval(bchk);
-                                        console.debug('100%');
-                                        console.timeEnd("Zip Generate");
-                                        console.groupEnd();
-                                        const Url = window.URL.createObjectURL(blob);
-                                        const e = new MouseEvent("click");
-                                        const a = document.createElement('a');
-                                        a.id = "bndl_dl";
-                                        a.innerHTML = 'Download';
-                                        a.download = fn;
-                                        a.href = Url;
-                                        a.dispatchEvent(e);
-                                        btn.appendChild(a);
-                                        URL.revokeObjectURL(blob);
-                                        pc.classList.remove("start");
-                                        console.timeEnd('Job Time');
-                                        startf=0;
-                                        bndlBTN.disabled=false;
-                                    }).catch(e => {
-                                        console.error("JSZip generate zip failed");
-                                        console.error(e.message);
-                                        console.groupEnd();
-                                    });
-                                }
-                            }, 'image/jpeg', quality);
+                            f.render({canvasContext: ctx, viewport: vp});
+                            setTimeout(() => {
+                                canvas.toBlob(async(blob) => {
+                                    zip.file("P"+pad(curp, 5)+".jpg", blob);
+                                    console.log("zipped", "P"+pad(curp, 5)+".jpg");
+                                    console.groupEnd()
+                                    if(curp < d.numPages) {
+                                        d.getPage(++curp).then(pageRen);
+                                    } else {
+                                        console.time("Zip Generate");
+                                        let serializer = new XMLSerializer();
+                                        let xmlStr = '<?xml version="1.0"?>\n' + serializer.serializeToString(xml);
+                                        zip.file("ComicInfo.xml", xmlStr, {type: "text/xml"});
+                                        console.groupCollapsed('Zip progress');
+                                        console.log("Progress will be hidden at debug level");
+                                        let pchk = 0;
+                                        let bchk = setInterval(function() {
+                                            console.debug(pchk+'%');
+                                            pc.setAttribute("data-label", "Generating zip...("+ pchk +"%)");
+                                            //window.document.title = "["+Math.ceil(pchk)+"%] "+on;
+                                            //favicon.badge(Math.ceil(pchk), {'bgColor':'#6a7'});
+                                        }, 1000);
+                                        zip.generateAsync({type:"blob"}, function updateCallback(metadata) {
+                                            pchk = metadata.percent.toFixed(2);
+                                            pc.setAttribute('value', pchk);
+                                        }).then((blob) => {
+                                            clearInterval(bchk);
+                                            console.debug('100%');
+                                            console.timeEnd("Zip Generate");
+                                            console.groupEnd();
+                                            const Url = window.URL.createObjectURL(blob);
+                                            const e = new MouseEvent("click");
+                                            const a = document.createElement('a');
+                                            a.id = "bndl_dl";
+                                            a.innerHTML = 'Download';
+                                            a.download = fn;
+                                            a.href = Url;
+                                            a.dispatchEvent(e);
+                                            btn.appendChild(a);
+                                            URL.revokeObjectURL(blob);
+                                            pc.classList.remove("start");
+                                            console.timeEnd('Job Time');
+                                            startf=0;
+                                            bndlBTN.disabled=false;
+                                        }).catch(e => {
+                                            console.error("JSZip generate zip failed");
+                                            console.error(e.message);
+                                            console.groupEnd();
+                                        });
+                                    }
+                                }, 'image/jpeg', quality);
+                            }, dIdelay);
                         }
                         d.getPage(curp).then(pageRen);
                     });
