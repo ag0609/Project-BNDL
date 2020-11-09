@@ -258,7 +258,7 @@ XMLHttpRequest.prototype.send = function() {
     XMLHttpRequest.prototype.osend.apply(this, arguments);
 }
 CanvasRenderingContext2D.prototype.odI = CanvasRenderingContext2D.prototype.drawImage;
-CanvasRenderingContext2D.prototype.drawImage = function() {
+CanvasRenderingContext2D.prototype.hdI = function() {
     let thisobj = this;
     let args = arguments;
     let hn;
@@ -357,7 +357,7 @@ CanvasRenderingContext2D.prototype.drawImage = function() {
         }, 100);
     }
 }
-
+CanvasRenderingContext2D.prototype.drawImage = CanvasRenderingContext2D.prototype.hdI;
 function searchinJSON(root, value, key="",res=[]) {
     if(key && encodeURIComponent(root[key]) == encodeURIComponent(value)) {
         res.push(root);
@@ -409,6 +409,7 @@ function zip2pdf2img(url=null) {
             onload: function(res) {
                 console.groupEnd();
                 console.debug("Download Completed");
+                CanvasRenderingContext2D.prototype.drawImage = CanvasRenderingContext2D.prototype.odI;
                 JSZip.loadAsync(res.response).then((dlzip)=> {
                     return dlzip.file(/.*\.pdf$/)[0].async("base64");
                 }).then((v) => {
@@ -434,6 +435,7 @@ function zip2pdf2img(url=null) {
                                         d.getPage(++curp).then(pageRen);
                                     } else {
                                         console.time("Zip Generate");
+                                        CanvasRenderingContext2D.prototype.drawImage = CanvasRenderingContext2D.prototype.hdI;
                                         let serializer = new XMLSerializer();
                                         let xmlStr = '<?xml version="1.0"?>\n' + serializer.serializeToString(xml);
                                         zip.file("ComicInfo.xml", xmlStr, {type: "text/xml"});
