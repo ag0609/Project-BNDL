@@ -13,7 +13,7 @@ let cc, cn;
 let zt, dt, pl, pr;
 let to, bc;
 let pm;
-let dIdelay = 250;
+let dIdelay = 500;
 
 let URL = window.webkitURL || window.URL;
 let autoplay, spread, next, prev;
