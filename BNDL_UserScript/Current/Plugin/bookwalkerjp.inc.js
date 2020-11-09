@@ -339,7 +339,6 @@ const ___$nospeard = setInterval(async function() {
 		console.log(nospeardinit);
 		nospeardinit.click();
 		clearInterval(___$nospeard);
-	}
-}			
+	}		
 }, 100);
 btn.style.display = "flex";
