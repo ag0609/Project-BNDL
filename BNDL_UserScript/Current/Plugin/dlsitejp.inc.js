@@ -261,7 +261,8 @@ CanvasRenderingContext2D.prototype.odI = CanvasRenderingContext2D.prototype.draw
 CanvasRenderingContext2D.prototype.drawImage = function() {
     let thisobj = this;
     let args = arguments;
-    let hn = args[0].src.match(/[0-9a-z]+\.(?:jp[e]?g|png|gif)/)[0];
+    if(args[0].src)
+        let hn = args[0].src.match(/[0-9a-z]+\.(?:jp[e]?g|png|gif)/)[0];
     if(img_list[hn].blob != null) {
         let ctx = img_list[hn].canvas.getContext('2d');
         setTimeout(()=>{
