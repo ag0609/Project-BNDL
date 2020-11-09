@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20201109");
+console.log("Dlsite Play Japan ver20201109.1");
 
 const packtype = [];
 packtype[0] = "Raw";
@@ -406,29 +406,73 @@ function zip2pdf2img(url=null) {
             onload: function(res) {
                 console.groupEnd();
                 console.debug("Download Completed");
-                console.debug(res);
-                JSZip.loadAsync(res.response).then((zip)=> {
-                    return zip.file(/.*\.pdf$/)[0].async("base64");
+                JSZip.loadAsync(res.response).then((dlzip)=> {
+                    return dlzip.file(/.*\.pdf$/)[0].async("base64");
                 }).then((v) => {
                     console.debug("passing data to PDF.js");
-                    let p = pdfjsLib.getDocument({data:v});
+                    let p = pdfjsLib.getDocument({data:atob(v)});
                     console.log("p", p);
                     p.promise.then(async function(d) {
                         console.log("d", d);
                         let curp = 1;
                         function pageRen(f) {
                             console.log("f", f);
-                            let vp = f.getViewport({'scale':1});
+                            let vp = f.getViewport({'scale':1.5});
                             console.log('vp', vp);
                             let canvas = document.createElement('canvas');
                             let ctx = canvas.getContext('2d');
                             canvas.width = vp.width;
                             canvas.height = vp.height;
                             f.render({canvasContext: ctx, viewport: vp});
-                            document.body.appendChild(canvas);
-                            if(curp < d.numPages) {
-                                d.getPage(++curp).then(pageRen);
-                            }
+                            //document.body.appendChild(canvas);
+                            canvas.toBlob((blob) => {
+                                zip.file("P"+pad(curp, 5)+".jpg", blob);
+                                console.log("zipped", "P"+pad(curp, 5)+".jpg");
+                                if(curp < d.numPages) {
+                                    d.getPage(++curp).then(pageRen);
+                                } else {
+                                    console.time("Zip Generate");
+                                    let serializer = new XMLSerializer();
+                                    let xmlStr = '<?xml version="1.0"?>\n' + serializer.serializeToString(xml);
+                                    zip.file("ComicInfo.xml", xmlStr, {type: "text/xml"});
+                                    console.groupCollapsed('Zip progress');
+                                    console.log("Progress will be hidden at debug level");
+                                    let pchk = 0;
+                                    let bchk = setInterval(function() {
+                                        console.debug(pchk+'%');
+                                        pc.setAttribute("data-label", "Generating zip...("+ pchk +"%)");
+                                        //window.document.title = "["+Math.ceil(pchk)+"%] "+on;
+                                        //favicon.badge(Math.ceil(pchk), {'bgColor':'#6a7'});
+                                    }, 1000);
+                                    zip.generateAsync({type:"blob"}, function updateCallback(metadata) {
+                                        pchk = metadata.percent.toFixed(2);
+                                        pc.setAttribute('value', pchk);
+                                    }).then(function(blob) {
+                                        clearInterval(bchk);
+                                        console.debug('100%');
+                                        console.timeEnd("Zip Generate");
+                                        console.groupEnd();
+                                        const Url = window.URL.createObjectURL(blob);
+                                        const e = new MouseEvent("click");
+                                        const a = document.createElement('a');
+                                        a.id = "bndl_dl";
+                                        a.innerHTML = 'Download';
+                                        a.download = fn;
+                                        a.href = Url;
+                                        a.dispatchEvent(e);
+                                        btn.appendChild(a);
+                                        URL.revokeObjectURL(blob);
+                                        pc.classList.remove("start");
+                                        console.timeEnd('Job Time');
+                                        startf=0;
+                                        bndlBTN.disabled=false;
+                                    }).catch(e => {
+                                        console.error("JSZip generate zip failed");
+                                        console.error(e.message);
+                                        console.groupEnd();
+                                    });
+                                }
+                            }, 'image/jpeg', quality);
                         }
                         d.getPage(curp).then(pageRen);
                     });
@@ -439,7 +483,7 @@ function zip2pdf2img(url=null) {
         //use local file?
     }
 }
-if(pdfjsLib) debug.zip2img = zip2pdf2img;
+debug.zip2img = zip2pdf2img;
 start = function() {
     if(pr && pr.dl_format == 0) {
         if(confirm("This product is not DRM protected. Using HTML5 Downloader only collect down-scaled quality images.\nAre you sure want to continue?")) {
