@@ -9,12 +9,15 @@
 // @match        https://booklive.jp/bviewer/s/*
 // @require      tampermonkey://vendor/jquery.js
 // @require      tampermonkey://vendor/jszip/jszip.js
+// @require      https://raw.githubusercontent.com/Stuk/jszip-utils/master/dist/jszip-utils.min.js
+// @require      https://mozilla.github.io/pdf.js/build/pdf.js
 // @resource     customCSS https://raw.githubusercontent.com/ag0609/Project-BNDL/master/css/BNDL.user.css
 // @resource     BWJP https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/bookwalkerjp.inc.js
 // @resource     DLJP https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/dlsitejp.inc.js
 // @resource     BLJP https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/booklivejp.inc.js
 // @connect      bookwalker.jp
 // @connect      play.dl.dlsite.com
+// @connect      download.dlsite.com
 // @grant        GM.xmlHttpRequest
 // @grant        GM.setValue
 // @grant        GM.getValue
