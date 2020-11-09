@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20201109.1");
+console.log("Dlsite Play Japan ver20201110.0");
 
 const packtype = [];
 packtype[0] = "Raw";
