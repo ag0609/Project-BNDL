@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20201110.0");
+console.log("Dlsite Play Japan ver20201110.1");
 
 const packtype = [];
 packtype[0] = "Raw";
@@ -18,6 +18,7 @@ let dIdelay = 500;
 let URL = window.webkitURL || window.URL;
 let autoplay, spread, next, prev;
 
+let pdf_minw = 1000, pdf_minh = 1500;
 if(pdfjsLib)
     pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
 
@@ -419,15 +420,29 @@ function zip2pdf2img(url=null) {
                         let curp = 1;
                         function pageRen(f) {
                             console.group(curp, "/", d.numPages);
-                            let vp = f.getViewport({'scale':2,});
+                            let scale = 1;
+                            let vp = f.getViewport({'scale':scale,});
+                            while(vp.width < pdf_minw || vp.height < pdf_minh) {
+                                scale+=0.2;
+                                vp = f.getViewport({'scale':scale,});
+                            }
                             let canvas = document.createElement('canvas');
                             let ctx = canvas.getContext('2d');
                             canvas.width = vp.width;
                             canvas.height = vp.height;
                             //document.body.appendChild(canvas);
                             f.render({canvasContext: ctx, viewport: vp});
-                            setTimeout(() => {
+                            let retry =0;
+                            let loop = setInterval(() => {
                                 canvas.toBlob(async(blob) => {
+                                    console.log("Scaled: %dx(%dx%d)", scale, vp.width, vp.height);
+                                    console.log("Size: %dx(%d)", blob.size, (vp.width*vp.height) / blob.size);
+                                    if(retry > 5 && (vp.width*vp.height) / blob.size < 173) {
+                                        retry++;
+                                        throw "file too small!";
+                                    }
+                                    clearInterval(loop);
+                                    retry = 0;
                                     zip.file("P"+pad(curp, 5)+".jpg", blob);
                                     console.log("zipped", "P"+pad(curp, 5)+".jpg");
                                     console.groupEnd()
