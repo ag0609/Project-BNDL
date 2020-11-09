@@ -336,7 +336,7 @@ const ___$nospeard = setInterval(async function() {
 		}
 	} else {
 		console.log(nospreadinit);
-		nospeardinit.click();
+		nospreadinit.click();
 		clearInterval(___$nospeard);
 	}		
 }, 100);
