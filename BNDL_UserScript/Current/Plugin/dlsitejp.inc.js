@@ -264,7 +264,7 @@ CanvasRenderingContext2D.prototype.drawImage = function() {
     let hn;
     if(args[0].src)
         hn = args[0].src.match(/[0-9a-z]+\.(?:jp[e]?g|png|gif)/)[0];
-    if(img_list[hn].blob != null) {
+    if(hn && img_list[hn].blob != null) {
         let ctx = img_list[hn].canvas.getContext('2d');
         setTimeout(()=>{
             img_list[hn].count++;
