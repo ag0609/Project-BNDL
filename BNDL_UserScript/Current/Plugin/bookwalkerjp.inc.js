@@ -325,7 +325,6 @@ const _$IfuBW_NFBR$_ = setInterval(function() {
 		clearInterval(_$IfuBW_NFBR$_);
 		_page_time = _job_time = new Date();
 		main();
-		$("#renderer").click();
 	}
 }, 100);
 let nospreadinit;
@@ -333,7 +332,7 @@ const ___$nospeard = setInterval(async function() {
 	if(!nospreadinit) {
 		if($("#menu")[0].classList.contains("show")) {
 			$("#showSettingPanel")[0].click();
-			let nospreadinit = document.getElementById("spread_false");
+			nospreadinit = document.getElementById("spread_false");
 		}
 	} else {
 		console.log(nospeardinit);
