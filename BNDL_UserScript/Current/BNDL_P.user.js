@@ -33,7 +33,6 @@
     console.time("Initialization Time");
     let debug_enable = 1;
     //
-    let debug = 0;
     let show_org = 0;
     let overflow_limit = 100;
     //Read External CSS
