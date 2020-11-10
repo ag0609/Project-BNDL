@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20201110.2");
+console.log("Dlsite Play Japan ver20201110.3");
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
@@ -406,26 +406,35 @@ function zip2pdf2img(url=null) {
         //download zip
         console.debug("start downloading", "https://play.dlsite.com/api/download?workno=" + pr.workno);
         console.groupCollapsed("Download Progress");
+        let org_tit = document.title;
         GM.xmlHttpRequest({
             method: "GET",
-            responseType: 'arraybuffer',
+            responseType: 'blob',
             url: "https://play.dlsite.com/api/download?workno=" + pr.workno,
             onprogress: function(p) {
-                console.debug("%.2d%", (p.loaded / p.total)*100);
+                let per = (p.loaded / p.total)*100
+                console.debug("%.2d%", per.toFixed(2));
+                document.title = "["+per.toFixed(2)+"%] Downloading Zip...";
             },
             onload: function(res) {
                 console.groupEnd();
                 console.debug("Download Completed");
                 CanvasRenderingContext2D.prototype.drawImage = CanvasRenderingContext2D.prototype.odI;
+                document.title = "Pharsing Zip File...";
                 JSZip.loadAsync(res.response).then((dlzip)=> {
-                    return dlzip.file(/.*\.pdf$/)[0].async("base64");
+                    return dlzip.file(/.*pdf$/)[0].async("base64");
                 }).then((v) => {
+                    res = null;
+                    document.title = "Parsing PDF File...";
                     console.debug("passing data to PDF.js");
                     let p = pdfjsLib.getDocument({data:atob(v)});
                     p.promise.then(async(d)=>{
+                        v = null;
                         let curp = 1;
+                        let loop;
                         function pageRen(f) {
-                            console.group(curp, "/", d.numPages);
+                            console.group(curp +"/"+ d.numPages);
+                            document.title = "["+curp +"/"+ d.numPages+"] Converting...";
                             let scale = 1;
                             let vp = f.getViewport({'scale':scale,});
                             while(vp.width < pdf_minw || vp.height < pdf_minh) {
@@ -439,22 +448,29 @@ function zip2pdf2img(url=null) {
                             //document.body.appendChild(canvas);
                             f.render({canvasContext: ctx, viewport: vp});
                             let retry =0;
-                            let loop = setInterval(() => {
+                            loop ? null : loop = setInterval(() => {
                                 canvas.toBlob(async(blob) => {
                                     console.log("Scaled: %dx(%dx%d)", scale, vp.width, vp.height);
                                     console.log("Size: %dx(%d)", blob.size, (vp.width*vp.height) / blob.size);
-                                    if(retry > 5 && (vp.width*vp.height) / blob.size < 173) {
+                                    if(retry < retry_max && (vp.width*vp.height) / blob.size > 150) {
                                         retry++;
-                                        throw "file too small!";
+                                        throw "file too small! Retrying";
                                     }
                                     clearInterval(loop);
+                                    loop = 0;
                                     retry = 0;
                                     zip.file("P"+pad(curp, 5)+".jpg", blob);
                                     console.log("zipped", "P"+pad(curp, 5)+".jpg");
+                                    URL.revokeObjectURL(blob);
+                                    f.cleanup();
+                                    canvas.remove();
                                     console.groupEnd()
                                     if(curp < d.numPages) {
                                         d.getPage(++curp).then(pageRen);
                                     } else {
+                                        d.cleanup();
+                                        p = null;
+                                        console.log(p);
                                         console.time("Zip Generate");
                                         CanvasRenderingContext2D.prototype.drawImage = CanvasRenderingContext2D.prototype.hdI;
                                         let serializer = new XMLSerializer();
@@ -471,6 +487,7 @@ function zip2pdf2img(url=null) {
                                         }, 1000);
                                         zip.generateAsync({type:"blob"}, function updateCallback(metadata) {
                                             pchk = metadata.percent.toFixed(2);
+                                            document.title = "["+ pchk +"%] Generating Zip...";
                                             pc.setAttribute('value', pchk);
                                         }).then((blob) => {
                                             clearInterval(bchk);
@@ -486,6 +503,7 @@ function zip2pdf2img(url=null) {
                                             a.href = Url;
                                             a.dispatchEvent(e);
                                             btn.appendChild(a);
+                                            document.title = org_tit;
                                             URL.revokeObjectURL(blob);
                                             pc.classList.remove("start");
                                             console.timeEnd('Job Time');
