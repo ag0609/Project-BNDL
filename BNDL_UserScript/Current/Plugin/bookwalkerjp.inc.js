@@ -170,10 +170,10 @@ function main() {
 		let curp = page.index+1;
 		if(_$canvas[curp] == undefined) {
 			_$canvas[curp] = [];
-			if(!startf && curp > 1) return firekey(document.getElementById('renderer'), 36); //Home
+			if(!_$canvas[1] && curp > 1) return firekey(document.getElementById('renderer'), 36); //Home
 		} else {
 			if(retry && img$size[curp]) return firekey(document.getElementById('renderer'), 34); //Page Down
-			if(curp > 1 && !img$size[curp-1]) return firekey(document.getElementById('renderer'), 33); //Page Up
+			if(startf && curp > startf && !img$size[curp-1]) return firekey(document.getElementById('renderer'), 33); //Page Up
 		}
 		if (image && !img$size[curp]) {
 			console.groupCollapsed("Page", curp, "/", totp);
@@ -251,6 +251,7 @@ function main() {
 							pc.classList.remove('start');
 							pc.classList.remove('zip');
 							ss.pause();
+							startf=0;
 						}, 5000);
 					});
 				} else {
@@ -308,13 +309,13 @@ function main() {
 }
 start = function() {
 	bndlBTN.disabled = true;
-	startf = true;
+	startf = curp;
 	firekey(document.getElementById('renderer'), 34);
 }
 cancel = function() {
 	if(startf) {
 		bndlBTN.disabled = false;
-		startf = false;
+		startf = 0;
 	} else {
 		unsafeWindow.NFBR.a6G.a5x.prototype.b9b = backup;
 		document.body.removeChild(btn);
