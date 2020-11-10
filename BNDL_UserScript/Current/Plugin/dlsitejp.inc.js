@@ -1,5 +1,12 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20201110.1");
+console.log("Dlsite Play Japan ver20201110.2");
+
+//User Configuration
+let retry_max = 25; //Maximum retry when drawImage
+let delay_max = 2500; //in miliseconds, please keep it over 2 seconds(2000) or blanks output may occurs
+let pdf_minw = 1000, pdf_minh = 1500; //in pixel, minimum resolution of pdf rendering output
+let cache_size = 10; //number of images will be cached before viewer load image, set 5 or above to avoiding CORS error ocuurs
+//
 
 const packtype = [];
 packtype[0] = "Raw";
@@ -7,18 +14,17 @@ packtype[9] = "DLST (DRM)";
 packtype[10] = "CPD (CypherGuard)";
 packtype[17] = "DLSite Play Only";
 
-let cache_size = 10, cache = {};
+let cache = {};
 let cl, tp, wn;
 let cc, cn;
 let zt, dt, pl, pr;
 let to, bc;
 let pm;
-let dIdelay = 500;
 
 let URL = window.webkitURL || window.URL;
 let autoplay, spread, next, prev;
 
-let pdf_minw = 1000, pdf_minh = 1500;
+let dIdelay = 2500 / retry_max;
 if(pdfjsLib)
     pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
 
