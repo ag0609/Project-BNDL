@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20201110.1");
+console.log("Bookwalker Japan", "v20201111.0");
 console.log("Reference:", "https://blog.jixun.moe/intercept-bookwalker-tw-image", "by JiXun");
 let _detail$retry_ = 0;
 let backup;
@@ -193,7 +193,7 @@ function main() {
 			document.body.appendChild(c);
 			backup.call(this, c, page, image, {x:0, y:0, width:page.width, height:page.height}, flag);
 			img$size[curp] = Math.round((c.toDataURL('image/jpeg')).length *3 /4);
-			console.log("size:", Math.round(img$size[curp]/10.24)/100, "KBytes");
+			console.log("size:", Math.round(img$size[curp]/1024).toFixed(2), "KBytes");
 			c.toBlob(async(v)=>{
 				zip.file("P"+pad(curp, 5) + ".jpg", v)
 				let page = document.createElementNS(null, 'Page');
