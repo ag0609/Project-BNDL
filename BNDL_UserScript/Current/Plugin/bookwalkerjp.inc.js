@@ -139,7 +139,7 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 					}
 					bd.author.sort(function(a,b) { if(a.name < b.name) { return -1 } else if(a.name > b.name) { return 1 } return 0; }); //sort by name
 					bd.author.sort(function(a,b) { return a.p - b.p; }); //sort by priority
-					console.debug(bd.author);
+					console.table(bd.author);
 					let author_filtered = bd.author.filter(e=>e.p<2);
 					if(author_filtered.length) {
 					        fn = '[' + author_filtered.splice(0,Math.min(author_filtered.length,3)).map(e=>e.name).join('×') + '] ' + fn;
@@ -153,10 +153,16 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 					let Mt = document.createElementNS(null, 'Month');
 					let Dt = document.createElementNS(null, 'Day');
 					[Yt.innerHTML, Mt.innerHTML, Dt.innerHTML] = pD.split('/');
-					console.debug("Published Date:", pD, Yt.innerHTML, Mt.innerHTML, Dt.innerHTML);
+					console.debug("Published Date: %s/%s/%s", Yt.innerHTML, Mt.innerHTML, Dt.innerHTML);
 					Ci.appendChild(Yt);
 					Ci.appendChild(Mt);
 					Ci.appendChild(Dt);
+					let lang = cENS("LanguageISO", "ja");
+					let BnW = cENS("BlackAndWhite", "Yes");
+					let manga = cENS("Manga", "YesAndRightToLeft");
+					Ci.appendChild(lang);
+					Ci.appendChild(BnW);
+					Ci.appendChild(manga);
 				}
 			});
 		}
@@ -264,8 +270,6 @@ function main() {
 					if(!wait && img$size[curp] > 20000) { //Detail collect will only do once and Cover should be larger than 20KB
 						wait = 1;
 						on = document.title;
-						const tt = document.createElementNS(null, 'Title');
-						const st = document.createElementNS(null, 'Series');
 						on = on.replace(/\s?【[^【】]*(無料|お試し|試し読み)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,''); //[Only for Period] will left for Bookwalker Stupid Retarded Search Engine
 						await getDetail(on);
 						on = on.replace(/\s?【[^【】]*(期間限定|特典)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,'');; //Now I can remove them for series name
@@ -280,15 +284,13 @@ function main() {
 						//Get Table of Contents(Bookmarks)
 						//Encrypted in configuration_pack.json => configuration["nav-list"] => BUT NO SOLUTION YET
 						//
-						let nt = document.createElementNS(null, 'Number');
-						nt.innerHTML = pad(num,2);
-						Ci.appendChild(nt);
-						tt.innerHTML = fn;
-						Ci.appendChild(tt);
-						st.innerHTML = ser;
+						let nt = cENS("Number", pad(num,2));
+						const tt = cENS('Title', fn);
+						const st = cENS('Series', ser);
 						Ci.appendChild(st);
-						let pct = document.createElementNS(null, 'PageCount');
-						pct.innerHTML = totp;
+						Ci.appendChild(tt);
+						Ci.appendChild(nt);
+						let pct = cENS('PageCount', totp);
 						if(!mode) Ci.appendChild(pct);
 						bndlBTN.disabled = false;
 						btn.classList.add('extend');
