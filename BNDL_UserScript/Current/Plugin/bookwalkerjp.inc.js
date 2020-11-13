@@ -311,7 +311,7 @@ function main() {
 }
 start = function() {
 	bndlBTN.disabled = true;
-	startf = curp;
+	startf = (document.getElementById('pageSliderCounter').innerHTML).split('/')[0] * 1;;
 	firekey(document.getElementById('renderer'), 34);
 }
 cancel = function() {
