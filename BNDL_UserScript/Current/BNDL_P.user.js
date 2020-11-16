@@ -281,11 +281,11 @@
         let args = arguments;
         GM.notification({text:args[0], title:args[1], image:args[2], onclick:()=>{window.focus()}});
     }//popout notification
-    Array.prototype.uniquify = function(key=null) {
+    function uniquify(arr, key=null) {
         if(key) {
-            return this.filter((v,i,a)=>{return i == a.findIndex(fv=>fv[key] == v[key])});
+            return arr.filter((v,i,a)=>{return i == a.findIndex(fv=>fv[key] == v[key])});
         } else {
-            return this.filter((v,i,a)=>{return i == a.findIndex(fv=>Object.keys(fv).join("♦▒")==Object.keys(v).join("♦▒") && Object.values(fv).join("♦▒") == Object.values(v).join("♦▒"))});
+            return arr.filter((v,i,a)=>{return i == a.findIndex(fv=>Object.keys(fv).join("♦▒")==Object.keys(v).join("♦▒") && Object.values(fv).join("♦▒") == Object.values(v).join("♦▒"))});
         }
     }//uniquify array values
     function cENS() {
