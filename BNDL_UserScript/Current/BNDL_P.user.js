@@ -242,6 +242,23 @@
             }
         }
     }
+    async function getFileSize($_u) {
+        let filesize = 0;
+        let xhr = await GM.xmlHttpRequest({
+            method: "HEAD",
+            synchronous: true,
+            timeout: 3000,
+            url: $_u,
+            onload: function() {
+                if(this.readyState == this.DONE && this.status === 200) {
+                    const headers = this.responseHeaders;
+                    filesize = parseInt(headers.match(new RegExp("content-length:\\s*\\d+"), "gi")[0].match(new RegExp("\\d+", "g"))[0]) || 0;
+                }
+                return filesize;
+            }
+        });
+    }
+    debug.getSize = getFileSize;
     function firekey(el, key) {
         key = key != null ? key : 34;
         let eventObj;
