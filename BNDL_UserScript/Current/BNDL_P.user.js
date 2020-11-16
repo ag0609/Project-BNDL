@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Plugin version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.3
+// @version      0.4
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://*.bookwalker.jp/*
@@ -263,7 +263,14 @@
     function popout() {
         let args = arguments;
         GM.notification({text:args[0], title:args[1], image:args[2], onclick:()=>{window.focus()}});
-    }
+    }//popout notification
+    Array.prototype.uniquify = function(key=null) {
+        if(key) {
+            return this.filter((v,i,a)=>{return i == a.findIndex(fv=>fv[key] == v[key])});
+        } else {
+            return this.filter((v,i,a)=>{return i == a.findIndex(fv=>Object.keys(fv).join("♦▒")==Object.keys(v).join("♦▒") && Object.values(fv).join("♦▒") == Object.values(v).join("♦▒"))});
+        }
+    }//uniquify array values
     function cENS() {
         let ar9s = arguments;
         let $3_ = document.createElementNS(ar9s[2] || null, ar9s[0] || "Node");
