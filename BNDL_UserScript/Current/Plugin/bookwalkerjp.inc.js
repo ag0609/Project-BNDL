@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20201111.0");
+console.log("Bookwalker Japan", "v20201116.0");
 console.log("Reference:", "https://blog.jixun.moe/intercept-bookwalker-tw-image", "by JiXun");
 let _detail$retry_ = 0;
 let backup;
@@ -15,7 +15,7 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 	let bwhp = "https://bookwalker.jp/";
 	let eventapi = "https://eventapi.bookwalker.jp/api/";
 	let autocom = "https://bookwalker.jp/louis-api/autocomplete/";
-	let cat = cty ? 2 : 0; //category 1 = Novel, 2 = Manga, 3 = Light Novel, 9 = Web Novel
+	let cat = cty ? 2 : 0; //category { 1 = Novel, 2 = Manga, 3 = Light Novel, 9 = Web Novel }
 	console.debug("getDetail()", autocom + "?category="+ cat +"&term=" + bn);
 	GM.xmlHttpRequest({
 		method: "GET",
@@ -139,8 +139,8 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 					}
 					bd.author.sort(function(a,b) { if(a.name < b.name) { return -1 } else if(a.name > b.name) { return 1 } return 0; }); //sort by name
 					bd.author.sort(function(a,b) { return a.p - b.p; }); //sort by priority
-					console.table(bd.author);
-					let author_filtered = bd.author.filter(e=>e.p<2);
+					let author_filtered = bd.author.uniquify("name").filter(e=>e.p<2);
+					console.table(author_filtered);
 					if(author_filtered.length) {
 					        fn = '[' + author_filtered.splice(0,Math.min(author_filtered.length,3)).map(e=>e.name).join('×') + '] ' + fn;
 					} else {
@@ -159,7 +159,7 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 					Ci.appendChild(Dt);
 					let lang = cENS("LanguageISO", "ja");
 					let BnW = cENS("BlackAndWhite", "Yes");
-					let manga = cENS("Manga", "YesAndRightToLeft");
+					let manga = cty ? cENS("Manga", "YesAndRightToLeft") : cENS("Manga", "NoAndRightToLeft");
 					Ci.appendChild(lang);
 					Ci.appendChild(BnW);
 					Ci.appendChild(manga);
