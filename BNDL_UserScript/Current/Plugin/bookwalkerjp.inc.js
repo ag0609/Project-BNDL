@@ -139,7 +139,7 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 					}
 					bd.author.sort(function(a,b) { if(a.name < b.name) { return -1 } else if(a.name > b.name) { return 1 } return 0; }); //sort by name
 					bd.author.sort(function(a,b) { return a.p - b.p; }); //sort by priority
-					let author_filtered = bd.author.uniquify("name").filter(e=>e.p<2);
+					let author_filtered = uniquify(bd.author, "name").filter(e=>e.p<2);
 					console.table(author_filtered);
 					if(author_filtered.length) {
 					        fn = '[' + author_filtered.splice(0,Math.min(author_filtered.length,3)).map(e=>e.name).join('×') + '] ' + fn;
