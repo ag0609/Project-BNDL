@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20201116.0");
+console.log("Bookwalker Japan", "v20201118.0");
 console.log("Reference:", "https://blog.jixun.moe/intercept-bookwalker-tw-image", "by JiXun");
 let _detail$retry_ = 0;
 let backup;
@@ -159,7 +159,7 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 					Ci.appendChild(Dt);
 					let lang = cENS("LanguageISO", "ja");
 					let BnW = cENS("BlackAndWhite", "Yes");
-					let manga = cty ? cENS("Manga", "YesAndRightToLeft") : cENS("Manga", "NoAndRightToLeft");
+					let manga = cty ? cENS("Manga", "YesAndRightToLeft") : cENS("Manga", "No");
 					Ci.appendChild(lang);
 					Ci.appendChild(BnW);
 					Ci.appendChild(manga);
