@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20201110.3");
+console.log("Dlsite Play Japan ver20201119.0");
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
@@ -64,6 +64,7 @@ function loadcache(startidx=0, path=tp) {
         let hne = cpobj[idx].hashname.replace(/^.*(\..*?)$/, "$1");
         if(/(?:jp[e]?g|png|gif)/.test(hne)) { //Image
             if(!img_list[hn].path) img_list[hn].path = searchPath(zt.tree, hn, "hashname");
+            if(!(new RegExp(img_list[hn].path, "")).test(path)) continue;
             if(img_list[hn].blob == null && !img_list[hn].caching && fcs - cp.used > 0) {
                 i++;
                 cp.used++;
@@ -88,6 +89,8 @@ function loadcache(startidx=0, path=tp) {
             }
         } else if(/pdf/.test(hne)) { //pdf
             i++;
+            if(!img_list[hn].path) img_list[hn].path = searchPath(zt.tree, hn, "hashname");
+            if(!(new RegExp(searchinJSON(cpobj, hn, "hashname")[0].name, "")).test(path)) continue;
             let pskipped = 0;
             let pdfroot = zt.playfile[hn].pdf.page;
             let fpcs = Math.min(cache_size, pdfroot.length - startidx);
@@ -206,6 +209,7 @@ XMLHttpRequest.prototype.send = function() {
                         }
                         if(/\.pdf$/.test(hn)) {
                             console.debug("pdf file", hn, "detected");
+                            img_list[hn] = {"fn":searchinJSON(zt.tree, hn, "hashname")[0].name, path:null};
                             let pdfroot = zt.playfile[hn].pdf.page;
                             for(let p =0; p < pdfroot.length; p++) {
                                 let phn = pdfroot[p].optimized.name;
@@ -529,18 +533,26 @@ function zip2pdf2img(url=null) {
 }
 debug.zip2img = zip2pdf2img;
 start = function() {
-    if(pr && pr.dl_format == 0) {
-        if(confirm("This product is not DRM protected. Using HTML5 Downloader only collect down-scaled quality images.\nAre you sure want to continue?")) {
-            startf=1;
-            bndlBTN.disabled=true;
-            btn.classList.add('extend');
-            btn.classList.add('start');
-            pc.classList.add('start');
-            ss.play();
-            //if(autoplay.length) autoplay[0].click();
-            console.time('Job Time');
-            if(next) next();
+    let cango=0;
+    if(pr) {
+        if(pr.dl_format == 0) {
+            if(confirm("This product is not DRM protected. Using HTML5 Downloader only collect down-scaled quality images.\nAre you sure want to continue?")) {
+                cango=1;
+            }
+        } else if(pr.dl_format == 17) {
+            cango=1;
         }
+    }
+    if(cango) {
+        startf=1;
+        bndlBTN.disabled=true;
+        btn.classList.add('extend');
+        btn.classList.add('start');
+        pc.classList.add('start');
+        ss.play();
+        //if(autoplay.length) autoplay[0].click();
+        console.time('Job Time');
+        if(next) next();
     }
 }
 cancel = function() {
