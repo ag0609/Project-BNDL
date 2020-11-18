@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Plugin version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.4
+// @version      0.42
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://*.bookwalker.jp/*
@@ -281,13 +281,6 @@
         let args = arguments;
         GM.notification({text:args[0], title:args[1], image:args[2], onclick:()=>{window.focus()}});
     }//popout notification
-    function uniquify(arr, key=null) {
-        if(key) {
-            return arr.filter((v,i,a)=>{return i == a.findIndex(fv=>fv[key] == v[key])});
-        } else {
-            return arr.filter((v,i,a)=>{return i == a.findIndex(fv=>Object.keys(fv).join("♦▒")==Object.keys(v).join("♦▒") && Object.values(fv).join("♦▒") == Object.values(v).join("♦▒"))});
-        }
-    }//uniquify array values
     function cENS() {
         let ar9s = arguments;
         let $3_ = document.createElementNS(ar9s[2] || null, ar9s[0] || "Node");
@@ -295,6 +288,7 @@
         return $3_;
     } //create XML Nodes for document
     const halfwidthValue = (value) => {return value.replace(/[\uff01-\uff5e]/g, fullwidthChar => String.fromCharCode(fullwidthChar.charCodeAt(0) - 0xfee0)).replace(/\u3000/g, '\u0020')}
+    Object.defineProperty(Array.prototype,"uniquify",{value:function(k=null){if(k){return this.filter((v,i,a)=>{return i == a.findIndex(fv=>fv[k] == v[k])});}else{return this.filter((v,i,a)=>{return i == a.findIndex(fv=>JSON.stringify(fv)===JSON.stringify(v))});}},writable:false,enumerable:false});
     let jsMain = "";
     let start = ()=>{}, cancel = ()=>{};
     if(/viewer(?:\-p?trial)?\.bookwalker\.jp/i.test(window.location.href)) jsMain = GM_getResourceText("BWJP");
