@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20201119.0");
+console.log("Dlsite Play Japan ver20201124.0");
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
@@ -160,7 +160,7 @@ XMLHttpRequest.prototype.send = function() {
                     let series = cENS("Series", pr.work_name.replace(/^\s?(.*?)\s?(?:[：\:]{0,1}\s?([\d０-９]+)|[（\(]([\d０-９]+)[\)）]|[第]?([\d０-９]+)[巻話]?)$/, "$1"));
                     let number = cENS("Number", pad((halfwidthValue(pr.work_name).match(/[第\:]?\d+[巻話\)]?/g) || ["1"])[0].match(/\d+/g)[0] || 1, 2));
                     let imprint = cENS("Imprint", pr.maker_name);
-                    let writer = cENS("Writer", pr.author_name || (tags ? tags.find(v=>v.class == "created_by").name : null) || pr.maker_name);
+                    let writer = cENS("Writer", pr.author_name || (tags && tags.find(v=>v.class == "created_by") ? tags.find(v=>v.class == "created_by").name : null) || pr.maker_name);
                     let web = cENS("Web", "https://dlsite.com/books/"+pr.workno);
                     Ci.appendChild(series);
                     Ci.appendChild(title);
@@ -171,7 +171,7 @@ XMLHttpRequest.prototype.send = function() {
                     Ci.appendChild(imprint);
                     Ci.appendChild(writer);
                     Ci.appendChild(web);
-                    fn = "[" + (pr.author_name || (tags != null ? pr.maker_name + " (" + tags.find(v=>v.class == "created_by").name + ")" : null) || pr.maker_name) + "] " + pr.work_name+" ("+pr.workno+")";
+                    fn = "[" + (pr.author_name || (tags != null && tags.find(v=>v.class == "created_by") ? pr.maker_name + " (" + tags.find(v=>v.class == "created_by").name + ")" : null) || pr.maker_name) + "] " + pr.work_name+" ("+pr.workno+")";
                     fn = fn.replace(/\s?【[^【】]*(無料|お試し|試し読み)[^【】]*】\s?/g, " ").replace(/\s?【[^【】]*(期間限定|特典)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm, '');
                     console.log("%cFilename: %s", "background-color:azure", fn);
                 }
