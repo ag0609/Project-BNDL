@@ -173,8 +173,8 @@ function main() {
 	unsafeWindow.NFBR.a6G.a5x.prototype.b9b = function () {
 		let [targetCanvas, page, image, drawRect, flag] = arguments;
 		const totp = (document.getElementById('pageSliderCounter').innerHTML).split('/')[1] * 1;
-		if(!PC) {
-			PC = new comicInfoPages(totp);
+		if(!pages) {
+			pages = new comicInfoPages(totp);
 		}
 		let curp = page.index+1;
 		if(_$canvas[curp] == undefined) {
