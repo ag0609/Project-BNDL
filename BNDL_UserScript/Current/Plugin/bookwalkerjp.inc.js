@@ -173,6 +173,9 @@ function main() {
 	unsafeWindow.NFBR.a6G.a5x.prototype.b9b = function () {
 		let [targetCanvas, page, image, drawRect, flag] = arguments;
 		const totp = (document.getElementById('pageSliderCounter').innerHTML).split('/')[1] * 1;
+		if(!PC) {
+			PC = new comicInfoPages(totp);
+		}
 		let curp = page.index+1;
 		if(_$canvas[curp] == undefined) {
 			_$canvas[curp] = [];
@@ -201,18 +204,16 @@ function main() {
 			img$size[curp] = Math.round((c.toDataURL('image/jpeg')).length *3 /4);
 			console.log("size:", Math.round(img$size[curp]/1024).toFixed(2), "KBytes");
 			c.toBlob(async(v)=>{
-				zip.file("P"+pad(curp, 5) + ".jpg", v)
-				let page = document.createElementNS(null, 'Page');
+				zip.file("P"+pad(curp, 5) + ".jpg", v)			
+				let page = pages.page[curp];
 				if(curp == 1) page.setAttribute('Type', 'FrontCover');
 				page.setAttribute('ImageWidth', c.width);
 				page.setAttribute('ImageHeight', c.height);
 				page.setAttribute('ImageSize', v.size);
-				page.setAttribute('Image', curp-1);
-				pages.appendChild(page);
-				if(curp >= totp && startf) {
+				if((curp >= totp || mode) && startf) {
 					if(!mode) {
 						Ci.appendChild(scan);
-						Ci.appendChild(pages);
+						Ci.appendChild(pages.pageCollection);
 					}
 					let serializer = new XMLSerializer();
 					let xmlStr = '<?xml version="1.0"?>\n' + serializer.serializeToString(xml);
