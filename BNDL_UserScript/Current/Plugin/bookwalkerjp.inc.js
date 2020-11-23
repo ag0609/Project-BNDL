@@ -205,7 +205,7 @@ function main() {
 			console.log("size:", Math.round(img$size[curp]/1024).toFixed(2), "KBytes");
 			c.toBlob(async(v)=>{
 				zip.file("P"+pad(curp, 5) + ".jpg", v)			
-				let page = pages.pages[curp];
+				let page = pages.pages[curp-1];
 				if(curp == 1) page.setAttribute('Type', 'FrontCover');
 				page.setAttribute('ImageWidth', c.width);
 				page.setAttribute('ImageHeight', c.height);
