@@ -251,7 +251,7 @@ function main() {
 						a.dispatchEvent(e);
 						btn.appendChild(a);
 						window.document.title = "\u2705" + on;
-						popout("Collect Completed.", fn, "https://viewer.bookwalker.jp/favicon.ico");
+						if(document.hidden) popout("Collect Completed.", fn, "https://viewer.bookwalker.jp/favicon.ico");
 						_job_time = new Date() - _job_time;
 						console.log("Book Download Time:", _job_time/1000, "sec");
 						setTimeout(function() {
