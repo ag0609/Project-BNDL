@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20201118.1");
+console.log("Bookwalker Japan", "v20201123.3");
 console.log("Reference:", "https://blog.jixun.moe/intercept-bookwalker-tw-image", "by JiXun");
 let _detail$retry_ = 0;
 let backup;
@@ -205,7 +205,7 @@ function main() {
 			console.log("size:", Math.round(img$size[curp]/1024).toFixed(2), "KBytes");
 			c.toBlob(async(v)=>{
 				zip.file("P"+pad(curp, 5) + ".jpg", v)			
-				let page = pages.page[curp];
+				let page = pages.pages[curp];
 				if(curp == 1) page.setAttribute('Type', 'FrontCover');
 				page.setAttribute('ImageWidth', c.width);
 				page.setAttribute('ImageHeight', c.height);
@@ -339,7 +339,7 @@ const ___$nospeard = setInterval(async function() {
 			nospreadinit = document.getElementById("spread_false");
 		}
 	} else {
-		console.log(nospreadinit);
+		console.debug(nospreadinit);
 		nospreadinit.click();
 		clearInterval(___$nospeard);
 	}		
