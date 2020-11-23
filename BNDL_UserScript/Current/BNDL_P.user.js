@@ -44,7 +44,52 @@
     ss.loop = true;
     //Read Last quality setting
     let quality = await GM.getValue('quality', 0.92);
-
+    //Class Defination
+    class comicInfoPages {
+        #P = document.createElementNS(null, 'Pages');
+        constructor(total=0) {
+            this.addPages(total);
+        }
+        get pageCollection() {
+            return this.#P.cloneNode(true);
+        }
+        get pages() {
+            return this.#P.children;
+        }
+        addPages(count, options=null) {
+            let page = document.createElementNS(null, 'Page');
+            let lastpage = this.#P.childElementCount;
+            for(let p=0; p < count; p++) {
+                let newpage = page.cloneNode();
+                newpage.setAttribute('Image', 1+lastpage+p);
+                if(options) {
+                    for(let k in options) {
+                        newpage.setAttribute(k, options[k]);
+                    }
+                }
+                this.#P.appendChild(newpage)
+            }
+        }
+        setPageAttr(i, k ,v) {
+            if(this.#P.childElementCount < i) return error("Page not found!");
+            this.#P.children[i].setAttribute(k, v);
+        }
+        getPageAttr(i, k, v=null) {
+            if(this.#P.childElementCount < i) return error("Page not found!");
+            if(v) {
+                return this.#P.children[i].getAttribute(k) == v;
+            } else {
+                return this.#P.children[i].getAttribute(k);
+            }
+        }
+        getPage(i) {
+            if(this.#P.childElementCount < i) return error("Page not found!");
+            return this.#P.children[i];
+        }
+        error(msg) {
+            console.error(msg);
+        }
+    }
     //Initialization
     let zip = new JSZip();
     let _init_time, _job_time, _page_time;
@@ -62,7 +107,7 @@
     let Ci = xml.getElementsByTagName('ComicInfo')[0];
     Ci.setAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
     Ci.setAttribute('xmlns:xsd', 'http://www.w3.org/2001/XMLSchema');
-    let pages = document.createElementNS(null, 'Pages');
+    let pages;
     let scan = document.createElementNS(null, 'ScanInformation');
     scan.innerHTML = "Scaned By BNDL Type Jixun v0.1(ag0609)";
     //Main UI
