@@ -332,7 +332,7 @@
         if(ar9s[1]) $3_.appendChild(document.createTextNode(ar9s[1]));
         return $3_;
     } //create XML Nodes for document
-    const halfwidthValue = (value) => {return value.replace(/[\uff01-\uff5e]/g, fullwidthChar => String.fromCharCode(fullwidthChar.charCodeAt(0) - 0xfee0)).replace(/\u3000/g, '\u0020')}
+    const halfwidthValue = (value) => {return value.replace(/(?:！？|!?)/g, "⁉").replace(/[\uff01-\uff5e]/g, fullwidthChar => String.fromCharCode(fullwidthChar.charCodeAt(0) - 0xfee0)).replace(/\u3000/g, '\u0020')}
     Object.defineProperty(Array.prototype,"uniquify",{value:function(k=null){if(k){return this.filter((v,i,a)=>{return i == a.findIndex(fv=>fv[k] == v[k])});}else{return this.filter((v,i,a)=>{return i == a.findIndex(fv=>JSON.stringify(fv)===JSON.stringify(v))});}},writable:false,enumerable:false});
     let jsMain = "";
     let start = ()=>{}, cancel = ()=>{};
