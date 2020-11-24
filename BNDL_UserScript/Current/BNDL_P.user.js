@@ -61,7 +61,7 @@
             let lastpage = this.#P.childElementCount;
             for(let p=0; p < count; p++) {
                 let newpage = page.cloneNode();
-                newpage.setAttribute('Image', 1+lastpage+p);
+                newpage.setAttribute('Image', lastpage+p);
                 if(options) {
                     for(let k in options) {
                         newpage.setAttribute(k, options[k]);
