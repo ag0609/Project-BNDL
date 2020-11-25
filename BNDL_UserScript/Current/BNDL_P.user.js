@@ -11,6 +11,7 @@
 // @require      tampermonkey://vendor/jszip/jszip.js
 // @require      https://raw.githubusercontent.com/Stuk/jszip-utils/master/dist/jszip-utils.min.js
 // @require      https://mozilla.github.io/pdf.js/build/pdf.js
+// @require      https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/comicinfo.class.js
 // @resource     customCSS https://raw.githubusercontent.com/ag0609/Project-BNDL/master/css/BNDL.user.css
 // @resource     BWJP https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/bookwalkerjp.inc.js
 // @resource     DLJP https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/dlsitejp.inc.js
@@ -44,52 +45,6 @@
     ss.loop = true;
     //Read Last quality setting
     let quality = await GM.getValue('quality', 0.92);
-    //Class Defination
-    class comicInfoPages {
-        #P = document.createElementNS(null, 'Pages');
-        constructor(total=0) {
-            this.addPages(total);
-        }
-        get pageCollection() {
-            return this.#P.cloneNode(true);
-        }
-        get pages() {
-            return this.#P.children;
-        }
-        addPages(count, options=null) {
-            let page = document.createElementNS(null, 'Page');
-            let lastpage = this.#P.childElementCount;
-            for(let p=0; p < count; p++) {
-                let newpage = page.cloneNode();
-                newpage.setAttribute('Image', lastpage+p);
-                if(options) {
-                    for(let k in options) {
-                        newpage.setAttribute(k, options[k]);
-                    }
-                }
-                this.#P.appendChild(newpage)
-            }
-        }
-        setPageAttr(i, k ,v) {
-            if(this.#P.childElementCount < i) return error("Page not found!");
-            this.#P.children[i].setAttribute(k, v);
-        }
-        getPageAttr(i, k, v=null) {
-            if(this.#P.childElementCount < i) return error("Page not found!");
-            if(v) {
-                return this.#P.children[i].getAttribute(k) == v;
-            } else {
-                return this.#P.children[i].getAttribute(k);
-            }
-        }
-        getPage(i) {
-            if(this.#P.childElementCount < i) return error("Page not found!");
-            return this.#P.children[i];
-        }
-        error(msg) {
-            console.error(msg);
-        }
-    }
     //Initialization
     let zip = new JSZip();
     let _init_time, _job_time, _page_time;
@@ -332,7 +287,7 @@
         if(ar9s[1]) $3_.appendChild(document.createTextNode(ar9s[1]));
         return $3_;
     } //create XML Nodes for document
-    const halfwidthValue = (value) => {return value.replace(/(?:！？|!?)/g, "⁉").replace(/[\uff01-\uff5e]/g, fullwidthChar => String.fromCharCode(fullwidthChar.charCodeAt(0) - 0xfee0)).replace(/\u3000/g, '\u0020')}
+    const halfwidthValue = (value) => {return value.replace(/(?:！？|!\?)/g, "⁉").replace(/[\uff01-\uff5e]/g, fullwidthChar => String.fromCharCode(fullwidthChar.charCodeAt(0) - 0xfee0)).replace(/\u3000/g, '\u0020')}
     Object.defineProperty(Array.prototype,"uniquify",{value:function(k=null){if(k){return this.filter((v,i,a)=>{return i == a.findIndex(fv=>fv[k] == v[k])});}else{return this.filter((v,i,a)=>{return i == a.findIndex(fv=>JSON.stringify(fv)===JSON.stringify(v))});}},writable:false,enumerable:false});
     let jsMain = "";
     let start = ()=>{}, cancel = ()=>{};
