@@ -71,9 +71,7 @@ function comicinfo() {
 function comicInfoPages(total=0) {
 	let _P = document.createElementNS(null, 'Pages');
 	this.pageCollection = _P.cloneNode(true);
-	this.pages = function() {
-		return _P.children;
-	}
+	this.pages = _P.children;
 	this.addPages = function(count, options=null) {
 		let page = document.createElementNS(null, 'Page');
 		let lastpage = _P.childElementCount;
