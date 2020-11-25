@@ -5,15 +5,15 @@ DON'T TOUCH THIS IF YOU DON'T KNOW WHAT IT IS.
 Support: (may not work if site update and NO-ONE update the script)
 - BWJP
 - DLPlay
+- BLive
 
 Maybe support in future:
 - BWTW
-- BLive
 
 Requirements:
 - Evironment have enough RAM to cache-up all canvas of a book (may cost ~400MB if facing a 500 pages novel)
 - A web browser support extension for running userscript
-  - Chrome, Firefox, IE9+
+  - Chrome, Firefox
 - JSzip library
   - You don't really need to install it, script itself will include it once installed to your browser.
   
