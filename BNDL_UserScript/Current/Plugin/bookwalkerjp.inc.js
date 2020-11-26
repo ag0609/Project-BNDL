@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20201123.3");
+console.log("Bookwalker Japan", "v20201126.0");
 console.log("Reference:", "https://blog.jixun.moe/intercept-bookwalker-tw-image", "by JiXun");
 let _detail$retry_ = 0;
 let backup;
@@ -110,23 +110,27 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 					let wt, pcl;
 					for(let i=0;i<authors.length;i++) {
 						try {
-							const at = authors[i].getElementsByClassName('author-head')[0].innerText;
+							const at = authors[i].getElementsByClassName('author-head')[0].innerText.split('・');
 							const an = authors[i].getElementsByClassName('author-name')[0].innerText.replace(/(（.*?）|\s)/g, "");
-							if(/キャラ/.test(at)) {
-								//
-							} else if(/^([原]?[著|作])$/g.test(at)) {
-								if(wt == undefined) wt = document.createElementNS(null, 'Writer');
-								wt.innerHTML = wt.innerHTML ? wt.innerHTML +", "+ an : an;
-								if(bd.author.filter(x => x.p == 0).length < 2) bd.author.push({'p':0, 'type':at, 'name':an});
-							} else if(/(著|画|マンガ|イラスト)/g.test(at)) {
-								if(pcl == undefined) pcl = document.createElementNS(null, 'Penciller');
-								pcl.innerHTML = pcl.innerHTML ? pcl.innerHTML +", "+ an : an;
-								bd.author.push({'p':1, 'type':at, 'name':an});
-							} else if(at != "") {
-								if(wt == undefined) wt = document.createElementNS(null, 'Writer');
-								wt.innerHTML = wt.innerHTML ? wt.innerHTML +", "+ an : an;
-								bd.author.push({'p':4, 'type':at, 'name':an});
-							};
+							at.foreach(v => 
+								if(/キャラ/.test(v)) {
+									if(wt == undefined) wt = document.createElementNS(null, 'Writer');
+									wt.innerHTML = wt.innerHTML ? wt.innerHTML +", "+ an : an;
+									bd.author.push({'p':4, 'type':at, 'name':an});
+								} else if(/^([原]?[著|作])$/g.test(v)) {
+									if(wt == undefined) wt = document.createElementNS(null, 'Writer');
+									wt.innerHTML = wt.innerHTML ? wt.innerHTML +", "+ an : an;
+									if(bd.author.filter(x => x.p == 0).length < 2) bd.author.push({'p':0, 'type':at, 'name':an});
+								} else if(/(著|画|マンガ|イラスト)/g.test(v)) {
+									if(pcl == undefined) pcl = document.createElementNS(null, 'Penciller');
+									pcl.innerHTML = pcl.innerHTML ? pcl.innerHTML +", "+ an : an;
+									bd.author.push({'p':1, 'type':at, 'name':an});
+								} else if(v != "") {
+									if(wt == undefined) wt = document.createElementNS(null, 'Writer');
+									wt.innerHTML = wt.innerHTML ? wt.innerHTML +", "+ an : an;
+									bd.author.push({'p':4, 'type':at, 'name':an});
+								}
+							);
 						} catch(e){};
 					}
 					if(wt) { 
