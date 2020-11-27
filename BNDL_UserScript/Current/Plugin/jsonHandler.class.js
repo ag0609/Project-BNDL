@@ -33,5 +33,10 @@ function JSONHandler(json='') {
 			this.error("json input is invalid!");
 		}
 		return undefined;
-    }
+    } // return path keys as array like ["0", "children", "13", "name"]
+	this.value = function(path) {
+		let result = _json;
+		path.forEach(v => result = result[v]);
+		return result;
+	}
 }
