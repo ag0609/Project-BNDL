@@ -107,5 +107,6 @@ function comicInfoPages(total=0) {
 	this.error = function(msg) {
 		console.error(msg);
 	}
-	this.addPages(total);
+	this.addPages(1, {'Type':'FrontCover'});
+	this.addPages(total-1);
 }
