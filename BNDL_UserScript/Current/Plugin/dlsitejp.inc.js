@@ -296,7 +296,6 @@ CanvasRenderingContext2D.prototype.hdI = function() {
                         if(!pages && totp > 1) {
                             pages = new comicInfoPages(totp);
                         }
-                        page = pages.pages[curp-1];
                         //tag page info here
                         pages.setPageAttr(curp-1, "ImageWidth", img_list[hn].canvas.width);
                         pages.setPageAttr(curp-1, "ImageHeight", img_list[hn].canvas.height);
