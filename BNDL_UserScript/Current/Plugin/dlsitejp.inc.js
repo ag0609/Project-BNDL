@@ -64,7 +64,7 @@ function loadcache(startidx=0, path=tp) {
         let hne = cpobj[idx].hashname.replace(/^.*(\..*?)$/, "$1");
         if(/(?:jp[e]?g|png|gif)/.test(hne)) { //Image
             if(!img_list[hn].path) img_list[hn].path = searchPath(zt.tree, hn, "hashname");
-            if(!(new RegExp(img_list[hn].path, "")).test(path)) i++; continue;
+            if(!(new RegExp(img_list[hn].path, "")).test(path)) { i++; continue; }
             if(img_list[hn].blob == null && !img_list[hn].caching && fcs - cp.used > 0) {
                 i++;
                 cp.used++;
