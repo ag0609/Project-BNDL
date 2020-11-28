@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20201128.0");
+console.log("Bookwalker Japan", "v20201129.0");
 console.log("Reference:", "https://blog.jixun.moe/intercept-bookwalker-tw-image", "by JiXun");
 let _detail$retry_ = 0;
 let backup;
@@ -109,38 +109,37 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 							const at = authors[i].getElementsByClassName('author-head')[0].innerText.split('・');
 							const an = authors[i].getElementsByClassName('author-name')[0].innerText.replace(/(（.*?）|\s)/g, "");
 							at.forEach((v) => {
-								if(/キャラ/.test(v)) {
-									if(wt == undefined) wt = document.createElementNS(null, 'Writer');
-									wt.innerHTML = wt.innerHTML ? wt.innerHTML +", "+ an : an;
-									bd.author.push({'p':4, 'type':at.join('/'), 'name':an});
-								} else if(/^([原]?[著|作])$/g.test(v)) {
-									if(wt == undefined) wt = document.createElementNS(null, 'Writer');
-									wt.innerHTML = wt.innerHTML ? wt.innerHTML +", "+ an : an;
-									if(bd.author.filter(x => x.p == 0).length < 2) bd.author.push({'p':0, 'type':at.join('/'), 'name':an});
-								} else if(/(著|画|マンガ|イラスト)/g.test(v)) {
-									if(pcl == undefined) pcl = document.createElementNS(null, 'Penciller');
-									pcl.innerHTML = pcl.innerHTML ? pcl.innerHTML +", "+ an : an;
-									bd.author.push({'p':1, 'type':at.join('/'), 'name':an});
+								if(/キャラ|設定/.test(v)) { //キャラクター原案
+									bd.author.push({'p':4, 'type':v, 'name':an});
+								} else if(/^([原][著作])$/g.test(v)) { //原作, 原著
+									bd.author.push({'p':0, 'type':v, 'name':an});
+								} else if(/^[著作][者]?$/.test) { //著, 作, 著者, 作者
+									bd.author.push({'p':1, 'type':v, 'name':an});  
+								} else if(/(画|マンガ|イラスト)/g.test(v)) { //漫画, マンガ, イラスト
+									bd.author.push({'p':2, 'type':v, 'name':an});
 								} else if(v != "") {
-									if(wt == undefined) wt = document.createElementNS(null, 'Writer');
-									wt.innerHTML = wt.innerHTML ? wt.innerHTML +", "+ an : an;
-									bd.author.push({'p':4, 'type':at.join('/'), 'name':an});
+									bd.author.push({'p':5, 'type':v, 'name':an});
 								}
 							});
 						} catch(e){};
 					}
-					if(wt) { 
-						Ci.add("/ComicInfo", 'Writer', wt.innerHTML);
-						if(pcl) Ci.add("/ComicInfo", 'Penciller', pcl.innerHTML);
-					} else if(pcl) {
-						Ci.add("/ComicInfo", 'Writer', pcl.innerHTML);
-					}
-					bd.author.sort(function(a,b) { if(a.name < b.name) { return -1 } else if(a.name > b.name) { return 1 } return 0; }); //sort by name
 					bd.author.sort(function(a,b) { return a.p - b.p; }); //sort by priority
-					let author_filtered = bd.author.uniquify("name").filter(e=>e.p<2);
+					pcl = [];
+					bd.author.forEach((v) => {
+						if(!wt && (!wt && v.p == 1)) {
+							wt = v.name;
+						} else if(v.p < 4) {
+							pcl.push(v.name);	
+						}
+					});
+					//bd.author.sort(function(a,b) { if(a.name < b.name) { return -1 } else if(a.name > b.name) { return 1 } return 0; }); //sort by name
+					Ci.add("/ComicInfo", "Writer", wt.join(','));
+					if(pcl.length) Ci.add("/ComicInfo", "Penciller", pcl.join(','));
+					let author_filtered = [wt];
+					author_filtered = author_filtered.concat(pcl.uniquify("name"));
 					console.table(author_filtered);
 					if(author_filtered.length) {
-					        fn = '[' + author_filtered.splice(0,Math.min(author_filtered.length,3)).map(e=>e.name).join('×') + '] ' + fn;
+					        fn = '[' + author_filtered.splice(0,Math.min(author_filtered.length,3)).join('×') + '] ' + fn;
 					} else {
 					        fn = '[' + bd.author.splice(0,Math.min(bd.author.length,3)).map(e=>e.name).join('×') + '] ' + fn;
 					}
