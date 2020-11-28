@@ -25,6 +25,16 @@ function comicinfo() {
 			return 1;
 		}
 	}
+	this.addPageCollection = function(PageCollection) {
+		let pages = PageCollection;
+		if(!pages && !pages.pageCollection) {
+			console.error("Input Invalid!!");
+			return 1;
+		} else {
+			_CI.appendChild(pages.pageCollection);
+			return 0;
+		}
+	}
 	this.remove = function(xpath2Tag) {
 		let p2t = xpath2Tag, kn = keyname, v = value;
 		let tag = _XML.evaluate(p2t, _XML, null, 9, null);
