@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20201129.0");
+console.log("Bookwalker Japan", "v20201129.1");
 console.log("Reference:", "https://blog.jixun.moe/intercept-bookwalker-tw-image", "by JiXun");
 let _detail$retry_ = 0;
 let backup;
@@ -133,7 +133,7 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 						}
 					});
 					//bd.author.sort(function(a,b) { if(a.name < b.name) { return -1 } else if(a.name > b.name) { return 1 } return 0; }); //sort by name
-					Ci.add("/ComicInfo", "Writer", wt.join(','));
+					Ci.add("/ComicInfo", "Writer", wt);
 					if(pcl.length) Ci.add("/ComicInfo", "Penciller", pcl.join(','));
 					let author_filtered = [wt];
 					author_filtered = author_filtered.concat(pcl.uniquify("name"));
