@@ -153,24 +153,15 @@ XMLHttpRequest.prototype.send = function() {
                     let tags = pr.tags;
                     console.log("%cPackage Type: %s - %s", (pr.dl_format?"background-color:LemonChiffon; color:DarkOrange":"background-color:PaleGreen; color:Green"), pr.file_type, packtype[pr.dl_format]);
                     let ptime = new Date(pr.regist_date);
-                    let year = cENS("Year", ptime.getFullYear());
-                    let month = cENS("Month", ptime.getMonth()+1);
-                    let day = cENS("Day", ptime.getDate());
-                    let title = cENS("Title", pr.work_name);
-                    let series = cENS("Series", pr.work_name.replace(/^\s?(.*?)\s?(?:[：\:]{0,1}\s?([\d０-９]+)|[（\(]([\d０-９]+)[\)）]|[第]?([\d０-９]+)[巻話]?)$/, "$1"));
-                    let number = cENS("Number", pad((halfwidthValue(pr.work_name).match(/[第\:]?\d+[巻話\)]?/g) || ["1"])[0].match(/\d+/g)[0] || 1, 2));
-                    let imprint = cENS("Imprint", pr.maker_name);
-                    let writer = cENS("Writer", pr.author_name || (tags && tags.find(v=>v.class == "created_by") ? tags.find(v=>v.class == "created_by").name : null) || pr.maker_name);
-                    let web = cENS("Web", "https://dlsite.com/books/"+pr.workno);
-                    Ci.appendChild(series);
-                    Ci.appendChild(title);
-                    Ci.appendChild(number);
-                    Ci.appendChild(year);
-                    Ci.appendChild(month);
-                    Ci.appendChild(day);
-                    Ci.appendChild(imprint);
-                    Ci.appendChild(writer);
-                    Ci.appendChild(web);
+                    Ci.add("/ComicInfo", "Year", ptime.getFullYear());
+                    Ci.add("/ComicInfo", "Month", ptime.getMonth()+1);
+                    Ci.add("/ComicInfo", "Day", ptime.getDate());
+                    Ci.add("/ComicInfo", "Title", pr.work_name);
+                    Ci.add("/ComicInfo", "Series", pr.work_name.replace(/^\s?(.*?)\s?(?:[：\:]{0,1}\s?([\d０-９]+)|[（\(]([\d０-９]+)[\)）]|[第]?([\d０-９]+)[巻話]?)$/, "$1"));
+                    Ci.add("/ComicInfo", "Number", cENS("Number", pad((halfwidthValue(pr.work_name).match(/[第\:]?\d+[巻話\)]?/g) || ["1"])[0].match(/\d+/g)[0] || 1, 2));
+                    Ci.add("/ComicInfo", "Imprint", pr.maker_name);
+                    Ci.add("/ComicInfo", "Writer", pr.author_name || (tags && tags.find(v=>v.class == "created_by") ? tags.find(v=>v.class == "created_by").name : null) || pr.maker_name);
+                    Ci.add("/ComicInfo", "Web", "https://dlsite.com/books/"+pr.workno);
                     fn = "[" + (pr.author_name || (tags != null && tags.find(v=>v.class == "created_by") ? pr.maker_name + " (" + tags.find(v=>v.class == "created_by").name + ")" : null) || pr.maker_name) + "] " + pr.work_name+" ("+pr.workno+")";
                     fn = fn.replace(/\s?【[^【】]*(無料|お試し|試し読み)[^【】]*】\s?/g, " ").replace(/\s?【[^【】]*(期間限定|特典)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm, '');
                     console.log("%cFilename: %s", "background-color:azure", fn);
@@ -298,24 +289,32 @@ CanvasRenderingContext2D.prototype.hdI = function() {
                             zip.folder(img_list[hn].path).file(img_list[hn].fn[f], blob);
                             console.log("zipped file:", img_list[hn].fn[f]);
                         }
-                        URL.revokeObjectURL(blob);
-                        URL.revokeObjectURL(img_list[hn].blob);
                         let pm = /\.pdf$/.test(window.location.hash) ? zt.playfile[img_list[hn].pdf].pdf.page : (tp ? searchinJSON(zt.tree, img_list[hn].path, "path")[0].children : zt.tree);
                         let zm = zip.folder(img_list[hn].path).file(/(.*)\.(.*)/);
                         let curp = zm.length;
                         let totp = pm.length;
+                        if(!pages && totp > 1) {
+                            pages = new comicInfoPages(totp);
+                        }
+                        page = pages.pages[curp-1];
+                        //tag page info here
+                        pages.setPageAttr(curp-1, "ImageWidth", img_list[hn].canvas.width);
+                        pages.setPageAttr(curp-1, "ImageHeight", img_list[hn].canvas.height);
+                        pages.setPageAttr(curp-1, "ImageSize", blob.size);
+                        //
+                        URL.revokeObjectURL(blob);
+                        URL.revokeObjectURL(img_list[hn].blob);
                         pc.setAttribute("max", totp);
                         pc.setAttribute("value", curp);
                         console.log(curp+"/"+totp);
                         pc.setAttribute("data-label", curp+"/"+totp);
                         if(curp >= totp) {
                             if(!to) {
+                                if(pages) Ci.addPageCollection(pages);
                                 pc.classList.add('zip');
                                 pc.setAttribute("min", 0);
                                 pc.setAttribute("max", 100);
-                                let serializer = new XMLSerializer();
-                            let xmlStr = '<?xml version="1.0"?>\n' + serializer.serializeToString(xml);
-                            zip.file("ComicInfo.xml", xmlStr, {type: "text/xml"});
+                                zip.file("ComicInfo.xml", Ci.toString(), {type: "text/xml"});
                                 console.groupCollapsed('Zip progress');
                                 console.log("Progress will be hidden at debug level");
                                 let pchk = 0;
@@ -436,6 +435,9 @@ function zip2pdf2img(url=null) {
                         v = null;
                         let curp = 1;
                         let loop;
+                        if(!pages && d.numPages > 0) {
+                            pages = new comicInfoPages(d.numPages);
+                        }
                         function pageRen(f) {
                             console.group(curp +"/"+ d.numPages);
                             document.title = "["+curp +"/"+ d.numPages+"] Converting...";
@@ -463,6 +465,11 @@ function zip2pdf2img(url=null) {
                                     clearInterval(loop);
                                     loop = 0;
                                     retry = 0;
+                                    //tag page info here
+                                    pages.setPageAttr(curp-1, "ImageWidth", vp.width);
+                                    pages.setPageAttr(curp-1, "ImageHeight", vp.height);
+                                    pages.setPageAttr(curp-1, "ImageSize", blob.size);
+                                    //
                                     zip.file("P"+pad(curp, 5)+".jpg", blob);
                                     console.log("zipped", "P"+pad(curp, 5)+".jpg");
                                     URL.revokeObjectURL(blob);
@@ -475,11 +482,10 @@ function zip2pdf2img(url=null) {
                                         d.cleanup();
                                         p = null;
                                         console.log(p);
+                                        if(pages) Ci.addPageCollection(pages);
                                         console.time("Zip Generate");
                                         CanvasRenderingContext2D.prototype.drawImage = CanvasRenderingContext2D.prototype.hdI;
-                                        let serializer = new XMLSerializer();
-                                        let xmlStr = '<?xml version="1.0"?>\n' + serializer.serializeToString(xml);
-                                        zip.file("ComicInfo.xml", xmlStr, {type: "text/xml"});
+                                        zip.file("ComicInfo.xml", Ci.toString(), {type: "text/xml"});
                                         console.groupCollapsed('Zip progress');
                                         console.log("Progress will be hidden at debug level");
                                         let pchk = 0;
