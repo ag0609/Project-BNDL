@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20201128.1");
+console.log("Dlsite Play Japan ver20201128.2");
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
