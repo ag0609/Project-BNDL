@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Plugin version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.47
+// @version      0.49
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://*.bookwalker.jp/*
@@ -59,13 +59,9 @@
     let fn, on, retry, wait;
     let bndl_d;
     let bd = {};
-    let xml = document.implementation.createDocument(null, 'ComicInfo'); //Build XML class for ComicInfo.xml(which mainly used by Comic Reader)
-    let Ci = xml.getElementsByTagName('ComicInfo')[0];
-    Ci.setAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
-    Ci.setAttribute('xmlns:xsd', 'http://www.w3.org/2001/XMLSchema');
+    let Ci = new comicinfo(); //Build XML class for ComicInfo.xml(which mainly used by Comic Reader)
     let pages;
-    let scan = document.createElementNS(null, 'ScanInformation');
-    scan.innerHTML = "Scaned By BNDL Type Jixun v0.1(ag0609)";
+    let scan = "Scaned By BNDL Type Jixun v0.1(ag0609)";
     //Main UI
     const btn = document.createElement('div');
     btn.id = 'bndl';
@@ -175,8 +171,12 @@
             }
             console.groupEnd();
         }
-        bndl_d.dlzip = () => {
+        bndl_d.dlzip = (_x$=0) => {
             console.group("dlzip:", "DL Current Zip");
+            if(_x$) {
+                let xmlblob = new Blob([Ci.toString()], {type: "text/xml"});
+                zip.file("ComicInfo.xml", xmlblob);
+            }
             zip.generateAsync({type:"blob"}, function updateCallback(metadata) {
                 //Do nothing
             }).then(function(blob) {
@@ -193,13 +193,11 @@
                 console.groupEnd();
             });
         }
-        bndl_d.comicInfo = ($a_) => {
+        bndl_d.comicInfo = ($a_=0) => {
             console.group("comicInfo: show comicInfo.xml");
-            console.debug(Ci);
+            console.debug(Ci.ComicInfo);
             if($a_) {
-                let serializer = new XMLSerializer();
-                let xmlStr = '<?xml version="1.0"?>\n' + serializer.serializeToString(xml);
-                let blob = new Blob([xmlStr], {type: "text/xml"});
+                let blob = new Blob([Ci.toString()], {type: "text/xml"});
                 const Url = window.URL.createObjectURL(blob);
                 const e = new MouseEvent("click");
                 const a = document.createElement('a');
