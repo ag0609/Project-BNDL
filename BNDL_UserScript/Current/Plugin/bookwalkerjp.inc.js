@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20201129.2");
+console.log("Bookwalker Japan", "v20201129.3");
 console.log("Reference:", "https://blog.jixun.moe/intercept-bookwalker-tw-image", "by JiXun");
 let _detail$retry_ = 0;
 let backup;
@@ -114,7 +114,7 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 								} else if(/^([原][著作])$/g.test(v)) { //原作, 原著
 									bd.author.push({'p':0, 'type':v, 'name':an});
 								} else if(/^[著作][者]?$/.test) { //著, 作, 著者, 作者
-									bd.author.push({'p':1, 'type':v, 'name':an});  
+									bd.author.push({'p':1, 'type':v, 'name':an});
 								} else if(/(画|マンガ|イラスト)/g.test(v)) { //漫画, マンガ, イラスト
 									bd.author.push({'p':2, 'type':v, 'name':an});
 								} else if(v != "") {
@@ -129,7 +129,7 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 						if(!wt && (!wt && v.p == 1)) {
 							wt = v.name;
 						} else if(v.p < 4) {
-							pcl.push(v.name);	
+							pcl.push(v.name);
 						}
 					});
 					//bd.author.sort(function(a,b) { if(a.name < b.name) { return -1 } else if(a.name > b.name) { return 1 } return 0; }); //sort by name
@@ -195,7 +195,7 @@ function main() {
 			img$size[curp] = Math.round((c.toDataURL('image/jpeg')).length *3 /4);
 			console.log("size:", Math.round(img$size[curp]/1024).toFixed(2), "KBytes");
 			c.toBlob(async(v)=>{
-				zip.file("P"+pad(curp, 5) + ".jpg", v)			
+				zip.file("P"+pad(curp, 5) + ".jpg", v);
 				if(curp == 1) pages.setPageAttr(curp-1, 'Type', 'FrontCover');
 				pages.setPageAttr(curp-1, 'ImageWidth', c.width);
 				pages.setPageAttr(curp-1, 'ImageHeight', c.height);
@@ -326,6 +326,6 @@ const ___$nospeard = setInterval(async function() {
 		console.debug(nospreadinit);
 		nospreadinit.click();
 		clearInterval(___$nospeard);
-	}		
+	}
 }, 100);
 btn.style.display = "flex";
