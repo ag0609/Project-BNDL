@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20201129.1");
+console.log("Bookwalker Japan", "v20201129.2");
 console.log("Reference:", "https://blog.jixun.moe/intercept-bookwalker-tw-image", "by JiXun");
 let _detail$retry_ = 0;
 let backup;
@@ -258,7 +258,7 @@ function main() {
 				} else {
 					if(!wait && img$size[curp] > 20000) { //Detail collect will only do once and Cover should be larger than 20KB
 						wait = 1;
-						on = document.title;
+						on = document.getElementById("pagetitle").innerText;
 						on = on.replace(/\s?【[^【】]*(無料|お試し|試し読み)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,''); //[Only for Period] will left for Bookwalker Stupid Retarded Search Engine
 						await getDetail(on);
 						on = on.replace(/\s?【[^【】]*(期間限定|特典)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,'');; //Now I can remove them for series name
