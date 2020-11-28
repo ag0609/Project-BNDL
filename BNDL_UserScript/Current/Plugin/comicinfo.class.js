@@ -32,6 +32,7 @@ function comicinfo() {
 			return 1;
 		} else {
 			_CI.appendChild(pages.pageCollection);
+			this.ComicInfo = _CI.cloneNode(1);
 			return 0;
 		}
 	}
