@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20201126.2");
+console.log("Bookwalker Japan", "v20201128.0");
 console.log("Reference:", "https://blog.jixun.moe/intercept-bookwalker-tw-image", "by JiXun");
 let _detail$retry_ = 0;
 let backup;
@@ -87,15 +87,11 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 				if(/^[\/]?de/.test(userbid)) {
 					bid = userbid.match(/de[0-9a-z\-]+/);
 				} else { //Giveup maybe the best choice for saving lives...
-					let web = document.createElementNS(null, 'Web');
-					web.innerHTML = bwhp + bid + '/';
-					Ci.appendChild(web);
+					Ci.add("/ComicInfo", 'Web', bwhp + bid + '/');
 					return;
 				}
 			}
-			let web = document.createElementNS(null, 'Web');
-			web.innerHTML = bwhp + bid + '/';
-			Ci.appendChild(web);
+			Ci.add("/ComicInfo", 'Web', bwhp + bid + '/');
 			console.debug("getDetail()", bwhp + bid + '/');
 			GM.xmlHttpRequest({
 				method: "GET",
@@ -134,12 +130,10 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 						} catch(e){};
 					}
 					if(wt) { 
-						Ci.appendChild(wt);
-						if(pcl) Ci.appendChild(pcl);
+						Ci.add("/ComicInfo", 'Writer', wt.innerHTML);
+						if(pcl) Ci.add("/ComicInfo", 'Penciller', pcl.innerHTML);
 					} else if(pcl) {
-						wt = document.createElementNS(null, 'Writer');
-						wt.innerHTML = pcl.innerHTML;
-						Ci.appendChild(wt);
+						Ci.add("/ComicInfo", 'Writer', pcl.innerHTML);
 					}
 					bd.author.sort(function(a,b) { if(a.name < b.name) { return -1 } else if(a.name > b.name) { return 1 } return 0; }); //sort by name
 					bd.author.sort(function(a,b) { return a.p - b.p; }); //sort by priority
@@ -153,20 +147,14 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 					console.log(fn);
 					document.title = fn;
 					const pD = document.evaluate("//dt[text()='配信開始日']", html, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.nextElementSibling.innerText;
-					let Yt = document.createElementNS(null, 'Year');
-					let Mt = document.createElementNS(null, 'Month');
-					let Dt = document.createElementNS(null, 'Day');
-					[Yt.innerHTML, Mt.innerHTML, Dt.innerHTML] = pD.split('/');
-					console.debug("Published Date: %s/%s/%s", Yt.innerHTML, Mt.innerHTML, Dt.innerHTML);
-					Ci.appendChild(Yt);
-					Ci.appendChild(Mt);
-					Ci.appendChild(Dt);
-					let lang = cENS("LanguageISO", "ja");
-					let BnW = cENS("BlackAndWhite", "Yes");
-					let manga = cty ? cENS("Manga", "YesAndRightToLeft") : cENS("Manga", "No");
-					Ci.appendChild(lang);
-					Ci.appendChild(BnW);
-					Ci.appendChild(manga);
+					const pDate = pD.split('/');
+					Ci.add("/ComicInfo", "Year", pDate[0]);
+					Ci.add("/ComicInfo", "Month", pDate[1]);
+					Ci.add("/ComicInfo", "Day", pDate[2]);
+					console.debug("Published Date: %s/%s/%s", ...pDate);
+					Ci.add("/ComicInfo", "LanguageISO", "ja");
+					Ci.add("/ComicInfo", "BlackAndWhite", "Yes");
+					cty ? Ci.add("/ComicInfo", "Manga", "YesAndRightToLeft") : Ci.add("/ComicInfo", "Manga", "No");
 				}
 			});
 		}
@@ -209,21 +197,18 @@ function main() {
 			console.log("size:", Math.round(img$size[curp]/1024).toFixed(2), "KBytes");
 			c.toBlob(async(v)=>{
 				zip.file("P"+pad(curp, 5) + ".jpg", v)			
-				let page = pages.pages[curp-1];
-				if(curp == 1) page.setAttribute('Type', 'FrontCover');
-				page.setAttribute('ImageWidth', c.width);
-				page.setAttribute('ImageHeight', c.height);
-				page.setAttribute('ImageSize', v.size);
+				if(curp == 1) pages.setPageAttr(curp-1, 'Type', 'FrontCover');
+				pages.setPageAttr(curp-1, 'ImageWidth', c.width);
+				pages.setPageAttr(curp-1, 'ImageHeight', c.height);
+				pages.setPageAttr(curp-1, 'ImageSize', v.size);
 				if((curp >= totp || mode) && startf) {
 					if(!mode) {
-						Ci.appendChild(scan);
-						Ci.appendChild(pages.pageCollection);
+						Ci.add("/ComicInfo", "ScanInfomation", scan);
+						Ci.addPageCollection(pages);
 					}
-					let serializer = new XMLSerializer();
-					let xmlStr = '<?xml version="1.0"?>\n' + serializer.serializeToString(xml);
-					zip.file("ComicInfo.xml", xmlStr, {type: "text/xml"});
+					zip.file("ComicInfo.xml", Ci.toString(), {type: "text/xml"});
 					console.groupCollapsed('ComicInfo.xml');
-					console.log(Ci);
+					console.log(Ci.ComicInfo);
 					console.groupEnd();
 					pc.classList.add('zip');
 					pc.setAttribute("min", 0);
@@ -289,14 +274,10 @@ function main() {
 						//Get Table of Contents(Bookmarks)
 						//Encrypted in configuration_pack.json => configuration["nav-list"] => BUT NO SOLUTION YET
 						//
-						let nt = cENS("Number", pad(num,2));
-						const tt = cENS('Title', fn);
-						const st = cENS('Series', ser);
-						Ci.appendChild(st);
-						Ci.appendChild(tt);
-						Ci.appendChild(nt);
-						let pct = cENS('PageCount', totp);
-						if(!mode) Ci.appendChild(pct);
+						Ci.add("/ComicInfo", "Number", pad(num,2));
+						Ci.add("/ComicInfo", 'Title', fn);
+						Ci.add("/ComicInfo", 'Series', ser);
+						if(!mode) Ci.add("/ComicInfo", 'PageCount', totp);
 						bndlBTN.disabled = false;
 						btn.classList.add('extend');
 						pc.classList.add("start");
