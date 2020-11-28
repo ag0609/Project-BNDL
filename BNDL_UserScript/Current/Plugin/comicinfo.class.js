@@ -10,13 +10,17 @@ function comicinfo() {
 	_CI.appendChild(series);
 	_CI.appendChild(title);
 	this.ComicInfo = _CI.cloneNode(1);
-	this.add = function(xpath2Tag, keyname, value="") {
+	this.add = function(xpath2Tag, keyname, value="", force=0) {
 		let p2t = xpath2Tag, kn = keyname, v = value;
 		let tag = _XML.evaluate(p2t, _XML, null, 9, null);
-		if(tag) {
-			let newtag = document.createElementNS(null, kn);
-			newtag.innerHTML = v;
-			tag.singleNodeValue.appendChild(newtag);
+		if(tag && tag.singleNodeValue) {
+			if(!tag.singleNodeValue.getElementsByTagName(keyname).length  || force) {
+				let newtag = document.createElementNS(null, kn);
+				newtag.innerHTML = v;
+				tag.singleNodeValue.appendChild(newtag);
+			} else {
+				this.set(p2t+"/"+kn, v);
+			}
 			this.ComicInfo = _CI.cloneNode(1);
 			return 0;
 		} else {
@@ -39,7 +43,7 @@ function comicinfo() {
 	this.remove = function(xpath2Tag) {
 		let p2t = xpath2Tag, kn = keyname, v = value;
 		let tag = _XML.evaluate(p2t, _XML, null, 9, null);
-		if(tag) {
+		if(tag && tag.singleNodeValue) {
 			tag.singleNodeValue.appendChild(newtag);
 			this.ComicInfo = _CI.cloneNode(1);
 			return 0;
@@ -52,7 +56,7 @@ function comicinfo() {
 	this.set = function(xpath2Tag, value="") {
 		let p2t = xpath2Tag, v = value;
 		let tag = _XML.evaluate(p2t, _XML, null, 9, null);
-		if(tag) {
+		if(tag && tag.singleNodeValue) {
 			tag.singleNodeValue.innerHTML = v;
 			this.ComicInfo = _CI.cloneNode(1);
 			return 0;
@@ -65,13 +69,12 @@ function comicinfo() {
 	this.get = function(xpath2Tag) {
 		let p2t = xpath2Tag;
 		let tag = _XML.evaluate(p2t, _XML, null, 9, null);
-		if(tag) {
-			return tag.singleNodeValue;
-			return 0;
+		if(tag && tag.singleNodeValue) {
+			return tag.singleNodeValue.innerHTML;
 		} else {
 			//toastr["warning"](p2t + " not found!");
 			console.error(p2t, "not found!");
-			return 1;
+			return null;
 		}
 	}
 	this.toString = function() {
