@@ -158,7 +158,7 @@ XMLHttpRequest.prototype.send = function() {
                     Ci.add("/ComicInfo", "Day", ptime.getDate());
                     Ci.add("/ComicInfo", "Title", pr.work_name);
                     Ci.add("/ComicInfo", "Series", pr.work_name.replace(/^\s?(.*?)\s?(?:[：\:]{0,1}\s?([\d０-９]+)|[（\(]([\d０-９]+)[\)）]|[第]?([\d０-９]+)[巻話]?)$/, "$1"));
-                    Ci.add("/ComicInfo", "Number", cENS("Number", pad((halfwidthValue(pr.work_name).match(/[第\:]?\d+[巻話\)]?/g) || ["1"])[0].match(/\d+/g)[0] || 1, 2));
+                    Ci.add("/ComicInfo", "Number", pad((halfwidthValue(pr.work_name).match(/[第\:]?\d+[巻話\)]?/g) || ["1"])[0].match(/\d+/g)[0] || 1, 2));
                     Ci.add("/ComicInfo", "Imprint", pr.maker_name);
                     Ci.add("/ComicInfo", "Writer", pr.author_name || (tags && tags.find(v=>v.class == "created_by") ? tags.find(v=>v.class == "created_by").name : null) || pr.maker_name);
                     Ci.add("/ComicInfo", "Web", "https://dlsite.com/books/"+pr.workno);
