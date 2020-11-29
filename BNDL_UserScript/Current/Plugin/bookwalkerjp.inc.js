@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20201129.3");
+console.log("Bookwalker Japan", "v20201129.4");
 console.log("Reference:", "https://blog.jixun.moe/intercept-bookwalker-tw-image", "by JiXun");
 let _detail$retry_ = 0;
 let backup;
@@ -126,7 +126,7 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 					bd.author.sort(function(a,b) { return a.p - b.p; }); //sort by priority
 					pcl = [];
 					bd.author.forEach((v) => {
-						if(!wt && (!wt && v.p == 1)) {
+						if(!wt || (!wt && v.p == 1)) {
 							wt = v.name;
 						} else if(v.p < 4) {
 							pcl.push(v.name);
