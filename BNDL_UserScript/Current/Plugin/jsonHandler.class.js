@@ -7,19 +7,18 @@ console.log("JSONHandler", ver["JSONHandler"], "loaded");
 function JSONHandler(json='') {
 	let _json = json;
 	if(typeof json == 'string') {
-	_json = JSON.parse(json);
+		_json = JSON.parse(json);
 	}
 	this.find = function(value, key=null, root=[]) {
 		if(Array.isArray(root)) {
 			let path = root;
-			root = value(root);
+			root = this.value(root);
 			for(let [k, v] of Object.entries(root)) {
 				if(typeof v == "object") {
-					path[0] = k;
-					let result = this.find(value, key, root[k]);
+					path.push(k);
+					let result = this.find(value, key, path);
 					if(Array.isArray(result)) {
-						path = path.concat(result);
-						return path;
+						return result;
 					} else if(typeof result != "undefined") {
 						return path;
 					}
@@ -30,8 +29,7 @@ function JSONHandler(json='') {
 						}
 					} else {
 						if(value === v) {
-							path.push(k);
-							return path;
+							return [k];
 						}
 					}
 				}
