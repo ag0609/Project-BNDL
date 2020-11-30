@@ -12,6 +12,7 @@ function JSONHandler(json='') {
 	this.find = function(value, key=null, root=[]) {
 		if(Array.isArray(root)) {
 			let path = root;
+			root = zt.find(root);
 			for(let [k, v] of Object.entries(root)) {
 				if(typeof v == "object") {
 					path[0] = k;
