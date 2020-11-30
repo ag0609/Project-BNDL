@@ -190,7 +190,7 @@ XMLHttpRequest.prototype.send = function() {
             //console.log("orsc", arguments);
             if(arguments[0].target.readyState == 4 && arguments[0].target.status == 200) {
                 //zt = JSON.parse(arguments[0].target.responseText);
-                zt = new JSONHandler();
+                zt = new JSONHandler(arguments[0].target.responseText);
                 let tree = zt.value(["tree"]), playfile = zt.value(["playfile"]);
                 if(!pl) fn = zt.workno + ".zip";
                 let imgarr;
