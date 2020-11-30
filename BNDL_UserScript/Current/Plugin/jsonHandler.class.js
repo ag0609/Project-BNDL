@@ -1,4 +1,3 @@
-if(!ver) let ver;
 ver["JSONHandler"] = "20201130.3";
 
 //Start
