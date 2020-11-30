@@ -1,3 +1,9 @@
+if(!ver) let ver;
+ver["comicinfo"] = "20201130.0";
+
+//
+console.log("comicinfo", ver["comicinfo"], "loaded");
+
 function comicinfo() {
 	let _XP = new DOMParser();
 	let _XS = new XMLSerializer();
