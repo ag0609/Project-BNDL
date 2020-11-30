@@ -1,4 +1,4 @@
-ver["JSONHandler"] = "20201130.3";
+ver["JSONHandler"] = "20201130.4";
 
 //Start
 console.log("JSONHandler", ver["JSONHandler"], "loaded");
@@ -11,8 +11,7 @@ function JSONHandler(json='') {
 	this.find = function(value, key=null, root=[]) {
 		if(Array.isArray(root)) {
 			let path = root;
-			root = this.value(root);
-			for(let [k, v] of Object.entries(root)) {
+			for(let [k, v] of Object.entries(this.value(root))) {
 				if(typeof v == "object") {
 					path.push(k);
 					let result = this.find(value, key, path);
@@ -20,6 +19,8 @@ function JSONHandler(json='') {
 						return result;
 					} else if(typeof result != "undefined") {
 						return path;
+					} else {
+						path.pop();
 					}
 				} else {
 					if(key) {
