@@ -1,7 +1,7 @@
-ver["JSONHandler"] = "20201130.4";
+ver_JSONHandler = "20201130.5";
 
 //Start
-console.log("JSONHandler", ver["JSONHandler"], "loaded");
+console.log("JSONHandler", ver_JSONHandler, "loaded");
 
 function JSONHandler(json='') {
 	let _json = json;
