@@ -1,4 +1,3 @@
-if(!ver) let ver;
 ver["comicinfo"] = "20201130.0";
 
 //
