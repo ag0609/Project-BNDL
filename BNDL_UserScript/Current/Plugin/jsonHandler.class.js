@@ -1,5 +1,5 @@
 if(!ver) let ver;
-ver["JSONHandler"] = "20201130.1";
+ver["JSONHandler"] = "20201130.2";
 
 //Start
 console.log("JSONHandler", ver["JSONHandler"], "loaded");
@@ -12,7 +12,7 @@ function JSONHandler(json='') {
 	this.find = function(value, key=null, root=[]) {
 		if(Array.isArray(root)) {
 			let path = root;
-			root = zt.find(root);
+			root = this.find(root);
 			for(let [k, v] of Object.entries(root)) {
 				if(typeof v == "object") {
 					path[0] = k;
