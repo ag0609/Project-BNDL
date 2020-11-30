@@ -1,5 +1,5 @@
 if(!ver) let ver;
-ver["JSONHandler"] = "20201130.0";
+ver["JSONHandler"] = "20201130.1";
 
 //Start
 console.log("JSONHandler", ver["JSONHandler"], "loaded");
