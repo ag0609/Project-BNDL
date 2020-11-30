@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20201130.0");
+console.log("Dlsite Play Japan ver20201130.4");
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
@@ -192,10 +192,10 @@ XMLHttpRequest.prototype.send = function() {
                 //zt = JSON.parse(arguments[0].target.responseText);
                 zt = new JSONHandler(arguments[0].target.responseText);
                 let tree = zt.value(["tree"]), playfile = zt.value(["playfile"]);
-                if(!pl) fn = zt.workno + ".zip";
+                if(!pl) fn = zt.value(["workno"]) + ".zip";
                 let imgarr;
-                console.debug("ziptree:", zt);
-                for(let i in zt.playfile) {
+                console.debug("ziptree:", zt.value([]));
+                for(let i in playfile) {
                     try {
                         let hn = i;
                         if(imgarr == undefined) {
@@ -204,7 +204,7 @@ XMLHttpRequest.prototype.send = function() {
                         if(/\.pdf$/.test(hn)) {
                             console.debug("pdf file", hn, "detected");
                             img_list[hn] = {"fn":zt.value(zt.find(hn, "hashname", ["tree"])), path:null};
-                            let pdfroot = zt.playfile[hn].pdf.page;
+                            let pdfroot = playfile[hn].pdf.page;
                             for(let p =0; p < pdfroot.length; p++) {
                                 let phn = pdfroot[p].optimized.name;
                                 let phne = pdfroot[p].optimized.name.replace(/^.*(\..*?)$/, "$1");
