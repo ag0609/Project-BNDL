@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20201128.2");
+console.log("Dlsite Play Japan ver20201130.0");
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
@@ -30,22 +30,23 @@ if(pdfjsLib)
 
 function loadcache(startidx=0, path=tp) {
     let cpobj, cp;
+    let tree = zt.value(["tree"]);
     try {
         if(/\.pdf$/.test(path)) {
-            cpobj = searchinJSON(zt.tree, path.split("/").slice(0, -1).join("/"), "path")[0].children;
+            cpobj = zt.value(zt.find(path.split("/").slice(0, -1).join("/"), "path", ["tree"])).children;
         } else {
-            cpobj = searchinJSON(zt.tree, path, "path")[0].children;
+            cpobj = zt.value(zt.find(path, "path", ["tree"])).children;
         }
         if(cache[path] == undefined) cache[path] = {"used":0};
         cp = cache[path];
     } catch(e) {
         console.debug("loadcache()", "path", path, "invaild, using current tree path.");
         if(tp && tp != "") {
-            cpobj = /\.pdf/i.test(tp) ? (/\//.test(tp) ? searchinJSON(zt.tree, searchPath(zt.tree, tp.replace(/^.*\/([^\/]+\.[^\/]+)$/, "$1"), "name"), "name")[0].children : zt.tree) : searchinJSON(zt.tree, tp, "path")[0].children;
+            cpobj = /\.pdf/i.test(tp) ? ((/\//.test(tp) ? zt.value(zt.find(zt.value(zt.find(tp.replace(/^.*\/([^\/]+\.[^\/]+)$/, "$1"), "name", ["tree"])).path, "name", ["tree"])).children : tree)) : zt.value(zt.find(tp, "path", ["tree"])).children;
             if(cache[tp] == undefined) cache[tp] = {"used":0};
             cp = cache[tp];
         } else {
-            cpobj = zt.tree;
+            cpobj = tree;
             if(cache["tree"] == undefined) cache["tree"] = {"used":0};
             cp = cache["tree"];
         }
@@ -63,7 +64,7 @@ function loadcache(startidx=0, path=tp) {
         let hn = cpobj[idx].hashname;
         let hne = cpobj[idx].hashname.replace(/^.*(\..*?)$/, "$1");
         if(/(?:jp[e]?g|png|gif)/.test(hne)) { //Image
-            if(!img_list[hn].path) img_list[hn].path = searchPath(zt.tree, hn, "hashname");
+            if(!img_list[hn].path) img_list[hn].path = zt.find(hn, "hashname", ["tree"]);
             if(!(new RegExp(img_list[hn].path, "")).test(path)) { i++; continue; }
             if(img_list[hn].blob == null && !img_list[hn].caching && fcs - cp.used > 0) {
                 i++;
@@ -89,8 +90,8 @@ function loadcache(startidx=0, path=tp) {
             }
         } else if(/pdf/.test(hne)) { //pdf
             i++;
-            if(!img_list[hn].path) img_list[hn].path = searchPath(zt.tree, hn, "hashname");
-            if(!(new RegExp(searchinJSON(cpobj, hn, "hashname")[0].name, "")).test(path)) continue;
+            if(!img_list[hn].path) img_list[hn].path = zt.value(zt.find(hn, "hashname", ["tree"])).path;
+            if(!(new RegExp(zt.value(zt.find(hn, "hashname", ["tree"])).name, "")).test(path)) continue;
             let pskipped = 0;
             let pdfroot = zt.playfile[hn].pdf.page;
             let fpcs = Math.min(cache_size, pdfroot.length - startidx);
@@ -100,7 +101,7 @@ function loadcache(startidx=0, path=tp) {
                 let hn = pdfroot[idx].optimized.name;
                 let hne = pdfroot[idx].optimized.name.replace(/^.*(\..*?)$/, "$1");
                 if(/(?:jp[e]?g|png|gif)/.test(hne)) { //Image
-                    if(img_list[hn].path ) img_list[hn].path = searchPath(zt.tree, hn, "hashname") ? searchPath(zt.tree, hn, "hashname") + "/" + searchinJSON(zt.tree, hn, "hashname")[0].name : searchinJSON(zt.tree, hn, "hashname")[0].name;
+                    if(img_list[hn].path ) img_list[hn].path = zt.value(zt.find(hn, "hashname", ["tree"])).path ? zt.value(zt.find(hn, "hashname", ["tree"])).path + "/" + zt.value(zt.find(hn, "hashname", ["tree"])).name : zt.value(zt.find(hn, "hashname", ["tree"])).name;
                     if(img_list[hn].blob == null && !img_list[hn].caching && fpcs - cp.used > 0) {
                         p++;
                         cp.used++;
@@ -188,7 +189,9 @@ XMLHttpRequest.prototype.send = function() {
         this.onreadystatechange = async function() {
             //console.log("orsc", arguments);
             if(arguments[0].target.readyState == 4 && arguments[0].target.status == 200) {
-                zt = JSON.parse(arguments[0].target.responseText);
+                //zt = JSON.parse(arguments[0].target.responseText);
+                zt = new JSONHandler();
+                let tree = zt.value(["tree"]), playfile = zt.value(["playfile"]);
                 if(!pl) fn = zt.workno + ".zip";
                 let imgarr;
                 console.debug("ziptree:", zt);
@@ -200,7 +203,7 @@ XMLHttpRequest.prototype.send = function() {
                         }
                         if(/\.pdf$/.test(hn)) {
                             console.debug("pdf file", hn, "detected");
-                            img_list[hn] = {"fn":searchinJSON(zt.tree, hn, "hashname")[0].name, path:null};
+                            img_list[hn] = {"fn":zt.value(zt.find(hn, "hashname", ["tree"])), path:null};
                             let pdfroot = zt.playfile[hn].pdf.page;
                             for(let p =0; p < pdfroot.length; p++) {
                                 let phn = pdfroot[p].optimized.name;
@@ -229,10 +232,10 @@ XMLHttpRequest.prototype.send = function() {
                             }
                         } else if(/\.(?:jp[e]?g|png|bmp)$/.test(hn)) {
                             img_list[hn] = {
-                                "fn":searchinJSON(zt.tree, hn, "hashname").map(v=>v.name),
+                                "fn":zt.value(zt.find(hn, "hashname", ["tree"])).filter(a=>a.hashname==hn).map(v=>v.name),
                                 "count":0,
                                 "path":null,
-                                "maxcount":Math.ceil(zt.playfile[hn].image.optimized.width/128)*Math.ceil(zt.playfile[hn].image.optimized.height/128),
+                                "maxcount":Math.ceil(playfile[hn].image.optimized.width/128)*Math.ceil(playfile[hn].image.optimized.height/128),
                                 "canvas":document.createElement('canvas'),
                                 "img":new Image(),
                                 "url":dt.url+"optimized/"+hn+"?token="+dt.params.token+"&expiration="+dt.params.expiration,
@@ -240,8 +243,8 @@ XMLHttpRequest.prototype.send = function() {
                                 "caching":0,
                                 "blob":null
                             };
-                            img_list[hn].canvas.width = zt.playfile[hn].image.optimized.width;
-                            img_list[hn].canvas.height = zt.playfile[hn].image.optimized.height;
+                            img_list[hn].canvas.width = playfile[hn].image.optimized.width;
+                            img_list[hn].canvas.height = playfile[hn].image.optimized.height;
                             img_list[hn].img.classList.add("pswp__preload");
                             img_list[hn].img.crossOrigin = "anonymous";
                         }
@@ -263,6 +266,7 @@ CanvasRenderingContext2D.prototype.odI = CanvasRenderingContext2D.prototype.draw
 CanvasRenderingContext2D.prototype.hdI = function() {
     let thisobj = this;
     let args = arguments;
+    let tree = zt.find(["tree"]), playfile = zt.find(["playfile"]);
     let hn;
     if(args[0].src)
         hn = args[0].src.match(/[0-9a-z]+\.(?:jp[e]?g|png|gif)/)[0];
@@ -289,7 +293,7 @@ CanvasRenderingContext2D.prototype.hdI = function() {
                             zip.folder(img_list[hn].path).file(img_list[hn].fn[f], blob);
                             console.log("zipped file:", img_list[hn].fn[f]);
                         }
-                        let pm = /\.pdf$/.test(window.location.hash) ? zt.playfile[img_list[hn].pdf].pdf.page : (tp ? searchinJSON(zt.tree, img_list[hn].path, "path")[0].children : zt.tree);
+                        let pm = /\.pdf$/.test(window.location.hash) ? playfile[img_list[hn].pdf].pdf.page : (tp ? zt.value(zt.find(img_list[hn].path, "path", ["tree"])).children : tree);
                         let zm = zip.folder(img_list[hn].path).file(/(.*)\.(.*)/);
                         let curp = zm.length;
                         let totp = pm.length;
