@@ -12,7 +12,7 @@ function JSONHandler(json='') {
 	this.find = function(value, key=null, root=[]) {
 		if(Array.isArray(root)) {
 			let path = root;
-			root = this.value(root);
+			root = value(root);
 			for(let [k, v] of Object.entries(root)) {
 				if(typeof v == "object") {
 					path[0] = k;
@@ -37,7 +37,7 @@ function JSONHandler(json='') {
 				}
 			}
 		} else {
-			this.error("input root is invalid!");
+			error("input root is invalid!");
 		}
 		return undefined;
 	} // return path keys as array like ["0", "children", "13", "name"]
