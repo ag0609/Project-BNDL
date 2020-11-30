@@ -1,11 +1,17 @@
+if(!ver) let ver;
+ver["JSONHandler"] = "20201130.0";
+
+//Start
+console.log("JSONHandler", ver["JSONHandler"], "loaded");
+
 function JSONHandler(json='') {
 	let _json = json;
-    if(typeof json == 'string') {
-        _json = JSON.parse(json);
-    }
-    this.find = function(value, key=null, root=_json) {
-		if(typeof root == "object") {
-			let path = [];
+	if(typeof json == 'string') {
+	_json = JSON.parse(json);
+	}
+	this.find = function(value, key=null, root=[]) {
+		if(Array.isArray(root)) {
+			let path = root;
 			for(let [k, v] of Object.entries(root)) {
 				if(typeof v == "object") {
 					path[0] = k;
@@ -30,10 +36,10 @@ function JSONHandler(json='') {
 				}
 			}
 		} else {
-			this.error("json input is invalid!");
+			this.error("input root is invalid!");
 		}
 		return undefined;
-    } // return path keys as array like ["0", "children", "13", "name"]
+	} // return path keys as array like ["0", "children", "13", "name"]
 	this.value = function(path) {
 		let result = _json;
 		path.forEach(v => result = result[v]);
