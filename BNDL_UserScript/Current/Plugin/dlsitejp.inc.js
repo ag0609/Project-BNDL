@@ -232,7 +232,7 @@ XMLHttpRequest.prototype.send = function() {
                             }
                         } else if(/\.(?:jp[e]?g|png|bmp)$/.test(hn)) {
                             img_list[hn] = {
-                                "fn":zt.value(zt.find(hn, "hashname", ["tree"])).filter(a=>a.hashname==hn).map(v=>v.name),
+                                "fn":zt.value(zt.find(hn, "hashname", ["tree"]).slice(0, -1)).filter(a=>a.hashname==hn).map(v=>v.name),
                                 "count":0,
                                 "path":null,
                                 "maxcount":Math.ceil(playfile[hn].image.optimized.width/128)*Math.ceil(playfile[hn].image.optimized.height/128),
