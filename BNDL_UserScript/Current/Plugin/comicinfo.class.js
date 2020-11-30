@@ -1,7 +1,7 @@
-ver["comicinfo"] = "20201130.0";
+ver_comicinfo = "20201130.1";
 
 //
-console.log("comicinfo", ver["comicinfo"], "loaded");
+console.log("comicinfo", ver_comicinfo, "loaded");
 
 function comicinfo() {
 	let _XP = new DOMParser();
