@@ -40,8 +40,12 @@ function JSONHandler(json='') {
 		return undefined;
 	} // return path keys as array like ["0", "children", "13", "name"]
 	this.value = function(path) {
-		let result = _json;
-		path.forEach(v => result = result[v]);
-		return result;
+		try {
+			let result = _json;
+			path.forEach(v => result = result[v]);
+			return result;
+		} catch(e) {
+			console.error("JSONHandler.value", "Error", e.message);	
+		}
 	}
 }
