@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20201201.1");
+console.log("Dlsite Play Japan ver20201201.2");
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
@@ -379,31 +379,6 @@ CanvasRenderingContext2D.prototype.hdI = function() {
     }
 }
 CanvasRenderingContext2D.prototype.drawImage = CanvasRenderingContext2D.prototype.hdI;
-function searchinJSON(root, value, key="",res=[]) {
-    if(key && encodeURIComponent(root[key]) == encodeURIComponent(value)) {
-        res.push(root);
-    } else if ((key && encodeURIComponent(JSON.stringify(root)).match(encodeURIComponent("\""+key+"\":\""+value+"\""))) ||
-               (key == "" && encodeURIComponent(JSON.stringify(root)).match(encodeURIComponent(":\""+value+"\"")))) {
-        let result;
-        for(let k in root) {
-            let newroot = root[k];
-            result = searchinJSON(newroot, value, key, res);
-        }
-        if(result != undefined && result.length > 0) {
-            return result;
-        }
-    }
-    return res;
-}
-function searchPath(root, value, key="") {
-    let res;
-    if(key=="") {
-        res = new RegExp(".+%22path%22%3A%22(.*?)%22.*?"+encodeURIComponent(":\""+value+"\""), "").exec(encodeURIComponent(JSON.stringify(root)));
-    } else {
-        res = new RegExp(".+%22path%22%3A%22(.*?)%22.*?"+encodeURIComponent("\""+key+"\":\""+value+"\""), "").exec(encodeURIComponent(JSON.stringify(root)));
-    }
-    return res ? decodeURIComponent(res[1]) : "";
-}
 function getCurrentCanvas() {
     let tf = cc.style.transform.replace(/\-/g, "");
     return document.evaluate("//div[@class='pswp__item'][contains(@style, '"+tf+"')]//canvas", cc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
