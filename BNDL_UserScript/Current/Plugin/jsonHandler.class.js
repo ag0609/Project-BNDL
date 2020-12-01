@@ -1,4 +1,4 @@
-const ver_JSONHandler = "20201130.5";
+const ver_JSONHandler = "20201201.1";
 
 //Start
 console.log("JSONHandler", ver_JSONHandler, "loaded");
