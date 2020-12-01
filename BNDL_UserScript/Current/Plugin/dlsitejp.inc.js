@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20201130.4");
+console.log("Dlsite Play Japan ver20201201.0");
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
@@ -13,6 +13,11 @@ packtype[0] = "Raw";
 packtype[9] = "DLST (DRM)";
 packtype[10] = "CPD (CypherGuard)";
 packtype[17] = "DLSite Play Only";
+
+const agecat = [];
+agetype[1] = "All";
+agetype[2] = "R15+";
+agetype[3] = "R18+";
 
 let cache = {};
 let cl, tp, wn;
@@ -162,6 +167,9 @@ XMLHttpRequest.prototype.send = function() {
                     Ci.add("/ComicInfo", "Number", pad((halfwidthValue(pr.work_name).match(/[第\:]?\d+[巻話\)]?/g) || ["1"])[0].match(/\d+/g)[0] || 1, 2));
                     Ci.add("/ComicInfo", "Imprint", pr.maker_name);
                     Ci.add("/ComicInfo", "Writer", pr.author_name || (tags && tags.find(v=>v.class == "created_by") ? tags.find(v=>v.class == "created_by").name : null) || pr.maker_name);
+                    Ci.add("/ComicInfo", "LanguageISO", "ja");
+                    Ci.add("/ComicInfo", "Manga", pr.work_type == "MNG" ? "YesAndRightToLeft" : "No");
+                    if(pr.age_category && agecat[pr.age_category] != undefined) Ci.add("/ComicInfo", "AgeRating", agecat[pr.age_category]);
                     Ci.add("/ComicInfo", "Web", "https://dlsite.com/books/"+pr.workno);
                     fn = "[" + (pr.author_name || (tags != null && tags.find(v=>v.class == "created_by") ? pr.maker_name + " (" + tags.find(v=>v.class == "created_by").name + ")" : null) || pr.maker_name) + "] " + pr.work_name+" ("+pr.workno+")";
                     fn = fn.replace(/\s?【[^【】]*(無料|お試し|試し読み)[^【】]*】\s?/g, " ").replace(/\s?【[^【】]*(期間限定|特典)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm, '');
