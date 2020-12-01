@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20201201.0");
+console.log("Dlsite Play Japan ver20201201.1");
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
@@ -15,9 +15,9 @@ packtype[10] = "CPD (CypherGuard)";
 packtype[17] = "DLSite Play Only";
 
 const agecat = [];
-agetype[1] = "All";
-agetype[2] = "R15+";
-agetype[3] = "R18+";
+agecat[1] = "All";
+agecat[2] = "R15+";
+agecat[3] = "R18+";
 
 let cache = {};
 let cl, tp, wn;
