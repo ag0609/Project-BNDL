@@ -1,4 +1,4 @@
-ver_JSONHandler = "20201130.5";
+const ver_JSONHandler = "20201130.5";
 
 //Start
 console.log("JSONHandler", ver_JSONHandler, "loaded");
@@ -35,7 +35,7 @@ function JSONHandler(json='') {
 				}
 			}
 		} else {
-			error("input root is invalid!");
+			console.error("input root is invalid!");
 		}
 		return undefined;
 	} // return path keys as array like ["0", "children", "13", "name"]
