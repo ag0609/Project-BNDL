@@ -1,4 +1,4 @@
-ver_comicinfo = "20201130.1";
+let ver_comicinfo = "20201130.1";
 
 //
 console.log("comicinfo", ver_comicinfo, "loaded");
