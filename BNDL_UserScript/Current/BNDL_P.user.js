@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Plugin version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.49
+// @version      0.50
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://*.bookwalker.jp/*
@@ -185,7 +185,7 @@
                 const e = new MouseEvent("click");
                 const a = document.createElement('a');
                 a.innerHTML = 'Download';
-                a.download = fn ? fn : "BNDL" + (new Date().getTime()) + ".zip";
+                a.download = (fn ? fn : "BNDL" + (new Date().getTime())) + ".zip";
                 a.href = Url;
                 a.dispatchEvent(e);
                 URL.revokeObjectURL(blob);
