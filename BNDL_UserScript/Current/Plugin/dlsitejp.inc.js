@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20201201.2");
+console.log("Dlsite Play Japan ver20201202.0");
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
@@ -47,7 +47,9 @@ function loadcache(startidx=0, path=tp) {
     } catch(e) {
         console.debug("loadcache()", "path", path, "invaild, using current tree path.");
         if(tp && tp != "") {
-            cpobj = /\.pdf/i.test(tp) ? ((/\//.test(tp) ? zt.value(zt.find(zt.value(zt.find(tp.replace(/^.*\/([^\/]+\.[^\/]+)$/, "$1"), "name", ["tree"])).path, "name", ["tree"])).children : tree)) : zt.value(zt.find(tp, "path", ["tree"])).children;
+            let namepath = zt.find(tp.replace(/^.*\/([^\/]+\.[^\/]+)$/, "$1"), "name", ["tree"]);
+            namepath = namepath.length > 2 && namepath.length - namepath.lastIndexOf("children") == 2 ? -2 : -1;
+            cpobj = /\.pdf/i.test(tp) ? ((/\//.test(tp) ? zt.value(zt.find(zt.value(namepath).path, "name", ["tree"])).children : tree)) : zt.value(zt.find(tp, "path", ["tree"])).children;
             if(cache[tp] == undefined) cache[tp] = {"used":0};
             cp = cache[tp];
         } else {
@@ -69,7 +71,11 @@ function loadcache(startidx=0, path=tp) {
         let hn = cpobj[idx].hashname;
         let hne = cpobj[idx].hashname.replace(/^.*(\..*?)$/, "$1");
         if(/(?:jp[e]?g|png|gif)/.test(hne)) { //Image
-            if(!img_list[hn].path) img_list[hn].path = zt.find(hn, "hashname", ["tree"]);
+            if(!img_list[hn].path) {
+                let namepath = zt.find(hn, "hashname", ["tree"]);
+                namepath = namepath.length > 2 && namepath.length - namepath.lastIndexOf("children") == 2 ? -2 : -1;
+                img_list[hn].path = namepath.path;
+            }
             if(!(new RegExp(img_list[hn].path, "")).test(path)) { i++; continue; }
             if(img_list[hn].blob == null && !img_list[hn].caching && fcs - cp.used > 0) {
                 i++;
@@ -95,9 +101,14 @@ function loadcache(startidx=0, path=tp) {
             }
         } else if(/pdf/.test(hne)) { //pdf
             i++;
-            if(!img_list[hn].path) img_list[hn].path = zt.value(zt.find(hn, "hashname", ["tree"])).path;
+            if(!img_list[hn].path) {
+                let namepath = zt.value(zt.find(hn, "hashname", ["tree"]));
+                namepath = namepath.length > 2 && namepath.length - namepath.lastIndexOf("children") == 2 ? -2 : -1;
+                img_list[hn].path = namepath.path;  
+            }
             if(!(new RegExp(zt.value(zt.find(hn, "hashname", ["tree"])).name, "")).test(path)) continue;
             let pskipped = 0;
+            let pdfhn = hn;
             let pdfroot = zt.playfile[hn].pdf.page;
             let fpcs = Math.min(cache_size, pdfroot.length - startidx);
             for(let p =0; p < fpcs && pskipped+startidx<pdfroot.length;) {
@@ -106,7 +117,9 @@ function loadcache(startidx=0, path=tp) {
                 let hn = pdfroot[idx].optimized.name;
                 let hne = pdfroot[idx].optimized.name.replace(/^.*(\..*?)$/, "$1");
                 if(/(?:jp[e]?g|png|gif)/.test(hne)) { //Image
-                    if(img_list[hn].path ) img_list[hn].path = zt.value(zt.find(hn, "hashname", ["tree"])).path ? zt.value(zt.find(hn, "hashname", ["tree"])).path + "/" + zt.value(zt.find(hn, "hashname", ["tree"])).name : zt.value(zt.find(hn, "hashname", ["tree"])).name;
+                    if(img_list[hn].path ) {
+                        img_list[hn].path = img_list[pdfhn].path + "/" + img_list[pdfhn].fn || pdfhn;
+                    }
                     if(img_list[hn].blob == null && !img_list[hn].caching && fpcs - cp.used > 0) {
                         p++;
                         cp.used++;
