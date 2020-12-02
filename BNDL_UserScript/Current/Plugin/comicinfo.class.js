@@ -62,7 +62,7 @@ function comicinfo() {
 		let p2t = xpath2Tag, v = value;
 		let tag = _XML.evaluate(p2t, _XML, null, 9, null);
 		if(tag && tag.singleNodeValue) {
-			tag.singleNodeValue.innerHTML = v;
+			tag.singleNodeValue.textContent = v;
 			this.ComicInfo = _CI.cloneNode(1);
 			return 0;
 		} else {
@@ -75,7 +75,7 @@ function comicinfo() {
 		let p2t = xpath2Tag;
 		let tag = _XML.evaluate(p2t, _XML, null, 9, null);
 		if(tag && tag.singleNodeValue) {
-			return tag.singleNodeValue.innerHTML;
+			return tag.singleNodeValue.textContent;
 		} else {
 			//toastr["warning"](p2t + " not found!");
 			console.error(p2t, "not found!");
