@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Plugin version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.50
+// @version      0.52
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://*.bookwalker.jp/*
@@ -11,6 +11,8 @@
 // @require      tampermonkey://vendor/jszip/jszip.js
 // @require      https://raw.githubusercontent.com/Stuk/jszip-utils/master/dist/jszip-utils.min.js
 // @require      https://mozilla.github.io/pdf.js/build/pdf.js
+// @require      https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/String.class.js
+// @require      https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/Array.class.js
 // @require      https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/comicinfo.class.js
 // @require      https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/jsonHandler.class.js
 // @resource     customCSS https://raw.githubusercontent.com/ag0609/Project-BNDL/master/css/BNDL.user.css
@@ -287,7 +289,6 @@
         return $3_;
     } //create XML Nodes for document
     const halfwidthValue = (value) => {return value.replace(/(?:！？|!\?)/g, "⁉").replace(/[\uff01-\uff5e]/g, fullwidthChar => String.fromCharCode(fullwidthChar.charCodeAt(0) - 0xfee0)).replace(/\u3000/g, '\u0020')}
-    Object.defineProperty(Array.prototype,"uniquify",{value:function(k=null){if(k){return this.filter((v,i,a)=>{return i == a.findIndex(fv=>fv[k] == v[k])});}else{return this.filter((v,i,a)=>{return i == a.findIndex(fv=>JSON.stringify(fv)===JSON.stringify(v))});}},writable:false,enumerable:false});
     let jsMain = "";
     let start = ()=>{}, cancel = ()=>{};
     if(/viewer(?:\-p?trial)?\.bookwalker\.jp/i.test(window.location.href)) jsMain = GM_getResourceText("BWJP");
