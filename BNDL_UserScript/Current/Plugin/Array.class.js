@@ -1,0 +1,1 @@
+Object.defineProperty(Array.prototype,"uniquify",{value:function(k=null){if(k){return this.filter((v,i,a)=>{return i == a.findIndex(fv=>fv[k] == v[k])});}else{return this.filter((v,i,a)=>{return i == a.findIndex(fv=>JSON.stringify(fv)===JSON.stringify(v))});}},writable:false,enumerable:false});
