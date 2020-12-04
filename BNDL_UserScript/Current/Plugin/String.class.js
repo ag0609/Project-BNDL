@@ -1,4 +1,4 @@
-let ver_similarity = "20201201.1";
+let ver_similarity = "20201203.1";
 
 //
 console.log("String.similarity", ver_similarity, "loaded");
@@ -11,8 +11,7 @@ Object.defineProperty(String.prototype, "similarity", {value:function(key, optio
     let matchScore = parseFloat(b.MatchScore) || 50, flowScore = parseFloat(b.FlowScore) || 50;
     let score1=0, score2=0;
     //keys match
-    if(typeof key == "string") a = new RegExp(a, "");
-    console.log(matchScore, flowScore);
+    if(typeof a == "string") a = new RegExp(a, "");
     if(b.AllMatch) {
         score1 = a.test(c) ? matchScore : 0;
     } else {
@@ -34,5 +33,5 @@ Object.defineProperty(String.prototype, "similarity", {value:function(key, optio
     if(score1) {
         score2 = flowScore - (flowScore * Math.abs(c.length - a.source.length)/Math.max(c.length, a.source.length));
     }
-    return {"score":score1+score2, "totalScore":matchScore+flowScore, "source":c, "key":a.source, "MatchScore":score1,"maxMatchScore":matchScore, "FlowScore":score2, "maxFlowScore":flowScore};
+    return {"score":score1+score2, "totalScore":matchScore+flowScore, "source":c.toString(), "key":a.source, "MatchScore":score1,"maxMatchScore":matchScore, "FlowScore":score2, "maxFlowScore":flowScore};
 }});
