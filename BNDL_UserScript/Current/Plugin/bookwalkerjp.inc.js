@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20201129.4");
+console.log("Bookwalker Japan", "v20201207.2");
 console.log("Reference:", "https://blog.jixun.moe/intercept-bookwalker-tw-image", "by JiXun");
 let _detail$retry_ = 0;
 let backup;
@@ -8,6 +8,49 @@ let mode = 0;
 if(window.location.hostname.match(/viewer-trial/)) {
 	console.warn("Trial viewer mode is running, this book is not a full version!!");
 	mode = 1;
+} else if(window.location.hostname.match(/ptrial/)) { //https://viewer-ptrial.bookwalker.jp/03/6/viewer.html?cid=5006ac04-3102-4b22-941f-bc56b81675c6&cty=0
+	console.warn("Ptrial viewer mode is running");
+	mode = 2;
+}
+let ptrialtime = {"fT":0, "lT":0};
+let interval = 250;
+let ptrialtimer;
+if(mode == 2) {
+	let ptrialcountdown = document.createElement("div");
+	if(localStorage.getItem("10min")) {
+        console.log("10min exists");
+		ptrialtime = JSON.parse(localStorage.getItem("10min"));
+		let now = new Date();
+		let jp5am = new Date(now.getFullYear() +'-'+ now.getMonth() +'-'+ now.getDay() + 'T05:00:00+09:00');
+		if((Date.now() - ptrialtime.fT) > (Date.now() - jp5am.getMilliseconds())) { //first touch in record && 5am in Japan
+			console.log("it is a cold and snowy day...");
+			//First touch before 5am, so this is the first touch of today
+			ptrialtime.fT = Date.now();
+			ptrialtime.lT = 600000; //10 minutes => 600 seconds in MilliSeconds
+		}
+	} else {
+        	console.log("10min not exists");
+		//ptrialtime not in localStorage, initial one
+		ptrialtime.fT = Date.now();
+		ptrialtime.lT = 600000; //10 minutes => 600 seconds in MilliSeconds
+		localStorage.setItem("10min", JSON.stringify(ptrialtime));
+	}
+	ptrialcountdown.innerHTML = "00:00";
+	ptrialcountdown.style.position = "fixed";
+	ptrialcountdown.style.top = "50px";
+	ptrialcountdown.style.left = "10px";
+	ptrialcountdown.style.backgroundColor = "lightgrey";
+	ptrialcountdown.style.padding = "10px 10px";
+	btn.appendChild(ptrialcountdown);
+	ptrialtimer = setInterval(function() {
+		ptrialtime.lT -= interval;
+		localStorage.setItem("10min", JSON.stringify(ptrialtime));
+		let lefttime = new Date(Math.abs(ptrialtime.lT));
+		ptrialcountdown.innerHTML = pad(lefttime.getMinutes(),2)+":"+pad(lefttime.getSeconds(),2);
+		if(ptrialtime.lT < 30000) {
+			ptrialcountdown.style.color = "red";
+		}	
+	}, interval);
 }
 const getDetail = async function(bn, st=5, on="", ta=0) {
 	console.debug("getDetail()", bn, st, on);
@@ -200,8 +243,8 @@ function main() {
 				pages.setPageAttr(curp-1, 'ImageWidth', c.width);
 				pages.setPageAttr(curp-1, 'ImageHeight', c.height);
 				pages.setPageAttr(curp-1, 'ImageSize', v.size);
-				if((curp >= totp || mode) && startf) {
-					if(!mode) {
+				if((curp >= totp || mode == 1) && startf) {
+					if(mode != 1) {
 						Ci.add("/ComicInfo", "ScanInfomation", scan);
 						Ci.addPageCollection(pages);
 					}
@@ -276,7 +319,7 @@ function main() {
 						Ci.add("/ComicInfo", "Number", pad(num,2));
 						Ci.add("/ComicInfo", 'Title', fn);
 						Ci.add("/ComicInfo", 'Series', ser);
-						if(!mode) Ci.add("/ComicInfo", 'PageCount', totp);
+						if(mode != 1) Ci.add("/ComicInfo", 'PageCount', totp);
 						bndlBTN.disabled = false;
 						btn.classList.add('extend');
 						pc.classList.add("start");
