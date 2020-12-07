@@ -1,4 +1,4 @@
-let ver_comicinfo = "20201202.1";
+let ver_comicinfo = "20201207.0";
 
 //
 console.log("comicinfo", ver_comicinfo, "loaded");
@@ -80,6 +80,27 @@ function comicinfo() {
 			//toastr["warning"](p2t + " not found!");
 			console.error(p2t, "not found!");
 			return null;
+		}
+	}
+	this.validate = function() {
+		let path, tag, val;
+		path = "/ComicInfo";
+		try {
+			tag = "Manga";
+			val = this.get([path,tag].join("/"));
+			if(!(val = null || val == "Yes" || val == "No" || val == "YesAndRightToLeft")) {
+				throw "invalid value";
+				return false;
+			}
+			tag = "BlackAndWhite";
+			val = this.get([path,tag].join("/"));
+			if(!(val = null || val == "Yes" || val == "No")) {
+				throw "invalid value";
+				return false;
+			}
+		} catch(e) {
+			console.error("Tag", tag, "error!!", e.message);
+			return false;
 		}
 	}
 	this.toString = function() {
