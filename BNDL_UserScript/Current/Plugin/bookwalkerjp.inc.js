@@ -23,12 +23,12 @@ if(mode == 2) {
 		ptrialtime = JSON.parse(localStorage.getItem("10min"));
 		console.log("Last Touch:", ptrialtime.fT, ", in string:", new Date(ptrialtime.fT).toString());
 		let now = new Date();
-		let jp5am = new Date(now.getFullYear() +'-'+ now.getMonth() +'-'+ now.getDay() + 'T05:00:00+09:00');
-		console.log("Japan 5am:", jp5am.toMilliSeconds(),", in string:", jp5am.toString());
-		if((Date.now() - ptrialtime.fT) > (Date.now() - jp5am.getMilliseconds())) { //first touch in record && 5am in Japan
+		let jp5am = new Date(now.getFullYear() +'-'+ now.getMonth() +'-'+ now.getDay() + ' 05:00:00 GMT+09:00');
+		console.log("Japan 5am:", jp5am.getTime(),", in string:", jp5am.toString());
+		if((now().getTime() - ptrialtime.fT) > (now.getTime() - jp5am.getTime())) { //first touch in record && 5am in Japan
 			console.log("it is a cold and snowy day...");
 			//First touch before 5am, so this is the first touch of today
-			ptrialtime.fT = Date.now();
+			ptrialtime.fT = now.getTime();
 			ptrialtime.lT = 600000; //10 minutes => 600 seconds in MilliSeconds
 		}
 	} else {
