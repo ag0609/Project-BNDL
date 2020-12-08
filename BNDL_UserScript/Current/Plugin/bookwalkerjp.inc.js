@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20201208.0");
+console.log("Bookwalker Japan", "v20201208.2");
 console.log("Reference:", "https://blog.jixun.moe/intercept-bookwalker-tw-image", "by JiXun");
 let _detail$retry_ = 0;
 let backup;
