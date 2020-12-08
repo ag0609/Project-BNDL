@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20201208.2");
+console.log("Bookwalker Japan", "v20201208.3");
 console.log("Reference:", "https://blog.jixun.moe/intercept-bookwalker-tw-image", "by JiXun");
 let _detail$retry_ = 0;
 let backup;
@@ -23,7 +23,7 @@ if(mode == 2) {
 		ptrialtime = JSON.parse(localStorage.getItem("10min"));
 		console.log("Last Touch:", ptrialtime.fT, ", in string:", new Date(ptrialtime.fT).toString());
 		let now = new Date();
-		let jp5am = new Date(now.getFullYear() +'-'+ now.getMonth() +'-'+ now.getDay() + ' 05:00:00 GMT+09:00');
+		let jp5am = new Date(Date.UTC(now.getFullYear(),now.getMonth()+1,now.getDate()-1,20,0,0)); //05:00 of GMT+9, at GMT+0 should be 20:00 of day before
 		console.log("Japan 5am:", jp5am.getTime(),", in string:", jp5am.toString());
 		if((now().getTime() - ptrialtime.fT) > (now.getTime() - jp5am.getTime())) { //first touch in record && 5am in Japan
 			console.log("it is a cold and snowy day...");
