@@ -141,6 +141,17 @@ button .bndl-btn {
 .bndl-progress.start .bndl-value {
 	animation: bndl-value-start-bar 3s infinite linear;
 }
+@keyframes bndl-alert {
+	0% {
+		background-color: lightgrey;
+	}
+	50% {
+		background-color: red;
+	}
+	100% {
+		background-color: lightgrey;
+	}
+}
 @keyframes bndl-value-start-bar {
 	0% {
 		background-position-x: 50px;
