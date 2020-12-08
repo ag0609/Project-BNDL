@@ -1,27 +1,30 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20201207.2");
+console.log("Bookwalker Japan", "v20201208.0");
 console.log("Reference:", "https://blog.jixun.moe/intercept-bookwalker-tw-image", "by JiXun");
 let _detail$retry_ = 0;
 let backup;
 //Check if reading a trial version of a book
 let mode = 0;
-if(window.location.hostname.match(/viewer-trial/)) {
+if(window.location.hostname.match(/viewer-trial/)) { //A trial version of a book, we will not fully downloading this, we do only for book detail collect.
 	console.warn("Trial viewer mode is running, this book is not a full version!!");
 	mode = 1;
-} else if(window.location.hostname.match(/ptrial/)) { //https://viewer-ptrial.bookwalker.jp/03/6/viewer.html?cid=5006ac04-3102-4b22-941f-bc56b81675c6&cty=0
+} else if(window.location.hostname.match(/ptrial/)) { //A Time-base limited book, timely we have daily 10 minutes novel reading scheme.
 	console.warn("Ptrial viewer mode is running");
 	mode = 2;
 }
+//10 minutes novel reading scheme
 let ptrialtime = {"fT":0, "lT":0};
 let interval = 250;
 let ptrialtimer;
 if(mode == 2) {
 	let ptrialcountdown = document.createElement("div");
 	if(localStorage.getItem("10min")) {
-        console.log("10min exists");
+		console.log("10min exists");
 		ptrialtime = JSON.parse(localStorage.getItem("10min"));
+		console.log("Last Touch:", ptrialtime.fT, ", in string:", new Date(ptrialtime.fT).toString());
 		let now = new Date();
 		let jp5am = new Date(now.getFullYear() +'-'+ now.getMonth() +'-'+ now.getDay() + 'T05:00:00+09:00');
+		console.log("Japan 5am:", jp5am.toMilliSeconds(),", in string:", jp5am.toString());
 		if((Date.now() - ptrialtime.fT) > (Date.now() - jp5am.getMilliseconds())) { //first touch in record && 5am in Japan
 			console.log("it is a cold and snowy day...");
 			//First touch before 5am, so this is the first touch of today
@@ -41,17 +44,22 @@ if(mode == 2) {
 	ptrialcountdown.style.left = "10px";
 	ptrialcountdown.style.backgroundColor = "lightgrey";
 	ptrialcountdown.style.padding = "10px 10px";
+	ptrialcountdown.style.transition = "2s all";
 	btn.appendChild(ptrialcountdown);
 	ptrialtimer = setInterval(function() {
 		ptrialtime.lT -= interval;
 		localStorage.setItem("10min", JSON.stringify(ptrialtime));
 		let lefttime = new Date(Math.abs(ptrialtime.lT));
 		ptrialcountdown.innerHTML = pad(lefttime.getMinutes(),2)+":"+pad(lefttime.getSeconds(),2);
-		if(ptrialtime.lT < 30000) {
+		if(ptrialtime.lT == 60000) {
+			ptrialcountdown.style.animation = "bndl-alert 2s 2 0 infinite";
+		}
+		/*if(ptrialtime.lT == 30000) {
 			ptrialcountdown.style.color = "red";
-		}	
+		}*/	
 	}, interval);
 }
+//
 const getDetail = async function(bn, st=5, on="", ta=0) {
 	console.debug("getDetail()", bn, st, on);
 	let cty = parseInt(getQuery("cty"));
