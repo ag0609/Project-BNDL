@@ -1,4 +1,4 @@
-let ver_similarity = "20201203.1";
+let ver_similarity = "20201209.0";
 
 //
 console.log("String.similarity", ver_similarity, "loaded");
@@ -35,3 +35,7 @@ Object.defineProperty(String.prototype, "similarity", {value:function(key, optio
     }
     return {"score":score1+score2, "totalScore":matchScore+flowScore, "source":c.toString(), "key":a.source, "MatchScore":score1,"maxMatchScore":matchScore, "FlowScore":score2, "maxFlowScore":flowScore};
 }});
+
+function escapeRegExp(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
