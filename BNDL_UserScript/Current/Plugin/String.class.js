@@ -1,7 +1,11 @@
-let ver_similarity = "20201209.0";
+let ver_similarity = "20201209.1";
 
 //
 console.log("String.similarity", ver_similarity, "loaded");
+
+function escapeRegExp(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
 
 Object.defineProperty(String.prototype, "similarity", {value:function(key, options={}) {
     let [a,b] = [key, options];
@@ -17,14 +21,14 @@ Object.defineProperty(String.prototype, "similarity", {value:function(key, optio
     } else {
         if(a.source.length*2 > c.length) {
             for(let i=a.source.length; i>0; i--) {
-                if((new RegExp(a.source.substr(0, i))).test(c)) {
+                if((new RegExp(escapeRegExp(a.source.substr(0, i)))).test(c)) {
                     score1 = i * matchScore/a.source.length;
                     break;
                 }
             }
         } else {
             for(let i=1; i<=a.source.length; i++) {
-                if((new RegExp(a.source.substr(0, i))).test(c)) {
+                if((new RegExp(escapeRegExp(a.source.substr(0, i)))).test(c)) {
                     score1 = i * matchScore/a.source.length;
                 }
             }
@@ -35,7 +39,3 @@ Object.defineProperty(String.prototype, "similarity", {value:function(key, optio
     }
     return {"score":score1+score2, "totalScore":matchScore+flowScore, "source":c.toString(), "key":a.source, "MatchScore":score1,"maxMatchScore":matchScore, "FlowScore":score2, "maxFlowScore":flowScore};
 }});
-
-function escapeRegExp(str) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
-}
