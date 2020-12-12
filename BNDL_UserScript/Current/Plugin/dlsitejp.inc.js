@@ -104,12 +104,12 @@ function loadcache(startidx=0, path=tp) {
             if(!img_list[hn].path) {
                 let namepath = zt.value(zt.find(hn, "hashname", ["tree"]));
                 namepath = namepath.length > 2 && namepath.length - namepath.lastIndexOf("children") == 2 ? -2 : -1;
-                img_list[hn].path = namepath.path;  
+                img_list[hn].path = namepath.path;
             }
             if(!(new RegExp(zt.value(zt.find(hn, "hashname", ["tree"])).name, "")).test(path)) continue;
             let pskipped = 0;
             let pdfhn = hn;
-            let pdfroot = zt.playfile[hn].pdf.page;
+            let pdfroot = zt.value(["playfile", hn, "pdf", "page"]);
             let fpcs = Math.min(cache_size, pdfroot.length - startidx);
             for(let p =0; p < fpcs && pskipped+startidx<pdfroot.length;) {
                 let idx = (startidx+pskipped) +Math.ceil(p%2 ? (p/2) : -(p/2));
@@ -287,7 +287,7 @@ CanvasRenderingContext2D.prototype.odI = CanvasRenderingContext2D.prototype.draw
 CanvasRenderingContext2D.prototype.hdI = function() {
     let thisobj = this;
     let args = arguments;
-    let tree = zt.find(["tree"]), playfile = zt.find(["playfile"]);
+    let tree = zt.value(["tree"]), playfile = zt.value(["playfile"]);
     let hn;
     if(args[0].src)
         hn = args[0].src.match(/[0-9a-z]+\.(?:jp[e]?g|png|gif)/)[0];
