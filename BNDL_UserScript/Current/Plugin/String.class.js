@@ -1,11 +1,24 @@
-let ver_similarity = "20201209.1";
+let ver_string = "20201214.0";
 
 //
-console.log("String.similarity", ver_similarity, "loaded");
+console.log("String.extension", ver_string, "loaded");
 
 function escapeRegExp(str) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
+
+Object.defineProperty(String.prototype, "toHalfWidth", {value:function(options={}) {
+  let string = this;
+  let exception = "";
+  let range = "\uff01-\uff5e";
+  let offset = 0xfee0;
+  if(options.oswin) {
+    exception += "\uff01\uff02\uff0a\uff0f\uff1a\uff1c\uff1e\uff1f\uff3c\uff5c"; //Windows Filename, 01! 02" 0a* 0f/ 1a: 1c< 1e> 1f? 3c\ 5c|
+  }
+  if(options.space) string.replace(/\u3000/g, '\u0020');
+  const regex = new RegExp("(?!["+exception+"])["+range+"]", "g");
+  return string.replace(regex, fwchar => String.fromCharCode(fwchar.charCodeAt(0) - offset));
+}});
 
 Object.defineProperty(String.prototype, "similarity", {value:function(key, options={}) {
     let [a,b] = [key, options];
