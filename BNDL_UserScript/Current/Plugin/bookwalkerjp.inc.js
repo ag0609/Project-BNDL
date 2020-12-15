@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20201208.3");
+console.log("Bookwalker Japan", "v20201216.0");
 console.log("Reference:", "https://blog.jixun.moe/intercept-bookwalker-tw-image", "by JiXun");
 let _detail$retry_ = 0;
 let backup;
@@ -251,7 +251,8 @@ function main() {
 				pages.setPageAttr(curp-1, 'ImageWidth', c.width);
 				pages.setPageAttr(curp-1, 'ImageHeight', c.height);
 				pages.setPageAttr(curp-1, 'ImageSize', v.size);
-				if((curp >= totp || mode == 1) && startf) {
+				//if((curp >= totp || mode == 1) && startf) {
+				if(curp >= totp && startf) {
 					if(mode != 1) {
 						Ci.add("/ComicInfo", "ScanInfomation", scan);
 						Ci.addPageCollection(pages);
