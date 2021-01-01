@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Plugin version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.53
+// @version      0.54
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://*.bookwalker.jp/*
@@ -63,7 +63,7 @@
     let bd = {};
     let Ci = new comicinfo(); //Build XML class for ComicInfo.xml(which mainly used by Comic Reader)
     let pages;
-    let scan = "Scaned By BNDL Type Jixun v0.1(ag0609)";
+    let scan = "Scaned By BNDL v0.54(ag0609)";
     //Main UI
     const btn = document.createElement('div');
     btn.id = 'bndl';
