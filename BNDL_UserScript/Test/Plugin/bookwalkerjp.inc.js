@@ -198,6 +198,7 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 					Ci.add("/ComicInfo", "LanguageISO", "ja");
 					Ci.add("/ComicInfo", "BlackAndWhite", "Yes");
 					cty ? Ci.add("/ComicInfo", "Manga", "YesAndRightToLeft") : Ci.add("/ComicInfo", "Manga", "No");
+					toast(fn, "info");
 				}
 			});
 		}
@@ -222,8 +223,8 @@ function main() {
 		}
 		if (image && !img$size[curp]) {
 			console.groupCollapsed("Page", curp, "/", totp);
-			$(pc).attr({"aria-valuemax":totp, "aria-valuenow":curp});
-			$(pcv).text("Capture Canvas: "+curp +"/"+ totp);
+			$(pcv).attr({"aria-valuemax":totp, "aria-valuenow":curp});
+			$(pcv).find('span').text("Capture Canvas: "+curp +"/"+ totp);
 			const c = document.createElement('canvas');
 			$(c).addClass('position-fixed border border-success').css({left:'20vw', top:'30vh', height:'30vh', userSelect:'none', pointerEvents:'none', transition:'all ease 3s'}).attr({id:"p"+page.index});
 			$(c).on("transitionend", function() {
@@ -251,19 +252,18 @@ function main() {
 					console.groupCollapsed('ComicInfo.xml');
 					console.log(Ci.ComicInfo);
 					console.groupEnd();
-					$(pcv).addClass('bg-success');
-					$(pc).attr({"aria-valuemin":0, "aria-valuemax":100});
+					$(pcv).addClass('bg-success').attr({"aria-valuemin":0, "aria-valuemax":100});
 					console.groupCollapsed('Zip progress');
 					let pchk = 0;
 					let bchk = setInterval(function() {
 						console.debug(pchk+'%');
-						$(pcv).text("Generating zip...("+ pchk +"%)");
+						$(pcv).find('span').text("Generating zip...("+ pchk +"%)");
 						window.document.title = "["+Math.ceil(pchk)+"%] "+on;
 						//favicon.badge(Math.ceil(pchk), {'bgColor':'#6a7'});
 					}, 1000);
 					zip.generateAsync({type:"blob"}, function updateCallback(metadata) {
 						pchk = metadata.percent.toFixed(2);
-						pc.attr('aria-valuenow', pchk);
+						$(pcv).attr('aria-valuenow', pchk).css({width:pchk+"%"});
 					}).then(function (blob) {
 						clearInterval(bchk);
 						console.groupEnd();
@@ -279,6 +279,7 @@ function main() {
 						if(document.hidden) popout("Collect Completed.", fn, "https://viewer.bookwalker.jp/favicon.ico");
 						_job_time = new Date() - _job_time;
 						console.log("Book Download Time:", _job_time/1000, "sec");
+						toast("Job Done", "success");
 						setTimeout(function() {
 							$(pc).attr('height', '0px');
 							ss.pause();
@@ -315,10 +316,11 @@ function main() {
 						if(mode != 1) Ci.add("/ComicInfo", 'PageCount', totp);
 						$(bndlBTN).removeAttr("disabled");
 						$(maindiv).attr({width:"100%", height:"100%"});
-						$(pc).attr({height:'16px'});
+						$(pc).css({height:'25px'});
 						ss.play();
 						_init_time = new Date() - _init_time;
 						console.log("Initialization time used:", _init_time/1000, "sec");
+						toast("Job Ready", "info", 10000);
 					}
 				};
 			}, 'image/jpeg', quality);
@@ -339,16 +341,17 @@ cancel = function() {
 	if(startf) {
 		$(bndlBTN).removeAttr("disabled");
 		startf = 0;
+		toast("Job Paused", "warning");
 	} else {
 		unsafeWindow.NFBR.a6G.a5x.prototype.b9b = backup;
 		$(maindiv).remove();
+		toast("Job Canceled", "warning");
 	}
 }
 const _$IfuBW_NFBR$_ = setInterval(function() {
 	if(unsafeWindow.NFBR.a6G && unsafeWindow.NFBR.a6G.a5x.prototype.b9b) {
 		clearInterval(_$IfuBW_NFBR$_);
 		_page_time = _job_time = new Date();
-        console.log("A");
 		main();
 	}
 }, 100);
