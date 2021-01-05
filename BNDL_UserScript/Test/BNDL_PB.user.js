@@ -85,7 +85,7 @@
       .css({height:'0px'})
       .addClass("progress");
     const pcv = document.createElement('div');
-    $(pcv).addClass("progress-bar progress-bar-striped progress-bar-animated bg-info")
+    $(pcv).addClass("progress-bar progress-bar-striped progress-bar-animated")
       .attr({"role":"progress-bar", "aria-valuemin":0, "aria-valuemax":0, "aria-valuenow":0})
       .appendTo($(pc));
     $('<span>').addClass('progress-label container-fluid position-absolute').css({'mix-blend-mode':'difference'}).text('progress bar caption here').appendTo($(pcv));
