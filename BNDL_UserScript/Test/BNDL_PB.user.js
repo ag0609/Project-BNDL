@@ -17,9 +17,9 @@
 // @require      https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/comicinfo.class.js
 // @require      https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/jsonHandler.class.js
 // @resource     customCSS https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css
-// @resource     BWJP https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/bookwalkerjp.inc.js
-// @resource     DLJP https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/dlsitejp.inc.js
-// @resource     BLJP https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/booklivejp.inc.js
+// @resource     BWJP https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Test/Plugin/bookwalkerjp.inc.js
+// @resource     DLJP https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Test/Plugin/dlsitejp.inc.js
+// @resource     BLJP https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Test/Plugin/booklivejp.inc.js
 // @connect      bookwalker.jp
 // @connect      play.dl.dlsite.com
 // @connect      download.dlsite.com
