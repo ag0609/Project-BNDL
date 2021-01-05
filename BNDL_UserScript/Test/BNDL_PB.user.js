@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Bootstrap version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.56
+// @version      0.57
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://*.bookwalker.jp/*
@@ -64,16 +64,17 @@
     let bd = {};
     let Ci = new comicinfo(); //Build XML class for ComicInfo.xml(which mainly used by Comic Reader)
     let pages;
-    let scan = "Scaned By BNDL v0.54(ag0609)";
+    let scan = "Scaned By BNDL v0.57(ag0609)";
     //Main UI
     const maindiv = document.createElement('div');
     $(maindiv).attr("id", 'bndl')
+              .addClass('container')
               .css({position:'fixed',
                     top:'50%',left:'50%',
                     transform:'translate(-50%,-50%)',
                     minWidth:'300px',minHeight:'150px',
-                    width:'10vw',height:'5vh',
-                    backgroundColor:'lightgrey'})
+                    width:'30vw',height:'10vh',
+                    margin:'auto',backgroundColor:'lightgrey'})
               .hide();
     maindiv.ob = new MutationObserver(ProgressBarCallback);
     maindiv.addEventListener('dblclick', function() {
@@ -88,8 +89,8 @@
     $(pcv).addClass("progress-bar progress-bar-striped progress-bar-animated")
       .attr({"role":"progress-bar", "aria-valuemin":0, "aria-valuemax":0, "aria-valuenow":0})
       .appendTo($(pc));
-    $('<span>').addClass('progress-label container-fluid position-absolute').css({'mix-blend-mode':'difference'}).text('progress bar caption here').appendTo($(pcv));
-    maindiv.ob.observe(pc, {attributes:true});
+    $('<span>').addClass('progress-label container-fluid position-absolute').css({'mix-blend-mode':'difference'}).appendTo($(pcv));
+    maindiv.ob.observe(pcv, {attributes:true});
     const btn_obj = document.createElement('button');
     $(btn_obj).attr("type", "button").addClass("btn");
     const bndlBTN = btn_obj.cloneNode();
