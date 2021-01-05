@@ -230,9 +230,8 @@
     }
     //
     function ProgressBarCallback($$e,_f_) {
-        const p = $('#bndl-progress')[0];
-        const v = $('.progress-bar')[0];
-        v.css(width, ((p.attr('aria-valuenow') - p.attr('aria-valuemin')) * 100 / p.attr('aria-valuemax')) + "%");
+        const v = $(pcv);
+        v.css(width, ((v.attr('aria-valuenow') - v.attr('aria-valuemin')) * 100 / v.attr('aria-valuemax')) + "%");
     } //Progress bar uses
     function pad(n, t) {
         n = ''+n;
