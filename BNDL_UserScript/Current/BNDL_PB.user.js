@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Bootstrap version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.55
+// @version      0.56
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://*.bookwalker.jp/*
@@ -220,7 +220,7 @@
             }
             console.groupEnd();
         }
-        bndl_d.toast = () => { toast("test", "info"); toast("test2", "good", 5000); }
+        bndl_d.toast = () => { toast("Information", "info", 15000); toast("Success", "good"); toast("Warning", "warning", 6000); toast("Error", "error"); }
         bndl_d.next = () => { console.warn("no function yet"); }
         bndl_d.prev = () => { console.warn("no function yet"); }
         bndl_d.ob = new MutationObserver(bndl_d.attrchg);
@@ -298,7 +298,7 @@
             bnto = $("<div>").addClass('toast')
                               .attr({role:'alert','aria-live':'assertive','aria-atomic':'true'});
             bnto.toast({autohide:false});
-            let bntoh = $('<div>').addClass('toast-header').html('<span id="header"></span>');
+            let bntoh = $('<div>').addClass('toast-header').html('<span id="header" class="container-fluid"></span>');
             bntoh.appendTo(bnto);
             //let bntob = $('<div>').addClass('toast-body');
             //bntob.appendTo(bnto);
@@ -319,12 +319,15 @@
         if(_hT) {
             nT.find(".close").remove();
             nT.toast({autohide:true, delay:_hT});
-            nT.on('hidden.bs.toast', function () {
-                $(this).toast('dispose').remove();
-            });
         } else {
             nT.toast({autohide:false});
+            nT.find('.close').on("click", function() {
+                nT.toast('hide');
+            });
         }
+        nT.on('hidden.bs.toast', function () {
+            $(this).toast('dispose').remove();
+        });
         nT.appendTo(bnt);
         nT.toast('show');
     }//toast out
