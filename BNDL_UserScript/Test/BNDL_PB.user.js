@@ -88,6 +88,7 @@
     $(pcv).addClass("progress-bar progress-bar-striped progress-bar-animated bg-info")
       .attr({"role":"progress-bar", "aria-valuemin":0, "aria-valuemax":0, "aria-valuenow":0})
       .appendTo($(pc));
+    $('<span>').addClass('progress-label container-fluid position-absolute').css({'mix-blend-mode':'difference'}).text('progress bar caption here').appendTo($(pcv));
     maindiv.ob.observe(pc, {attributes:true});
     const btn_obj = document.createElement('button');
     $(btn_obj).attr("type", "button").addClass("btn");
