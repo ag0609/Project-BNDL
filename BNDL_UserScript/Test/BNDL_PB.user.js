@@ -231,7 +231,7 @@
     //
     function ProgressBarCallback($$e,_f_) {
         const v = $(pcv);
-        v.css(width, ((v.attr('aria-valuenow') - v.attr('aria-valuemin')) * 100 / v.attr('aria-valuemax')) + "%");
+        v.css('width', ((v.attr('aria-valuenow') - v.attr('aria-valuemin')) * 100 / v.attr('aria-valuemax')) + "%");
     } //Progress bar uses
     function pad(n, t) {
         n = ''+n;
