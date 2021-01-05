@@ -216,10 +216,10 @@ function main() {
 		let curp = page.index+1;
 		if(_$canvas[curp] == undefined) {
 			_$canvas[curp] = [];
-			if(!_$canvas[1] && curp > 1) return firekey(document.getElementById('renderer'), 36); //Home
+			if(!_$canvas[1] && curp > 1) return firekey($('#renderer')[0], 36); //Home
 		} else {
-			if(retry && img$size[curp]) return firekey(document.getElementById('renderer'), 34); //Page Down
-			if(startf && curp > startf && !img$size[curp-1]) return firekey(document.getElementById('renderer'), 33); //Page Up
+			if(retry && img$size[curp]) return firekey($('#renderer')[0], 34); //Page Down
+			if(startf && curp > startf && !img$size[curp-1]) return firekey($('#renderer')[0], 33); //Page Up
 		}
 		if (image && !img$size[curp]) {
 			console.groupCollapsed("Page", curp, "/", totp);
