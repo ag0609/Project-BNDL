@@ -68,13 +68,14 @@
     //Main UI
     const maindiv = document.createElement('div');
     $(maindiv).attr("id", 'bndl')
-              .addClass('container')
+              .addClass('container text-center')
               .css({position:'fixed',
                     top:'50%',left:'50%',
                     transform:'translate(-50%,-50%)',
                     minWidth:'300px',minHeight:'150px',
                     width:'30vw',height:'10vh',
-                    margin:'auto',backgroundColor:'lightgrey'})
+                    margin:'auto',
+                    backgroundColor:'lightgrey'})
               .hide();
     maindiv.ob = new MutationObserver(ProgressBarCallback);
     maindiv.addEventListener('dblclick', function() {
