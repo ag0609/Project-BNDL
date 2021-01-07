@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Bootstrap version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.57
+// @version      0.58
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://*.bookwalker.jp/*
@@ -67,8 +67,10 @@
     let scan = "Scaned By BNDL v0.57(ag0609)";
     //Main UI
     const maindiv = document.createElement('div');
+    const maindiv$extend = {top:0,bottom:'',left:0,right:'',width:'100vw',height:'100vh'};
+    const maindiv$close = {top:'',bottom:0,left:'',right:0,width:'10%',height:'5%'};
     $(maindiv).attr("id", 'bndl')
-              .addClass('container text-center')
+              .addClass('container text-center p-3')
               .css({position:'fixed',
                     top:'50%',left:'50%',
                     transform:'translate(-50%,-50%)',
@@ -79,13 +81,17 @@
               .hide();
     maindiv.ob = new MutationObserver(ProgressBarCallback);
     maindiv.addEventListener('dblclick', function() {
-        maindiv.classList.toggle('close');
-        maindiv.classList.toggle('extend', !maindiv.classList.contains('close'));
+        $(maindiv).toggleClass('extend');
+        if($(maindiv).hasClass('extend')) {
+            $(maindiv).css(maindiv$extend);
+        } else {
+            $(maindiv).css(maindiv$close);
+        }
     });
     const pc = document.createElement('div');
     $(pc).attr("id", 'bndl-progress')
       .css({height:'0px'})
-      .addClass("progress");
+      .addClass("progress user-select-none");
     const pcv = document.createElement('div');
     $(pcv).addClass("progress-bar progress-bar-striped progress-bar-animated")
       .attr({"role":"progress-bar", "aria-valuemin":0, "aria-valuemax":0, "aria-valuenow":0})
@@ -223,7 +229,7 @@
             }
             console.groupEnd();
         }
-        bndl_d.toast = () => { toast("Information", "info", 15000); toast("Success", "good"); toast("Warning", "warning", 6000); toast("Error", "error"); }
+        bndl_d.toast = () => { toast("Information is a good one to state messages which user may want to acknowlaged. This one will shows up 15 seconds.", "info", 15000, "Information"); toast("This is a message when good news here.", "good", 0, "Success"); toast("This is a message which you are being warned, stay sharp.\nThis message will hide in 6 seconds.", "warning", 6000, "Warning"); toast("Error Message will show up when task catch on error.", "error", 0, "Error"); }
         bndl_d.next = () => { console.warn("no function yet"); }
         bndl_d.prev = () => { console.warn("no function yet"); }
         bndl_d.ob = new MutationObserver(bndl_d.attrchg);
@@ -293,22 +299,45 @@
         let args = arguments;
         GM.notification({text:args[0], title:args[1], image:args[2], onclick:()=>{window.focus()}});
     }//popout notification
-    function toast($_msg, _$t, _hT) {
+    function toast($_msg, _$t, _hT, $_t) {
         if(!bnt) {
-            bnt = $("<div>").addClass('toast-container container position-fixed float-end p-3').css({top:0, right:0, width:'20vw', height:'100vh'});
+            bnt = $("<div>").addClass('toast-container container position-fixed float-end p-3 user-select-none').css({top:0, right:0, width:'20vw', height:'100vh'});
             bnt.appendTo('body');
             bnto = $("<div>").addClass('toast')
-                              .attr({role:'alert','aria-live':'assertive','aria-atomic':'true'});
+                             .attr({role:'alert','aria-live':'assertive','aria-atomic':'true'})
+                             .css({transition:'all ease .7s'});
             bnto.toast({autohide:false});
-            let bntoh = $('<div>').addClass('toast-header').html('<span id="header" class="container-fluid"></span>');
+            let bntoh = $('<div>').addClass('toast-header text-truncate font-weight-blod').html('<span id="header" class="container-fluid"></span>');
             bntoh.appendTo(bnto);
-            //let bntob = $('<div>').addClass('toast-body');
-            //bntob.appendTo(bnto);
+            let bntob = $('<div>').addClass('toast-body').html('<span id="body" class="container-fluid"></span>');
+            bntob.appendTo(bnto);
+            let bntof = $('<div>').addClass('toast-footer text-right font-weight-light font-italic').html('<span id="body" class="container-fluid"></span>');
+            bntof.appendTo(bnto);
             $('<button>').addClass('close')
                           .attr({type:'button','data-bs-dismiss':'toast','aria-label':'Close'})
                           .html('<span aria-hidden="true">&times;</span>').appendTo(bntoh);
+            setInterval(function() {
+                let toastList = $('.toast:not(.latest)').find('.toast-footer');
+                toastList.find('span').text(function() {
+                    let diff = (Date.now() - $(this).parent().attr('aria-timestamp'))/1000;
+                    if(diff >= 60*60*24*365) {
+                        return Math.floor(diff/(60*60*24*365)) + " years ago.";
+                    } else if(diff >= 60*60*24*30) {
+                        return Math.floor(diff/(60*60*24*30)) + " months ago.";
+                    } else if(diff >= 60*60*24) {
+                        return Math.floor(diff/(60*60*24)) + " days ago.";
+                    } else if(diff >= 60*60) {
+                        return Math.floor(diff/(60*60)) + " hours " + Math.floor(diff/60) + " minutes ago.";
+                    } else if(diff >= 60) {
+                        return Math.floor(diff/60) + " minutes " + Math.floor(diff%60) + " seconds ago.";
+                    } else {
+                        return Math.floor(diff) + " seconds ago.";
+                    }
+                });
+            }, 5000);
         }
         const nT = bnto.clone();
+        nT.find('.toast-footer').attr({'aria-timestamp':Date.now()});
         const type = {
                         "info":{'h':'text-white bg-primary', b:{}},
                         "good":{'h':'text-white bg-success',b:{}},
@@ -316,7 +345,8 @@
                         "error":{'h':'text-white bg-danger',b:{}}
                       };
         if(!type[_$t]) _$t = "info";
-        nT.find('.toast-header').addClass(type[_$t]['h']).find('#header').text($_msg);
+        nT.find('.toast-header').addClass(type[_$t]['h']).find('#header').text($_t ? $_t : _$t);
+        nT.find('.toast-body').addClass(type[_$t]['b']).find('span').text($_msg);
         nT.find('.close').addClass(type[_$t]['h']);
         if(_hT) {
             nT.find(".close").remove();
@@ -330,6 +360,7 @@
         nT.on('hidden.bs.toast', function () {
             $(this).toast('dispose').remove();
         });
+        nT.find('.toast-footer > span').text('now.');
         nT.appendTo(bnt);
         nT.toast('show');
     }//toast out
