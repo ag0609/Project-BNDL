@@ -280,7 +280,7 @@ function main() {
 						if(document.hidden) popout("Collect Completed.", fn, "https://viewer.bookwalker.jp/favicon.ico");
 						_job_time = new Date() - _job_time;
 						console.log("Book Download Time:", _job_time/1000, "sec");
-						toast("", "good", 0, "Job Done");
+						toast("", "success", 0, "Job Done");
 						setTimeout(function() {
 							$(pc).attr('height', '0px');
 							ss.pause();
