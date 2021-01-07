@@ -67,25 +67,26 @@
     let scan = "Scaned By BNDL v0.57(ag0609)";
     //Main UI
     const maindiv = document.createElement('div');
-    const maindiv$extend = {top:0,bottom:'',left:0,right:'',width:'100vw',height:'100vh'};
-    const maindiv$close = {top:'',bottom:0,left:'',right:0,width:'10%',height:'5%'};
+    const maindiv$extend = {width:'100vw',height:'100vh'};
+    const maindiv$close = {width:'10%',height:'5%'};
     $(maindiv).attr("id", 'bndl')
-              .addClass('container text-center p-3')
+              .addClass('container-fluid text-center p-3')
               .css({position:'fixed',
                     top:'50%',left:'50%',
                     transform:'translate(-50%,-50%)',
                     minWidth:'300px',minHeight:'150px',
                     width:'30vw',height:'10vh',
-                    margin:'auto',
+                    margin:'auto', 'z-index':500,
                     backgroundColor:'lightgrey'})
               .hide();
+    $(maindiv).hover(function() {$(this).css({opacity:.7})}, function() {$(this).css({opacity:1})});
     maindiv.ob = new MutationObserver(ProgressBarCallback);
     maindiv.addEventListener('dblclick', function() {
         $(maindiv).toggleClass('extend');
         if($(maindiv).hasClass('extend')) {
-            $(maindiv).css(maindiv$extend);
+            $(maindiv).addClass('w-100 h-100');
         } else {
-            $(maindiv).css(maindiv$close);
+            $(maindiv).removeClass('w-100 h-100');
         }
     });
     const pc = document.createElement('div');
@@ -104,7 +105,6 @@
     $(bndlBTN).attr("id", 'bndl4')
       .attr({"data-default-text":"BNDL", disabled:"true"})
       .addClass('btn-primary')
-      .addClass('disabled')
       .text('BNDL');
     const quaBTN = btn_obj.cloneNode();
     $(quaBTN).addClass('btn-primary')
@@ -301,7 +301,7 @@
     }//popout notification
     function toast($_msg, _$t, _hT, $_t) {
         if(!bnt) {
-            bnt = $("<div>").addClass('toast-container container position-fixed float-end p-3 user-select-none').css({top:0, right:0, width:'20vw', height:'100vh'});
+            bnt = $("<div>").addClass('toast-container container position-fixed float-end p-3 user-select-none').css({top:0, right:0, width:'20vw', height:'100vh','z-index':1070});
             bnt.appendTo('body');
             bnto = $("<div>").addClass('toast')
                              .attr({role:'alert','aria-live':'assertive','aria-atomic':'true'});
