@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20210105.0");
+console.log("Bookwalker Japan", "v20210107.0");
 console.log("Reference:", "https://blog.jixun.moe/intercept-bookwalker-tw-image", "by JiXun");
 let _detail$retry_ = 0;
 let backup;
@@ -128,8 +128,9 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 			}
 			if(askhelp) { //Try ask user for help
 				let userbid = prompt("Sorry, Record not found. Please help search "+ bn +" at bookwalker.jp and paste bookID or detail page link here");
-				if(/^[\/]?de/.test(userbid)) {
-					bid = userbid.match(/de[0-9a-z\-]+/);
+				//de8a5395a0-df91-4c3c-a676-3c948fbc30ed
+				if(/de[0-9a-f]{8}\-(?:[0-9a-f]{4}\-){3}[0-9a-f]{12}/.test(userbid)) {
+					bid = userbid.match(/de[0-9a-f]{8}\-(?:[0-9a-f]{4}\-){3}[0-9a-f]{12}/);
 				} else { //Giveup maybe the best choice for saving lives...
 					Ci.add("/ComicInfo", 'Web', bwhp + bid + '/');
 					return;
@@ -198,7 +199,7 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 					Ci.add("/ComicInfo", "LanguageISO", "ja");
 					Ci.add("/ComicInfo", "BlackAndWhite", "Yes");
 					cty ? Ci.add("/ComicInfo", "Manga", "YesAndRightToLeft") : Ci.add("/ComicInfo", "Manga", "No");
-					toast(fn, "info");
+					toast(fn, "info", 0, "Title");
 				}
 			});
 		}
@@ -279,7 +280,7 @@ function main() {
 						if(document.hidden) popout("Collect Completed.", fn, "https://viewer.bookwalker.jp/favicon.ico");
 						_job_time = new Date() - _job_time;
 						console.log("Book Download Time:", _job_time/1000, "sec");
-						toast("Job Done", "success");
+						toast("", "good", 0, "Job Done");
 						setTimeout(function() {
 							$(pc).attr('height', '0px');
 							ss.pause();
@@ -320,7 +321,7 @@ function main() {
 						ss.play();
 						_init_time = new Date() - _init_time;
 						console.log("Initialization time used:", _init_time/1000, "sec");
-						toast("Job Ready", "info", 10000);
+						toast("", "info", 10000, "Job Ready");
 					}
 				};
 			}, 'image/jpeg', quality);
@@ -341,11 +342,11 @@ cancel = function() {
 	if(startf) {
 		$(bndlBTN).removeAttr("disabled");
 		startf = 0;
-		toast("Job Paused", "warning");
+		toast("", "warning", 5000, "Job Paused");
 	} else {
 		unsafeWindow.NFBR.a6G.a5x.prototype.b9b = backup;
 		$(maindiv).remove();
-		toast("Job Canceled", "warning");
+		toast("", "error", 0, "Job Canceled");
 	}
 }
 const _$IfuBW_NFBR$_ = setInterval(function() {
