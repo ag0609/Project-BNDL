@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Bootstrap version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.58
+// @version      0.60
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://*.bookwalker.jp/*
@@ -229,7 +229,7 @@
             }
             console.groupEnd();
         }
-        bndl_d.toast = () => { toast("Information is a good one to state messages which user may want to acknowlaged. This one will shows up 15 seconds.", "info", 15000, "Information"); toast("This is a message when good news here.", "good", 0, "Success"); toast("This is a message which you are being warned, stay sharp.\nThis message will hide in 6 seconds.", "warning", 6000, "Warning"); toast("Error Message will show up when task catch on error.", "error", 0, "Error"); }
+        bndl_d.toast = () => { toast("Information is a good one to state messages which user may want to acknowlaged. This one will shows up 15 seconds.", "info", 15000, "Information"); toast("This is a message when good news here.", "success", 0, "Success"); toast("This is a message which you are being warned, stay sharp.\nThis message will hide in 6 seconds.", "warning", 6000, "Warning"); toast("Error Message will show up when task catch on error.", "error", 0, "Error"); }
         bndl_d.next = () => { console.warn("no function yet"); }
         bndl_d.prev = () => { console.warn("no function yet"); }
         bndl_d.ob = new MutationObserver(bndl_d.attrchg);
@@ -304,22 +304,21 @@
             bnt = $("<div>").addClass('toast-container container position-fixed float-end p-3 user-select-none').css({top:0, right:0, width:'20vw', height:'100vh'});
             bnt.appendTo('body');
             bnto = $("<div>").addClass('toast')
-                             .attr({role:'alert','aria-live':'assertive','aria-atomic':'true'})
-                             .css({transition:'all ease .7s'});
+                             .attr({role:'alert','aria-live':'assertive','aria-atomic':'true'});
             bnto.toast({autohide:false});
-            let bntoh = $('<div>').addClass('toast-header text-truncate font-weight-blod').html('<span id="header" class="container-fluid"></span>');
+            let bntoh = $('<div>').addClass('toast-header text-truncate font-weight-bold').html('<span id="header" class="container-fluid"></span>');
             bntoh.appendTo(bnto);
             let bntob = $('<div>').addClass('toast-body').html('<span id="body" class="container-fluid"></span>');
             bntob.appendTo(bnto);
-            let bntof = $('<div>').addClass('toast-footer text-right font-weight-light font-italic').html('<span id="body" class="container-fluid"></span>');
+            let bntof = $('<div>').addClass('toast-footer text-muted text-right font-weight-light font-italic').html('<small class="timebadge container-fluid"></small><div class="timebar"></div>');
             bntof.appendTo(bnto);
             $('<button>').addClass('close')
                           .attr({type:'button','data-bs-dismiss':'toast','aria-label':'Close'})
                           .html('<span aria-hidden="true">&times;</span>').appendTo(bntoh);
             setInterval(function() {
-                let toastList = $('.toast:not(.latest)').find('.toast-footer');
-                toastList.find('span').text(function() {
-                    let diff = (Date.now() - $(this).parent().attr('aria-timestamp'))/1000;
+                const toastList = $('.toast:not(.latest)').find('.toast-footer');
+                toastList.find('.timebadge').text(function() {
+                    const diff = (Date.now() - $(this).parent().attr('aria-timestamp'))/1000;
                     if(diff >= 60*60*24*365) {
                         return Math.floor(diff/(60*60*24*365)) + " years ago.";
                     } else if(diff >= 60*60*24*30) {
@@ -340,17 +339,21 @@
         nT.find('.toast-footer').attr({'aria-timestamp':Date.now()});
         const type = {
                         "info":{'h':'text-white bg-primary', b:{}},
-                        "good":{'h':'text-white bg-success',b:{}},
+                        "success":{'h':'text-white bg-success',b:{}},
                         "warning":{'h':'text-white bg-warning',b:{}},
                         "error":{'h':'text-white bg-danger',b:{}}
                       };
         if(!type[_$t]) _$t = "info";
         nT.find('.toast-header').addClass(type[_$t]['h']).find('#header').text($_t ? $_t : _$t);
-        nT.find('.toast-body').addClass(type[_$t]['b']).find('span').text($_msg);
+        if($_msg) { nT.find('.toast-body').addClass(type[_$t]['b']).find('span').text($_msg); } else { nT.find('.toast-body').hide(); }
         nT.find('.close').addClass(type[_$t]['h']);
         if(_hT) {
             nT.find(".close").remove();
             nT.toast({autohide:true, delay:_hT});
+            nT.find('.toast-footer > .timebar').css({transition:'width '+(_hT/1000).toFixed(2)+'s linear', width:'100%',height:'2px'}).addClass('bg-'+_$t);
+            nT.on('shown.bs.toast', function() {
+                $(this).find('.toast-footer > .timebar').css({width:'0%'});
+            });
         } else {
             nT.toast({autohide:false});
             nT.find('.close').on("click", function() {
@@ -360,7 +363,7 @@
         nT.on('hidden.bs.toast', function () {
             $(this).toast('dispose').remove();
         });
-        nT.find('.toast-footer > span').text('now.');
+        nT.find('.toast-footer > .timebadge').text('now.');
         nT.appendTo(bnt);
         nT.toast('show');
     }//toast out
