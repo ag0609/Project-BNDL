@@ -245,7 +245,7 @@ XMLHttpRequest.prototype.send = function() {
                                         "caching":0,
                                         "blob":null
                                     };
-                                    $(img_list[hn].canvas).attr(width:playfile[hn].image.optimized.width, height:playfile[hn].image.optimized.height);
+                                    $(img_list[hn].canvas).attr({width:playfile[hn].image.optimized.width, height:playfile[hn].image.optimized.height});
                                     $(img_list[hn].img).addClass("pswp__preload").attr("crossOrigin","anonymous");
                                 }
                             }
@@ -262,7 +262,7 @@ XMLHttpRequest.prototype.send = function() {
                                 "caching":0,
                                 "blob":null
                             };
-                            $(img_list[hn].canvas).attr(width:playfile[hn].image.optimized.width, height:playfile[hn].image.optimized.height);
+                            $(img_list[hn].canvas).attr({width:playfile[hn].image.optimized.width, height:playfile[hn].image.optimized.height});
                             $(img_list[hn].img).addClass("pswp__preload").attr("crossOrigin","anonymous");
                         }
                     } catch(e) { console.error("Parsing ztree.json failed.", e.message); };
@@ -494,7 +494,7 @@ function zip2pdf2img(url=null) {
                                         zip.generateAsync({type:"blob"}, function updateCallback(metadata) {
                                             pchk = metadata.percent.toFixed(2);
                                             document.title = "["+ pchk +"%] Generating Zip...";
-                                            pc.setAttribute('value', pchk);
+                                            $(pcv).attr('aria-valuenow', pchk);
                                         }).then((blob) => {
                                             clearInterval(bchk);
                                             console.debug('100%');
@@ -548,6 +548,7 @@ start = function() {
         }
     }
     if(cango) {
+        console.debug('go');
         startf=1;
         $(bndlBTN).attr({disabled:true});
         $(maindiv).addClass('w-100 h-100');
@@ -556,19 +557,23 @@ start = function() {
         //if(autoplay.length) autoplay[0].click();
         console.time('Job Time');
         if(next) next();
+    } else {
+        console.debug('cannot go');
     }
 }
 cancel = function() {
     if(startf) {
-        $(bndlBTN).attr({disabled:false});
+        $(bndlBTN).removeAttr('disabled');
         $(maindiv).removeClass('w-100 h-100');
         startf=0;
         ss.pause();
+        toast("", "warning", 10000, "Job Paused");
         //if(autoplay.length) autoplay[0].click();
     } else {
         CanvasRenderingContext2D.prototype.drawImage = CanvasRenderingContext2D.prototype.odI;
         XMLHttpRequest.prototype.send = XMLHttpRequest.prototype.osend;
         $(maindiv).remove();
+        toast("", "error", 0, "Job Canceled");
     }
 }
 var img_list = [];
@@ -584,8 +589,10 @@ const hashcheck = setInterval(function() {
             if(/view/.test(cl)) {
                 butcheck();
                 console.time("Ready Time");
-                $(maindiv).removeClass('w-100 h-100').show();
-                if($("#bndl_dl") != null) { let a = $("#bndl_dl"); URL.revokeObjectURL(a.href); btn.removeChild(a); }
+                $(maindiv).removeClass('w-100 h-100');
+                $(maindiv).show();
+                $(pc).css({height:'16px'});
+                if($("#bndl_dl") != null) { let a = $("#bndl_dl"); URL.revokeObjectURL(a.href); $(a).remove(); }
                 let tpa = cl.split("%2F");
                 if(tpa.length > 1) {
                     if(/\.pdf$/.test(tpa[tpa.length-1])) {
@@ -611,7 +618,7 @@ const hashcheck = setInterval(function() {
                             last_img = $("div.thumbnail").length;
                             $("div.thumbnail").css({opacity:0});
                         } else {
-                            clearInterval(hideimg);   
+                            clearInterval(hideimg);
                         }
                     }, 1000);
                 }
@@ -633,7 +640,7 @@ const hashcheck = setInterval(function() {
                         last_img = $("div.thumbnail").length;
                         $("div.thumbnail").css({opacity:0});
                     } else {
-                        clearInterval(hideimg);   
+                        clearInterval(hideimg);
                     }
                 }, 1000);
             }
@@ -655,9 +662,9 @@ const butcheck = () => {
                 prev = () => { prev_but.click() }
                 if(debug_enable) bndl_d.prev = prev;
                 console.debug("controls catcha: %o", [autoplay, spread, next_but, prev_but]);
-                if(spread.classList.contains("on")) { spread.click(); }
+                if($(spread).hasClass("on")) { spread.click(); }
                 clearInterval(bc);
-                bndlBTN.disabled=false;
+                $(bndlBTN).removeAttr('disabled');
                 console.timeEnd("Ready Time");
             }
         }, 100);
