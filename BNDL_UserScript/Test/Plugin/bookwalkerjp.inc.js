@@ -275,12 +275,12 @@ function main() {
 						console.groupEnd();
 						const e = new MouseEvent("click");
 						const a = document.createElement('a');
-						$(a).attr({download:fn+".zip", href:Url}).text('Download').appendTo($(maindiv)).click();
+						$(a).attr({download:fn+".zip", href:Url}).text('Download').appendTo($(maindiv));
 						window.document.title = "\u2705" + on;
 						if(document.hidden) popout("Collect Completed.", fn, "https://viewer.bookwalker.jp/favicon.ico");
 						_job_time = new Date() - _job_time;
 						console.log("Book Download Time:", _job_time/1000, "sec");
-						toast("", "success", 0, "Job Done");
+						toast($(a), "success", 0, "Job Done");
 						setTimeout(function() {
 							$(pc).attr('height', '0px');
 							ss.pause();
