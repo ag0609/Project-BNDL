@@ -4,7 +4,10 @@
 // @version      0.61
 // @description  Don't use if you don't know what is this
 // @author       ag0609
-// @match        https://*.bookwalker.jp/*
+// @match        https://viewer.bookwalker.jp/*
+// @match        https://viewer-trial.bookwalker.jp/*
+// @match        https://viewer-ptrial.bookwalker.jp/*
+// @match        https://viewer-subscription.bookwalker.jp/*
 // @match        https://play.dlsite.com/*
 // @match        https://booklive.jp/bviewer/s/*
 // @require      https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js
