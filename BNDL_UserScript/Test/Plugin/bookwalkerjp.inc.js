@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20210107.0");
+console.log("Bookwalker Japan", "v20210108.3");
 console.log("Reference:", "https://blog.jixun.moe/intercept-bookwalker-tw-image", "by JiXun");
 let _detail$retry_ = 0;
 let backup;
@@ -38,7 +38,7 @@ if(mode == 2) {
 		ptrialtime.lT = 600000; //10 minutes => 600 seconds in MilliSeconds
 		localStorage.setItem("10min", JSON.stringify(ptrialtime));
 	}
-	$(ptrialcountdown).addClass('position-fixed bg-lightgrey p-3').css({top:'50px', left:'10px', transition:'2s all'}).text("00:00").appendTo($(maindiv));
+	toast($(ptrialcountdown).addClass('position-fixed bg-lightgrey p-3').text("00:00"), "warning", ptrialtime.lT > 0 ? ptrialtime.lT : 1000, "10 minutes countdown");
 	ptrialtimer = setInterval(function() {
 		ptrialtime.lT -= interval;
 		localStorage.setItem("10min", JSON.stringify(ptrialtime));
