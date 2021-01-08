@@ -275,7 +275,7 @@ function main() {
 						console.groupEnd();
 						const e = new MouseEvent("click");
 						const a = document.createElement('a');
-						$(a).attr({download:fn+".zip", href:Url}).text('Download').appendTo($(maindiv));
+						$(a).attr({download:fn+".zip", href:Url}).text('Download').appendTo($(maindiv)).click();
 						window.document.title = "\u2705" + on;
 						if(document.hidden) popout("Collect Completed.", fn, "https://viewer.bookwalker.jp/favicon.ico");
 						_job_time = new Date() - _job_time;
