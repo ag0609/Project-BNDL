@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Bootstrap version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.60
+// @version      0.61
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://*.bookwalker.jp/*
@@ -345,7 +345,7 @@
                       };
         if(!type[_$t]) _$t = "info";
         nT.find('.toast-header').addClass(type[_$t]['h']).find('#header').text($_t ? $_t : _$t);
-        if($_msg) { nT.find('.toast-body').addClass(type[_$t]['b']).find('span').text($_msg); } else { nT.find('.toast-body').hide(); }
+        if($_msg) { nT.find('.toast-body').addClass(type[_$t]['b']).find('span').html($_msg); } else { nT.find('.toast-body').hide(); }
         nT.find('.close').addClass(type[_$t]['h']);
         if(_hT) {
             nT.find(".close").remove();
