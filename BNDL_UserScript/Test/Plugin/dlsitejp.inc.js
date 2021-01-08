@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20201213.0");
+console.log("Dlsite Play Japan ver20210108.0");
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
@@ -264,10 +264,8 @@ XMLHttpRequest.prototype.send = function() {
                                 "caching":0,
                                 "blob":null
                             };
-                            img_list[hn].canvas.width = playfile[hn].image.optimized.width;
-                            img_list[hn].canvas.height = playfile[hn].image.optimized.height;
-                            img_list[hn].img.classList.add("pswp__preload");
-                            img_list[hn].img.crossOrigin = "anonymous";
+                            $(img_list[hn].canvas).attr(width:playfile[hn].image.optimized.width, height:playfile[hn].image.optimized.height);
+                            $(img_list[hn].img).addClass("pswp__preload").attr("crossOrigin","anonymous");
                         }
                     } catch(e) { console.error("Parsing ztree.json failed.", e.message); };
                 }
@@ -328,23 +326,23 @@ CanvasRenderingContext2D.prototype.hdI = function() {
                         //
                         URL.revokeObjectURL(blob);
                         URL.revokeObjectURL(img_list[hn].blob);
-                        pc.setAttribute("max", totp);
-                        pc.setAttribute("value", curp);
+                        $(pcv).attr("aria-valuemax", totp);
+                        $(pcv).attr("aria-valuenow", curp);
                         console.log(curp+"/"+totp);
-                        pc.setAttribute("data-label", curp+"/"+totp);
+                        $(pcv).find('span').text(curp+"/"+totp);
                         if(curp >= totp) {
                             if(!to) {
                                 if(pages) Ci.addPageCollection(pages);
-                                pc.classList.add('zip');
-                                pc.setAttribute("min", 0);
-                                pc.setAttribute("max", 100);
+                                $(pcv).addClass('bg-success');
+                                $(pcv).attr("aria-valuemin", 0);
+                                $(pcv).attr("aria-valuemax", 100);
                                 zip.file("ComicInfo.xml", Ci.toString(), {type: "text/xml"});
                                 console.groupCollapsed('Zip progress');
                                 console.log("Progress will be hidden at debug level");
                                 let pchk = 0;
                                 let bchk = setInterval(function() {
                                     console.debug(pchk+'%');
-                                    pc.setAttribute("data-label", "Generating zip...("+ pchk +"%)");
+                                    $(pcv).find('span').text("Generating zip...("+ pchk +"%)");
                                     //window.document.title = "["+Math.ceil(pchk)+"%] "+on;
                                     //favicon.badge(Math.ceil(pchk), {'bgColor':'#6a7'});
                                 }, 1000);
@@ -353,26 +351,27 @@ CanvasRenderingContext2D.prototype.hdI = function() {
                                     console.time("Zip Generate");
                                     zip.generateAsync({type:"blob"}, function updateCallback(metadata) {
                                         pchk = metadata.percent.toFixed(2);
-                                        pc.setAttribute('value', pchk);
+                                        $(pcv).attr('aria-valuenow', pchk.toFixed(2));
                                     }).then(function(blob) {
                                         clearInterval(bchk);
-                                        console.debug('100%');
                                         console.timeEnd("Zip Generate");
                                         console.groupEnd();
                                         const Url = window.URL.createObjectURL(blob);
                                         const e = new MouseEvent("click");
                                         const a = document.createElement('a');
-                                        a.id = "bndl_dl";
-                                        a.innerHTML = 'Download';
-                                        a.download = fn;
-                                        a.href = Url;
+                                        $(a).attr({id:"bndl_dl",
+                                                    download:fn,
+                                                    href:Url
+                                                 }).text('Download'); 
                                         a.dispatchEvent(e);
-                                        btn.appendChild(a);
+                                        toast($(a), "success", 0, "Job Done");
                                         //URL.revokeObjectURL(blob);
-                                        pc.classList.remove("start");
+                                        $(pc).css({height:'0px'});
+                                        $(pcv).removeClass('bg-success');
+                                        $(pcv).find('span').text('');
                                         console.timeEnd('Job Time');
                                         startf=0;
-                                        bndlBTN.disabled=false;
+                                        $(bndlBTN).attr({disabled:false});
                                     }).catch(e => {
                                         console.error("JSZip generate zip failed");
                                         console.error(e.message);
@@ -490,7 +489,7 @@ function zip2pdf2img(url=null) {
                                         let pchk = 0;
                                         let bchk = setInterval(function() {
                                             console.debug(pchk+'%');
-                                            pc.setAttribute("data-label", "Generating zip...("+ pchk +"%)");
+                                            $(pcv).find('span').text("Generating zip...("+ pchk +"%)");
                                             //window.document.title = "["+Math.ceil(pchk)+"%] "+on;
                                             //favicon.badge(Math.ceil(pchk), {'bgColor':'#6a7'});
                                         }, 1000);
@@ -506,18 +505,20 @@ function zip2pdf2img(url=null) {
                                             const Url = window.URL.createObjectURL(blob);
                                             const e = new MouseEvent("click");
                                             const a = document.createElement('a');
-                                            a.id = "bndl_dl";
-                                            a.innerHTML = 'Download';
-                                            a.download = fn;
-                                            a.href = Url;
+                                            $(a).attr({id:"bndl_dl",
+                                                        download:fn,
+                                                        href:Url
+                                                      }).text('Download'); 
                                             a.dispatchEvent(e);
-                                            btn.appendChild(a);
                                             document.title = org_tit;
                                             URL.revokeObjectURL(blob);
-                                            pc.classList.remove("start");
+                                            $(pc).css({height:'0px'});
+                                            $(pcv).removeClass('bg-success');
+                                            $(pcv).find('span').text('');
+                                            toast($(a), "success", 0, "Job Success");
                                             console.timeEnd('Job Time');
                                             startf=0;
-                                            bndlBTN.disabled=false;
+                                            $(bndlBTN).attr({disabled:false});
                                         }).catch(e => {
                                             console.error("JSZip generate zip failed");
                                             console.error(e.message);
@@ -550,10 +551,9 @@ start = function() {
     }
     if(cango) {
         startf=1;
-        bndlBTN.disabled=true;
-        btn.classList.add('extend');
-        btn.classList.add('start');
-        pc.classList.add('start');
+        $(bndlBTN).attr({disabled:true});
+        $(maindiv).addClass('w-100 h-100');
+        $(pc).css({height:'16px'});
         ss.play();
         //if(autoplay.length) autoplay[0].click();
         console.time('Job Time');
@@ -562,16 +562,15 @@ start = function() {
 }
 cancel = function() {
     if(startf) {
-        bndlBTN.disabled=false;
-        btn.classList.remove('extend');
-        btn.classList.remove('start');
+        $(bndlBTN).attr({disabled:false});
+        $(maindiv).removeClass('w-100 h-100');
         startf=0;
         ss.pause();
         //if(autoplay.length) autoplay[0].click();
     } else {
         CanvasRenderingContext2D.prototype.drawImage = CanvasRenderingContext2D.prototype.odI;
         XMLHttpRequest.prototype.send = XMLHttpRequest.prototype.osend;
-        document.body.removeChild(btn);
+        $(maindiv).remove();
     }
 }
 var img_list = [];
@@ -587,10 +586,8 @@ const hashcheck = setInterval(function() {
             if(/view/.test(cl)) {
                 butcheck();
                 console.time("Ready Time");
-                btn.style.display = "flex";
-                btn.classList.remove("start");
-                btn.classList.remove("close");
-                if(document.getElementById("bndl_dl") != null) { let a = document.getElementById("bndl_dl"); URL.revokeObjectURL(a.href); btn.removeChild(a); }
+                $(maindiv).removeClass('w-100 h-100').show();
+                if($("#bndl_dl") != null) { let a = $("#bndl_dl"); URL.revokeObjectURL(a.href); btn.removeChild(a); }
                 let tpa = cl.split("%2F");
                 if(tpa.length > 1) {
                     if(/\.pdf$/.test(tpa[tpa.length-1])) {
@@ -607,18 +604,18 @@ const hashcheck = setInterval(function() {
                     cancel();
                     clearBlob();
                 }
-                btn.style.display = "none";
+                $(maindiv).hide();
                 clearInterval(hideimg);
                 if(debug_enable && !show_org) {
+                    let last_img=0;
                     hideimg = setInterval(function() {
-                        if($("div.thumbnail").length) {
-                            for(let t=0; t<$("div.thumbnail").length; t++) {
-                                //console.log($("div.thumbnail")[t]);
-                                $("div.thumbnail")[t].style.opacity = 0;
-                            }
-                            clearInterval(hideimg);
+                        if($("div.thumbnail").length > last_img) {
+                            last_img = $("div.thumbnail").length;
+                            $("div.thumbnail").css({opacity:0});
+                        } else {
+                            clearInterval(hideimg);   
                         }
-                    }, 100);
+                    }, 1000);
                 }
                 tp = decodeURIComponent(cl.split(/tree/)[1].substr(1));
             }
@@ -629,18 +626,18 @@ const hashcheck = setInterval(function() {
                 console.log("zt not ready");
             }
         } else {
-            btn.style.display = "none";
+            $(maindiv).hide();
             clearInterval(hideimg);
             if(debug_enable && !show_org) {
+                let last_img=0;
                 hideimg = setInterval(function() {
-                    if($("div.thumbnail").length) {
-                        for(let t=0; t<$("div.thumbnail").length; t++) {
-                            //console.log($("div.thumbnail")[t]);
-                            $("div.thumbnail")[t].style.opacity = 0;
-                        }
-                        clearInterval(hideimg);
+                    if($("div.thumbnail").length > last_img) {
+                        last_img = $("div.thumbnail").length;
+                        $("div.thumbnail").css({opacity:0});
+                    } else {
+                        clearInterval(hideimg);   
                     }
-                }, 100);
+                }, 1000);
             }
         }
     }
