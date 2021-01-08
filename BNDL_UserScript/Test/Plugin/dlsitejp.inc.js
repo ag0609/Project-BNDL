@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20210108.0");
+console.log("Dlsite Play Japan ver20210108.1");
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
@@ -245,10 +245,8 @@ XMLHttpRequest.prototype.send = function() {
                                         "caching":0,
                                         "blob":null
                                     };
-                                    img_list[phn].canvas.width = pdfroot[p].optimized.width;
-                                    img_list[phn].canvas.height = pdfroot[p].optimized.height;
-                                    img_list[phn].img.classList.add("pswp__preload");
-                                    img_list[phn].img.crossOrigin = "anonymous";
+                                    $(img_list[hn].canvas).attr(width:playfile[hn].image.optimized.width, height:playfile[hn].image.optimized.height);
+                                    $(img_list[hn].img).addClass("pswp__preload").attr("crossOrigin","anonymous");
                                 }
                             }
                         } else if(/\.(?:jp[e]?g|png|bmp)$/.test(hn)) {
