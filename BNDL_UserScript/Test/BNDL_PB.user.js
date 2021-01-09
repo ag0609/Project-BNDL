@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Bootstrap version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.61
+// @version      0.62
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://viewer.bookwalker.jp/*
@@ -79,7 +79,7 @@
                     transform:'translate(-50%,-50%)',
                     minWidth:'300px',minHeight:'150px',
                     width:'30vw',height:'10vh',
-                    margin:'auto', 'z-index':500,
+                    margin:'auto', 'z-index':10000,
                     backgroundColor:'lightgrey'})
               .hide();
     $(maindiv).hover(function() {$(this).css({opacity:.7})}, function() {$(this).css({opacity:1})});
@@ -304,14 +304,15 @@
     }//popout notification
     function toast($_msg, _$t, _hT, $_t) {
         if(!bnt) {
-            bnt = $("<div>").addClass('toast-container container position-fixed float-end p-3 user-select-none').css({top:0, right:0, width:'20vw', height:'100vh','z-index':1070});
+            bnt = $("<div>").addClass('toast-container container position-fixed float-end p-3 user-select-none').css({top:0, right:0, width:'20vw', height:'100vh'});
             bnt.appendTo('body');
-            bnto = $("<div>").addClass('toast')
-                             .attr({role:'alert','aria-live':'assertive','aria-atomic':'true'});
+            bnto = $("<div>").addClass('toast position-relative p-0 bg-white')
+                             .attr({role:'alert','aria-live':'assertive','aria-atomic':'true'})
+                             .css({'z-index':10700});
             bnto.toast({autohide:false});
             let bntoh = $('<div>').addClass('toast-header text-truncate font-weight-bold').html('<span id="header" class="container-fluid"></span>');
             bntoh.appendTo(bnto);
-            let bntob = $('<div>').addClass('toast-body').html('<span id="body" class="container-fluid"></span>');
+            let bntob = $('<div>').addClass('toast-body text-dark font-weight-normal').html('<span id="body" class="container-fluid"></span>');
             bntob.appendTo(bnto);
             let bntof = $('<div>').addClass('toast-footer text-muted text-right font-weight-light font-italic').html('<small class="timebadge container-fluid"></small><div class="timebar"></div>');
             bntof.appendTo(bnto);
