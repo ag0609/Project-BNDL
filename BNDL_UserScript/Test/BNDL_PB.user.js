@@ -79,7 +79,7 @@
                     transform:'translate(-50%,-50%)',
                     minWidth:'300px',minHeight:'150px',
                     width:'30vw',height:'10vh',
-                    margin:'auto', 'z-index':10000,
+                    margin:'auto', 'z-index':1000000,
                     backgroundColor:'lightgrey'})
               .hide();
     $(maindiv).hover(function() {$(this).css({opacity:.7})}, function() {$(this).css({opacity:1})});
@@ -304,7 +304,7 @@
     }//popout notification
     function toast($_msg, _$t, _hT, $_t) {
         if(!bnt) {
-            bnt = $("<div>").addClass('toast-container container position-fixed float-end p-3 user-select-none').css({top:0, right:0, width:'20vw', height:'100vh','z-index':10700});
+            bnt = $("<div>").addClass('toast-container container position-fixed float-end p-3 user-select-none').css({top:0, right:0, width:'20vw', height:'100vh','z-index':1070000});
             bnt.appendTo('body');
             bnto = $("<div>").addClass('toast position-relative p-0 bg-white')
                              .attr({role:'alert','aria-live':'assertive','aria-atomic':'true'});
