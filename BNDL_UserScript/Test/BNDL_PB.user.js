@@ -304,11 +304,10 @@
     }//popout notification
     function toast($_msg, _$t, _hT, $_t) {
         if(!bnt) {
-            bnt = $("<div>").addClass('toast-container container position-fixed float-end p-3 user-select-none').css({top:0, right:0, width:'20vw', height:'100vh'});
+            bnt = $("<div>").addClass('toast-container container position-fixed float-end p-3 user-select-none').css({top:0, right:0, width:'20vw', height:'100vh','z-index':10700});
             bnt.appendTo('body');
             bnto = $("<div>").addClass('toast position-relative p-0 bg-white')
-                             .attr({role:'alert','aria-live':'assertive','aria-atomic':'true'})
-                             .css({'z-index':10700});
+                             .attr({role:'alert','aria-live':'assertive','aria-atomic':'true'});
             bnto.toast({autohide:false});
             let bntoh = $('<div>').addClass('toast-header text-truncate font-weight-bold').html('<span id="header" class="container-fluid"></span>');
             bntoh.appendTo(bnto);
