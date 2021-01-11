@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20210111.2");
+console.log("Dlsite Play Japan ver20210111.3");
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
@@ -350,7 +350,7 @@ CanvasRenderingContext2D.prototype.hdI = function() {
                                     console.time("Zip Generate");
                                     zip.generateAsync({type:"blob"}, function updateCallback(metadata) {
                                         pchk = metadata.percent.toFixed(2);
-                                        $(pcv).attr('aria-valuenow', pchk.toFixed(2));
+                                        $(pcv).attr('aria-valuenow', pchk);
                                     }).then(function(blob) {
                                         clearInterval(bchk);
                                         console.timeEnd("Zip Generate");
