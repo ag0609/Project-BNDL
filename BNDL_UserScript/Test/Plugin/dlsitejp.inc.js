@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20210111.1");
+console.log("Dlsite Play Japan ver20210111.2");
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
@@ -540,16 +540,22 @@ function zip2pdf2img(url=null) {
         //use local file?
     }
 }
-debug.zip2img = zip2pdf2img;
+bndl_d.zip2img = zip2pdf2img;
 start = function() {
     let cango=0;
     if(pr) {
-        if(pr.dl_format == 0) {
-            if(confirm("This product is not DRM protected. Using HTML5 Downloader only collect down-scaled quality images.\nAre you sure want to continue?")) {
+        switch(pr.dl_format) {
+            case 0:  //RAW
+                if(confirm("This product is not DRM protected. Using HTML5 Downloader only collect down-scaled quality images.\nAre you sure want to continue?")) {
+                    cango=1;
+                }
+                break;
+            case 9:  //DLST, DLViewer Encrypted
+            case 17: //DLView Only
                 cango=1;
-            }
-        } else if(pr.dl_format == 17) {
-            cango=1;
+                break;
+            default:
+                cango=1;
         }
     }
     if(cango) {
