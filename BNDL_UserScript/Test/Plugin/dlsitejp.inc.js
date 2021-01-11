@@ -561,6 +561,7 @@ start = function() {
         console.debug('cannot go');
     }
 }
+bndl_d.start = start;
 cancel = function() {
     if(startf) {
         $(bndlBTN).removeAttr('disabled');
@@ -576,6 +577,7 @@ cancel = function() {
         toast("", "error", 0, "Job Canceled");
     }
 }
+bndl_d.stop = cancel;
 var img_list = [];
 let hideimg;
 const hashcheck = setInterval(function() {
@@ -657,10 +659,10 @@ const butcheck = () => {
                 spread = $(".toggle-spread-pages").detach()[0];
                 let next_but = $(".pswp__button--arrow--left")[0];
                 next = () => { next_but.click() };
-                if(debug_enable) bndl_d.next = next;
+                bndl_d.next = next;
                 let prev_but = $(".pswp__button--arrow--right")[0];
                 prev = () => { prev_but.click() }
-                if(debug_enable) bndl_d.prev = prev;
+                bndl_d.prev = prev;
                 console.debug("controls catcha: %o", [autoplay, spread, next_but, prev_but]);
                 if($(spread).hasClass("on")) { spread.click(); }
                 clearInterval(bc);
