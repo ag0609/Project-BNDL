@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Bootstrap version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.63
+// @version      0.64
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://viewer.bookwalker.jp/*
@@ -232,7 +232,17 @@
             }
             console.groupEnd();
         }
-        bndl_d.toast = () => { toast("Information is a good one to state messages which user may want to acknowlaged. This one will shows up 15 seconds.", "info", 15000, "Information"); toast("This is a message when good news here.", "success", 0, "Success"); toast("This is a message which you are being warned, stay sharp.\nThis message will hide in 6 seconds.", "warning", 6000, "Warning"); toast("Error Message will show up when task catch on error.", "error", 0, "Error"); }
+        bndl_d.toast = function() {
+            const args = arguments;
+            if(args.length == 0) {
+                toast("Information is a good one to state messages which user may want to acknowlaged. This one will shows up 15 seconds.", "info", 15000, "Information");
+                toast("This is a message when good news here.", "success", 0, "Success");
+                toast("This is a message which you are being warned, stay sharp.\nThis message will hide in 6 seconds.", "warning", 6000, "Warning");
+                toast("Error Message will show up when task catch on error.", "error", 0, "Error");
+            } else {
+                toast(...args);
+            }
+        }
         bndl_d.next = () => { console.warn("no function yet"); }
         bndl_d.prev = () => { console.warn("no function yet"); }
         bndl_d.ob = new MutationObserver(bndl_d.attrchg);
@@ -306,7 +316,7 @@
         if(!bnt) {
             bnt = $("<div>").addClass('toast-container container position-fixed float-end overflow-auto p-3 user-select-none').css({top:0, right:0, width:'20vw', height:'100vh','z-index':1070000});
             bnt.appendTo('body');
-            bnto = $("<div>").addClass('toast sticky-top p-0 bg-white')
+            bnto = $("<div>").addClass('toast sticky-top w-100 p-0 bg-white')
                              .attr({role:'alert','aria-live':'assertive','aria-atomic':'true'});
             bnto.toast({autohide:false});
             let bntoh = $('<div>').addClass('toast-header text-truncate font-weight-bold').html('<span id="header" class="container-fluid"></span>');
@@ -341,22 +351,29 @@
         const nT = bnto.clone();
         nT.find('.toast-footer').attr({'aria-timestamp':Date.now()});
         const type = {
-                        "info":{'h':'text-white bg-primary', b:{}},
-                        "success":{'h':'text-white bg-success',b:{}},
-                        "warning":{'h':'text-white bg-warning',b:{}},
-                        "error":{'h':'text-white bg-danger',b:{}}
-                      };
-        if(!type[_$t]) _$t = "info";
-        nT.find('.toast-header').addClass(type[_$t]['h']).find('#header').text($_t ? $_t : _$t);
+            info:['text-white', 'bg-primary'],
+            success:['text-white', ''],
+            warning:['text-white', ''],
+            danger:['text-white', ''],
+            default:['text-dark', 'bg-'+_$t]
+        };
+        for(const k of type[_$t].keys()) {
+            if(type[_$t][k] == '') type[_$t][k] = type['default'][k];
+        }
+        nT.find('.toast-header').addClass(type[_$t].join(' ')).find('#header').text($_t ? $_t : _$t);
         if($_msg) { nT.find('.toast-body').addClass(type[_$t]['b']).find('span').html($_msg); } else { nT.find('.toast-body').hide(); }
         nT.find('.close').addClass(type[_$t]['h']);
-        if(_hT) {
+        if(_hT != 0) {
             nT.find(".close").remove();
-            nT.toast({autohide:true, delay:_hT});
-            nT.find('.toast-footer > .timebar').css({transition:'width '+(_hT/1000).toFixed(2)+'s linear', width:'100%',height:'2px'}).addClass('bg-'+_$t);
-            nT.on('shown.bs.toast', function() {
-                $(this).find('.toast-footer > .timebar').css({width:'0%'});
-            });
+            if(_hT > 0) {
+                nT.toast({autohide:true, delay:_hT});
+                nT.find('.toast-footer > .timebar').css({transition:'width '+(_hT/1000).toFixed(2)+'s linear', width:'100%',height:'2px'}).addClass('bg-'+_$t);
+                nT.on('shown.bs.toast', function() {
+                    $(this).find('.toast-footer > .timebar').css({width:'0%'});
+                });
+            } else {
+                nT.toast({autohide:false});
+            }
         } else {
             nT.toast({autohide:false});
             nT.find('.close').on("click", function() {
