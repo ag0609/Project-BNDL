@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Bootstrap version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.65
+// @version      0.66
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://viewer.bookwalker.jp/*
@@ -333,15 +333,15 @@
                 const toastList = $('.toast:not(.latest)').find('.toast-footer');
                 toastList.find('.timebadge').text(function() {
                     const diff = (Date.now() - $(this).parent().attr('aria-timestamp'))/1000;
-                    if(diff >= 60*60*24*365) {
+                    if(Math.abs(diff) >= 60*60*24*365) {
                         return Math.floor(diff/(60*60*24*365)) + " years ago.";
-                    } else if(diff >= 60*60*24*30) {
+                    } else if(Math.abs(diff) >= 60*60*24*30) {
                         return Math.floor(diff/(60*60*24*30)) + " months ago.";
-                    } else if(diff >= 60*60*24) {
+                    } else if(Math.abs(diff) >= 60*60*24) {
                         return Math.floor(diff/(60*60*24)) + " days ago.";
-                    } else if(diff >= 60*60) {
-                        return Math.floor(diff/(60*60)) + " hours " + Math.floor(diff/60) + " minutes ago.";
-                    } else if(diff >= 60) {
+                    } else if(Math.abs(diff) >= 60*60) {
+                        return Math.floor(diff/(60*60)) + " hours " + Math.floor((diff/60)%60) + " minutes ago.";
+                    } else if(Math.abs(diff) >= 60) {
                         return Math.floor(diff/60) + " minutes " + Math.floor(diff%60) + " seconds ago.";
                     } else {
                         return Math.floor(diff) + " seconds ago.";
