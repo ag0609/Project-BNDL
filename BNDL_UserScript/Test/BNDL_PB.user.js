@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Bootstrap version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.64
+// @version      0.65
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://viewer.bookwalker.jp/*
@@ -76,6 +76,7 @@
               .addClass('container-fluid text-center p-3')
               .css({position:'fixed',
                     top:'50%',left:'50%',
+                    transition:'all 1s',
                     transform:'translate(-50%,-50%)',
                     minWidth:'300px',minHeight:'150px',
                     width:'30vw',height:'10vh',
