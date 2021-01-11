@@ -315,17 +315,21 @@
     }//popout notification
     function toast($_msg, _$t, _hT, $_t) {
         if(!bnt) {
-            bnt = $("<div>").addClass('toast-container container position-fixed float-end overflow-auto p-3 user-select-none').css({top:0, right:0, width:'20vw', height:'100vh','z-index':1070000});
+            bnt = $("<div>").addClass('toast-container container position-fixed float-end overflow-auto w-25 h-100 p-3 user-select-none').css({top:0, right:0, 'z-index':1070000});
             bnt.appendTo('body');
             bnto = $("<div>").addClass('toast sticky-top w-100 p-0 bg-white')
                              .attr({role:'alert','aria-live':'assertive','aria-atomic':'true'});
             bnto.toast({autohide:false});
-            let bntoh = $('<div>').addClass('toast-header text-truncate font-weight-bold').html('<span id="header" class="container-fluid"></span>');
+            let bntoh = $('<div>').addClass('toast-header text-truncate text-start font-weight-bold').html('<span id="header" class="container-fluid"></span>');
             bntoh.appendTo(bnto);
-            let bntob = $('<div>').addClass('toast-body text-dark font-weight-normal').html('<span id="body" class="container-fluid"></span>');
+            let bntob = $('<div>').attr({id:"toast-body"}).addClass('toast-body collapse show text-dark font-weight-normal').html('<span class="container-fluid"></span>');
             bntob.appendTo(bnto);
             let bntof = $('<div>').addClass('toast-footer text-muted text-right font-weight-light font-italic').html('<small class="timebadge container-fluid"></small><div class="timebar"></div>');
             bntof.appendTo(bnto);
+            $('<button>').addClass('btn collapsed')
+                          .attr({type:'button', 'data-toggle':'collapse', 'aria-expanded':'true', 'aria-label':'Minimize'})
+                          .css({transform:'rotate(90deg)'})
+                          .html('<span aria-hidden="true">&harr;</span>').appendTo(bntoh);
             $('<button>').addClass('close')
                           .attr({type:'button','data-bs-dismiss':'toast','aria-label':'Close'})
                           .html('<span aria-hidden="true">&times;</span>').appendTo(bntoh);
@@ -350,6 +354,12 @@
             }, 5000);
         }
         const nT = bnto.clone();
+        let cid = '00000';
+        while($('#toast'+cid).length) {
+            cid = pad(Math.floor(Math.random()*99999), 5);
+        }
+        nT.find('.toast-body').attr({id:'toast'+cid});
+        nT.find('.collapsed').attr({'data-target':'#toast'+cid, 'aria-controls':'toast'+cid});
         nT.find('.toast-footer').attr({'aria-timestamp':Date.now()});
         const type = {
             info:['text-white', 'bg-primary'],
@@ -362,10 +372,10 @@
             if(type[_$t][k] == '') type[_$t][k] = type['default'][k];
         }
         nT.find('.toast-header').addClass(type[_$t].join(' ')).find('#header').text($_t ? $_t : _$t);
-        if($_msg) { nT.find('.toast-body').addClass(type[_$t]['b']).find('span').html($_msg); } else { nT.find('.toast-body').hide(); }
+        if($_msg) { nT.find('.toast-body').addClass(type[_$t]['b']).find('span').html($_msg); } else { nT.find('.toast-body').hide(); nT.find('.collapsed').remove(); }
         nT.find('.close').addClass(type[_$t]['h']);
         if(_hT != 0) {
-            nT.find(".close").remove();
+            nT.find(".close:not(.collapsed)").remove();
             if(_hT > 0) {
                 nT.toast({autohide:true, delay:_hT});
                 nT.find('.toast-footer > .timebar').css({transition:'width '+(_hT/1000).toFixed(2)+'s linear', width:'100%',height:'2px'}).addClass('bg-'+_$t);
