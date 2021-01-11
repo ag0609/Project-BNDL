@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20210108.3");
+console.log("Bookwalker Japan", "v20210111.1");
 console.log("Reference:", "https://blog.jixun.moe/intercept-bookwalker-tw-image", "by JiXun");
 let _detail$retry_ = 0;
 let backup;
@@ -26,7 +26,7 @@ if(mode == 2) {
 		let jp5am = new Date(Date.UTC(now.getFullYear(),now.getMonth(),now.getDate()-1,20,0,0)); //05:00 of GMT+9, at GMT+0 should be 20:00 of day before
 		console.log("Japan 5am:", jp5am.getTime(),", in string:", jp5am.toString());
 		if((now.getTime() - ptrialtime.fT) > (now.getTime() - jp5am.getTime())) { //first touch in record && 5am in Japan
-			console.log("it is a cold and snowy day...");
+			console.log("%cit is a cold and snowy day...%c", "background-color:skyblue");
 			//First touch before 5am, so this is the first touch of today
 			ptrialtime.fT = now.getTime();
 			ptrialtime.lT = 600000; //10 minutes => 600 seconds in MilliSeconds
@@ -45,7 +45,10 @@ if(mode == 2) {
 		let lefttime = new Date(Math.abs(ptrialtime.lT));
 		$(ptrialcountdown).text(pad(lefttime.getMinutes(),2)+":"+pad(lefttime.getSeconds(),2));
 		if(ptrialtime.lT == 60000) {
-			$(ptrialcountdown).css({animation:"bndl-alert 2s 2 0 infinite"});
+			if($(partialcountdown).queue() < 20) {
+				$(ptrialcountdown).animate({backgroundColor:red}, 750);
+				$(ptrialcountdown).animate({backgroundColor:lightgrey}, 750);
+			}
 		}
 		/*if(ptrialtime.lT == 30000) {
 			ptrialcountdown.style.color = "red";
@@ -280,7 +283,7 @@ function main() {
 						if(document.hidden) popout("Collect Completed.", fn, "https://viewer.bookwalker.jp/favicon.ico");
 						_job_time = new Date() - _job_time;
 						console.log("Book Download Time:", _job_time/1000, "sec");
-						toast($(a), "success", 0, "Job Done");
+						toast($(a), "success", -1, "Job Done");
 						setTimeout(function() {
 							$(pc).attr('height', '0px');
 							ss.pause();
@@ -346,7 +349,7 @@ cancel = function() {
 	} else {
 		unsafeWindow.NFBR.a6G.a5x.prototype.b9b = backup;
 		$(maindiv).remove();
-		toast("", "error", 0, "Job Canceled");
+		toast("", "danger", -1, "Job Canceled");
 	}
 }
 const _$IfuBW_NFBR$_ = setInterval(function() {
@@ -369,4 +372,4 @@ const ___$nospeard = setInterval(async function() {
 		clearInterval(___$nospeard);
 	}
 }, 100);
-$(maindiv).show();
+$(maindiv).show(500);
