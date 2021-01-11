@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20210108.1");
+console.log("Dlsite Play Japan ver20210111.1");
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
@@ -187,6 +187,7 @@ XMLHttpRequest.prototype.send = function() {
                     fn = "[" + (pr.author_name || (tags != null && tags.find(v=>v.class == "created_by") ? pr.maker_name + " (" + tags.find(v=>v.class == "created_by").name + ")" : null) || pr.maker_name) + "] " + pr.work_name+" ("+pr.workno+")";
                     fn = fn.replace(/\s?【[^【】]*(無料|お試し|試し読み)[^【】]*】\s?/g, " ").replace(/\s?【[^【】]*(期間限定|特典)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm, '');
                     console.log("%cFilename: %s", "background-color:azure", fn);
+                    toast(fn, "info", 0, "Title");
                 }
                 if(!pl) { //purchase list not granted
                     GM.xmlHttpRequest({
@@ -362,7 +363,7 @@ CanvasRenderingContext2D.prototype.hdI = function() {
                                                     href:Url
                                                  }).text('Download'); 
                                         a.dispatchEvent(e);
-                                        toast($(a), "success", 0, "Job Done");
+                                        toast($(a), "success", -1, "Job Done");
                                         //URL.revokeObjectURL(blob);
                                         $(pc).css({height:'0px'});
                                         $(pcv).removeClass('bg-success');
@@ -371,8 +372,10 @@ CanvasRenderingContext2D.prototype.hdI = function() {
                                         startf=0;
                                         $(bndlBTN).attr({disabled:false});
                                     }).catch(e => {
-                                        console.error("JSZip generate zip failed");
+                                        let errt = "JSZip generate zip failed";
+                                        console.error(errt);
                                         console.error(e.message);
+                                        toast(e.message, "danger", -1, e.message);
                                         console.groupEnd();
                                     });
                                 }, 2000);
@@ -513,13 +516,15 @@ function zip2pdf2img(url=null) {
                                             $(pc).css({height:'0px'});
                                             $(pcv).removeClass('bg-success');
                                             $(pcv).find('span').text('');
-                                            toast($(a), "success", 0, "Job Success");
+                                            toast($(a), "success", -1, "Job Success");
                                             console.timeEnd('Job Time');
                                             startf=0;
                                             $(bndlBTN).attr({disabled:false});
                                         }).catch(e => {
-                                            console.error("JSZip generate zip failed");
+                                            let errt = "JSZip generate zip failed";
+                                            console.error(errt);
                                             console.error(e.message);
+                                            toast(e.message, "danger", -1, e.message);
                                             console.groupEnd();
                                         });
                                     }
@@ -574,7 +579,7 @@ cancel = function() {
         CanvasRenderingContext2D.prototype.drawImage = CanvasRenderingContext2D.prototype.odI;
         XMLHttpRequest.prototype.send = XMLHttpRequest.prototype.osend;
         $(maindiv).remove();
-        toast("", "error", 0, "Job Canceled");
+        toast("", "error", -1, "Job Canceled");
     }
 }
 bndl_d.stop = cancel;
@@ -668,6 +673,7 @@ const butcheck = () => {
                 clearInterval(bc);
                 $(bndlBTN).removeAttr('disabled');
                 console.timeEnd("Ready Time");
+                toast("", "info", 0, "Job Ready");
             }
         }, 100);
     }
