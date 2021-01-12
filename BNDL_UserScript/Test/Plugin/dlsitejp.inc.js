@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20210112.0);
+console.log("Dlsite Play Japan ver20210112.1");
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
@@ -48,7 +48,7 @@ function loadcache(startidx=0, path=tp) {
         console.debug("loadcache()", "path", path, "invaild, using current tree path.");
         if(tp && tp != "") {
             let namepath = zt.find(tp.replace(/^.*\/([^\/]+\.[^\/]+)$/, "$1"), "name", ["tree"]);
-            namepath = namepath.length > 2 && namepath.length - namepath.lastIndexOf("children") == 2 ? -2 : -1;
+            namepath = namepath.slice(0, namepath.length > 2 && namepath.length - namepath.lastIndexOf("children") == 2 ? -2 : -1);
             cpobj = /\.pdf/i.test(tp) ? ((/\//.test(tp) ? zt.value(zt.find(zt.value(namepath).path, "name", ["tree"])).children : tree)) : zt.value(zt.find(tp, "path", ["tree"])).children;
             if(cache[tp] == undefined) cache[tp] = {"used":0};
             cp = cache[tp];
@@ -73,7 +73,7 @@ function loadcache(startidx=0, path=tp) {
         if(/(?:jp[e]?g|png|gif)/.test(hne)) { //Image
             if(!img_list[hn].path) {
                 let namepath = zt.find(hn, "hashname", ["tree"]);
-                namepath = namepath.length > 2 && namepath.length - namepath.lastIndexOf("children") == 2 ? -2 : -1;
+                namepath = zt.value(namepath.slice(0, namepath.length > 2 && namepath.length - namepath.lastIndexOf("children") == 2 ? -2 : -1));
                 img_list[hn].path = namepath.path;
             }
             if(!(new RegExp(img_list[hn].path, "")).test(path)) { i++; continue; }
@@ -102,8 +102,8 @@ function loadcache(startidx=0, path=tp) {
         } else if(/pdf/.test(hne)) { //pdf
             i++;
             if(!img_list[hn].path) {
-                let namepath = zt.value(zt.find(hn, "hashname", ["tree"]));
-                namepath = namepath.length > 2 && namepath.length - namepath.lastIndexOf("children") == 2 ? -2 : -1;
+                let namepath = zt.find(hn, "hashname", ["tree"]);
+                namepath = zt.value(namepath.slice(0, namepath.length > 2 && namepath.length - namepath.lastIndexOf("children") == 2 ? -2 : -1));
                 img_list[hn].path = namepath.path;
             }
             if(!(new RegExp(zt.value(zt.find(hn, "hashname", ["tree"])).name, "")).test(path)) continue;
@@ -117,7 +117,7 @@ function loadcache(startidx=0, path=tp) {
                 let hn = pdfroot[idx].optimized.name;
                 let hne = pdfroot[idx].optimized.name.replace(/^.*(\..*?)$/, "$1");
                 if(/(?:jp[e]?g|png|gif)/.test(hne)) { //Image
-                    if(img_list[hn].path ) {
+                    if(img_list[hn] && img_list[hn].path) {
                         img_list[hn].path = img_list[pdfhn].path + "/" + img_list[pdfhn].fn || pdfhn;
                     }
                     if(img_list[hn].blob == null && !img_list[hn].caching && fpcs - cp.used > 0) {
@@ -246,8 +246,8 @@ XMLHttpRequest.prototype.send = function() {
                                         "caching":0,
                                         "blob":null
                                     };
-                                    $(img_list[hn].canvas).attr({width:playfile[hn].image.optimized.width, height:playfile[hn].image.optimized.height});
-                                    $(img_list[hn].img).addClass("pswp__preload").attr("crossOrigin","anonymous");
+                                    $(img_list[phn].canvas).attr({width:pdfroot[p].optimized.width, height:pdfroot[p].optimized.height});
+                                    $(img_list[phn].img).addClass("pswp__preload").attr("crossOrigin","anonymous");
                                 }
                             }
                         } else if(/\.(?:jp[e]?g|png|bmp)$/.test(hn)) {
