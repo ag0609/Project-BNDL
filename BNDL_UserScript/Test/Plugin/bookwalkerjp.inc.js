@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20210111.1");
+console.log("Bookwalker Japan", "v20210112.0");
 console.log("Reference:", "https://blog.jixun.moe/intercept-bookwalker-tw-image", "by JiXun");
 let _detail$retry_ = 0;
 let backup;
@@ -32,7 +32,7 @@ if(mode == 2) {
 			ptrialtime.lT = 600000; //10 minutes => 600 seconds in MilliSeconds
 		}
 	} else {
-        	console.log("10min not exists");
+        	console.log("10min record not exists");
 		//ptrialtime not in localStorage, initial one
 		ptrialtime.fT = Date.now();
 		ptrialtime.lT = 600000; //10 minutes => 600 seconds in MilliSeconds
@@ -209,15 +209,15 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 	});
 } // Get Detail of Book
 function main() {
-    console.log("main");
+	console.log("main");
 	backup = unsafeWindow.NFBR.a6G.a5x.prototype.b9b;
 	unsafeWindow.NFBR.a6G.a5x.prototype.b9b = function () {
 		let [targetCanvas, page, image, drawRect, flag] = arguments;
-		const totp = ($('#pageSliderCounter').text()).split('/')[1] * 1;
+		totp = ($('#pageSliderCounter').text()).split('/')[1] * 1;
 		if(!pages) {
 			pages = new comicInfoPages(totp);
 		}
-		let curp = page.index+1;
+		curp = page.index+1;
 		if(_$canvas[curp] == undefined) {
 			_$canvas[curp] = [];
 			if(!_$canvas[1] && curp > 1) return firekey($('#renderer')[0], 36); //Home
@@ -279,6 +279,7 @@ function main() {
 						const e = new MouseEvent("click");
 						const a = document.createElement('a');
 						$(a).attr({download:fn+".zip", href:Url}).text('Download').appendTo($(maindiv));
+						a.dispatchEvent(e);
 						window.document.title = "\u2705" + on;
 						if(document.hidden) popout("Collect Completed.", fn, "https://viewer.bookwalker.jp/favicon.ico");
 						_job_time = new Date() - _job_time;
@@ -324,6 +325,7 @@ function main() {
 						ss.play();
 						_init_time = new Date() - _init_time;
 						console.log("Initialization time used:", _init_time/1000, "sec");
+                        			stage = 1;
 						toast("", "info", 10000, "Job Ready");
 					}
 				};
@@ -337,13 +339,15 @@ function main() {
 	}
 }
 start = function() {
-	bndlBTN.disabled = true;
+	$(bndlBTN).attr({disabled:true});
+	$(maindiv).addClass('w-100 h-100');
 	startf = ($('#pageSliderCounter').text()).split('/')[0] * 1;;
 	firekey($('#renderer')[0], 34);
 }
 cancel = function() {
 	if(startf) {
 		$(bndlBTN).removeAttr("disabled");
+		$(maindiv).removeClass('w-100 h-100');
 		startf = 0;
 		toast("", "warning", 5000, "Job Paused");
 	} else {
@@ -372,4 +376,25 @@ const ___$nospeard = setInterval(async function() {
 		clearInterval(___$nospeard);
 	}
 }, 100);
+const ___$loopcheckdead = setInterval(function() {
+	let dead = 0;
+	if(stage == 0 && _init_time && Date.now() - _init_time > 30000) {
+        console.error("init dead");
+		dead = 1;
+	} else if(startf && _page_time && Date.now() - _page_time > 30000) {
+        console.error("page dead");
+		dead = 1;
+	}
+	if(dead && !$('#dead_body').length) {
+		let _$content = $('<div>').attr({id:'dead_body'});
+		let a1 = $('<a>').attr({href:'#'}).text('Download Incomplete Archive');
+		a1.on('click', function() {
+			bndl_d.dlzip();
+		});
+		a1.appendTo(_$content);
+		toast(_$content, "danger", -1, "Job frozen")
+        clearInterval(___$loopcheckdead);
+	}
+}, 1000);
+let stage = 0;
 $(maindiv).show(500);
