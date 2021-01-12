@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Booklive Japan ver20201028");
+console.log("Booklive Japan ver20210112.0");
 
 let content_root = document.getElementById("content");
 let content_obv = new MutationObserver(contentChangeCallback);
