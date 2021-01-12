@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Bootstrap version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.66
+// @version      0.67
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://viewer.bookwalker.jp/*
@@ -62,6 +62,7 @@
     let _$canvas = [];
     let img$size = [];
     let _$c_wh = {w:0, h:0};
+    let curp, totp;
     let fn, on, retry, wait;
     let bndl_d, bnt, bnto;
     let bd = {};
@@ -198,6 +199,8 @@
                 let xmlblob = new Blob([Ci.toString()], {type: "text/xml"});
                 zip.file("ComicInfo.xml", xmlblob);
             }
+            let ext = '';
+            if(curp && curp > 1) ext = '-'+ curp;
             zip.generateAsync({type:"blob"}, function updateCallback(metadata) {
                 //Do nothing
             }).then(function(blob) {
@@ -207,7 +210,7 @@
                 const a = document.createElement('a');
                 $(a).addClass('btn')
                     .text('Download')
-                    .attr("download", (fn ? fn : "BNDL" + (new Date().getTime())) + ".zip")
+                    .attr("download", (fn ? fn : "BNDL" + (new Date().getTime())) + ext +".zip")
                     .attr("href", Url);
                 a.dispatchEvent(e);
                 URL.revokeObjectURL(blob);
