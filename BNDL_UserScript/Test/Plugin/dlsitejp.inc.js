@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20210111.3");
+console.log("Dlsite Play Japan ver20210112.0);
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
@@ -313,8 +313,8 @@ CanvasRenderingContext2D.prototype.hdI = function() {
                         }
                         let pm = /\.pdf$/.test(window.location.hash) ? playfile[img_list[hn].pdf].pdf.page : (tp ? zt.value(zt.find(img_list[hn].path, "path", ["tree"])).children : tree);
                         let zm = zip.folder(img_list[hn].path).file(/(.*)\.(.*)/);
-                        let curp = zm.length;
-                        let totp = pm.length;
+                        curp = zm.length;
+                        totp = pm.length;
                         if(!pages && totp > 1) {
                             pages = new comicInfoPages(totp);
                         }
