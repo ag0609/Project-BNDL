@@ -219,8 +219,8 @@ function wait(v, t=0) { //t == type == [0:"plain value", 1:"array", 2:"object"]
 async function contentChangeCallback($_a, __$) {
 	console.log("content changed");
 	wait(document.getElementById("menu_slidercaption"));
-	let totp = parseInt(document.getElementById("menu_slidercaption").innerHTML.split("/")[1]) || 1;
-	pc.setAttribute("max", totp);
+	totp = parseInt(document.getElementById("menu_slidercaption").innerHTML.split("/")[1]) || 1;
+	$(pcv).attr("aria-valuemax", totp);
 	let content_div = Array.prototype.slice.call(content_root.getElementsByTagName("div")).filter(v => /content\-p\d+/.test(v.id));
 	//console.log(content_div);
 	for(let d=0; d<content_div.length; d++) {
@@ -244,16 +244,17 @@ async function contentChangeCallback($_a, __$) {
 			c.toBlob((blob)=> {
 				page_blob[page_no] = 1;
 				zip.file(pad(page_no, 5)+".jpg", blob);
-				let curp = zip.file(/.*\.jpg/).length;
-				pc.setAttribute("value", curp);
-				pc.setAttribute("data-label", curp+"/"+totp);
+				curp = zip.file(/.*\.jpg/).length;
+				$(pcv).attr("aria-valuenow", curp);
+				//$(pcv).attr("data-label", curp+"/"+totp);
 				if(startf) {
 					if(curp >= totp) {
 						to = setTimeout(function() {
+							$(pcv).attr("aria-valuemax", 100).addClass('bg-success');
 							let pchk = 0;
 							zip.generateAsync({type:"blob"}, function updateCallback(metadata) {
 							    pchk = metadata.percent.toFixed(2);
-							    pc.setAttribute('value', pchk);
+							    $(pcv).attr('aria-valuenow', pchk);
 							}).then(function(blob) {
 							    const Url = window.URL.createObjectURL(blob);
 							    const e = new MouseEvent("click");
@@ -263,9 +264,9 @@ async function contentChangeCallback($_a, __$) {
 							    a.download = fn;
 							    a.href = Url;
 							    a.dispatchEvent(e);
-							    btn.appendChild(a);
+							    $(a).appendTo($(maindiv));
 							    //URL.revokeObjectURL(blob);
-							    pc.classList.remove("start");
+							    $(pcv).removeClass('bg-success').css({height:0});
 							    startf=0;
 							});
 						}, 1000);
@@ -273,7 +274,7 @@ async function contentChangeCallback($_a, __$) {
 						firekey(document.body, 37);
 					}
 				} else {
-					bndlBTN.disabled=false;
+					$(bndlBTN).removeAttr('disabled');
 				}
 			}, "image/jpeg", quality);
 		}, 1000);
@@ -282,22 +283,24 @@ async function contentChangeCallback($_a, __$) {
 }
 start = () => {
 	startf=1;
-	bndlBTN.disabled=true;
-	btn.classList.add("start");
-	btn.classList.add("extend");
-	pc.classList.add("start");
+	$(bndlBTN).attr({disabled:true});
+	$(maindiv).addClass('w-100 h-100');
+	$(pc).css({height:'25px'});
 	firekey(document.body, 37);
 }
 cancel = () => {
 	if(startf) {
-		btn.classList.remove("start");
-		btn.classList.remove("extend");
-		bndlBTN.disabled=false;
+		$(maindiv).removeClass('w-100 h-100');
+		$(bndlBTN).removeAttr('disabled');
 		startf=0;
 	} else {
-		pc.classList.remove("start");
+		$(pc).css({height:0});
 		content_obv.disconnect();
 		content_obv = null;
-		document.body.removeChild(btn);
+		$(maindiv).remove();
 	}
 }
+next = () => {}
+prev = () => {}
+home = () => {}
+end = () => {}
