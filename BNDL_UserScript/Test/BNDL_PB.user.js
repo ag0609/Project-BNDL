@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Bootstrap version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.67
+// @version      0.68
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://viewer.bookwalker.jp/*
@@ -320,7 +320,7 @@
         if(!bnt) {
             bnt = $("<div>").addClass('toast-container container position-fixed float-end overflow-auto w-25 h-100 p-3 user-select-none').css({top:0, right:0, 'z-index':1070000});
             bnt.appendTo('body');
-            bnto = $("<div>").addClass('toast sticky-top w-100 p-0 bg-white')
+            bnto = $("<div>").addClass('sticky-top toast w-100 p-0 bg-white')
                              .attr({role:'alert','aria-live':'assertive','aria-atomic':'true'});
             bnto.toast({autohide:false});
             let bntoh = $('<div>').addClass('toast-header text-truncate text-start font-weight-bold').html('<span id="header" class="container-fluid"></span>');
@@ -415,6 +415,6 @@
     if(/booklive\.jp/i.test(window.location.href)) jsMain = GM_getResourceText("BLJP");
     if(/play\.dlsite\.com/i.test(window.location.href)) jsMain = GM_getResourceText("DLJP");
     eval(jsMain);
-    bndlBTN.onclick = ()=>{start()};
-    canBTN.onclick = ()=>{cancel()};
+    $(bndlBTN).on("click", ()=>{start()});
+    $(canBTN).on("click", ()=>{cancel()});
 })();
