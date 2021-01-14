@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Bootstrap version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.70
+// @version      0.71
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://viewer.bookwalker.jp/*
@@ -380,23 +380,17 @@
         if(_hT != 0) {
             nT.find(".close:not(.collapsed)").remove();
             if(_hT > 0) {
-                nT.toast({autohide:true, delay:_hT});
-                nT.find('.toast-footer > .timebar').css({transition:'width '+(_hT/1000).toFixed(2)+'s linear', width:'100%',height:'2px'}).addClass('bg-'+_$t);
-                nT.on('shown.bs.toast', function() {
-                    $(this).find('.toast-footer > .timebar').css({width:'0%'});
-                });
+                nT.toast({autohide:false});
+                nT.find('.toast-footer > .timebar').css({height:'4px', width:'100%'}).addClass('bg-'+_$t).delay(250).animate({width:['toggle','linear']},_hT,function() {nT.animate({height:['toggle','linear'], opacity:['toggle','swing']}, 250, function() {nT.toast('dispose').remove();});});
             } else {
                 nT.toast({autohide:false});
             }
         } else {
             nT.toast({autohide:false});
             nT.find('.close').on("click", function() {
-                nT.toast('hide');
+                nT.animate({height:'toggle', opacity:0}, 250, function() {nT.toast('dispose').remove();});
             });
         }
-        nT.on('hidden.bs.toast', function () {
-            $(this).toast('dispose').remove();
-        });
         nT.find('.toast-footer > .timebadge').text('now.');
         nT.appendTo(bnt);
         nT.toast('show');
