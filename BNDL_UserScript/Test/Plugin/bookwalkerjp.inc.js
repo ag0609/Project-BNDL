@@ -213,11 +213,13 @@ function main() {
 	backup = unsafeWindow.NFBR.a6G.a5x.prototype.b9b;
 	unsafeWindow.NFBR.a6G.a5x.prototype.b9b = function () {
 		let [targetCanvas, page, image, drawRect, flag] = arguments;
-		totp = ($('#pageSliderCounter').text()).split('/')[1] * 1;
+		let totp = ($('#pageSliderCounter').text()).split('/')[1] * 1;
+		gtotp = totp;
 		if(!pages) {
 			pages = new comicInfoPages(totp);
 		}
-		curp = page.index+1;
+		let curp = page.index+1;
+		gcurp = curp;
 		if(_$canvas[curp] == undefined) {
 			_$canvas[curp] = [];
 			if(!_$canvas[1] && curp > 1) return firekey($('#renderer')[0], 36); //Home
@@ -226,7 +228,7 @@ function main() {
 			if(startf && curp > startf && !img$size[curp-1]) return firekey($('#renderer')[0], 33); //Page Up
 		}
 		if (image && !img$size[curp]) {
-			console.groupCollapsed("Page", curp, "/", totp);
+			console.groupCollapsed("Page", curp, "/", totp, "("+(zip.file(/.*/).length+1),"files zipped)");
 			$(pcv).attr({"aria-valuemax":totp, "aria-valuenow":curp});
 			$(pcv).find('span').text("Capture Canvas: "+curp +"/"+ totp);
 			const c = document.createElement('canvas');
