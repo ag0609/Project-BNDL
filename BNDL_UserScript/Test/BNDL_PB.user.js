@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Bootstrap version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.71
+// @version      0.72
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://viewer.bookwalker.jp/*
@@ -63,7 +63,7 @@
     let _$canvas = [];
     let img$size = [];
     let _$c_wh = {w:0, h:0};
-    let curp, totp;
+    let gcurp, gtotp;
     let fn, on, retry, wait;
     let bndl_d, bnt, bnto;
     let bd = {};
@@ -201,7 +201,7 @@
                 zip.file("ComicInfo.xml", xmlblob);
             }
             let ext = '';
-            if(curp && curp > 1) ext = '-'+ curp;
+            if(gcurp && gcurp > 1) ext = '-'+ curp;
             zip.generateAsync({type:"blob"}, function updateCallback(metadata) {
                 //Do nothing
             }).then(function(blob) {
