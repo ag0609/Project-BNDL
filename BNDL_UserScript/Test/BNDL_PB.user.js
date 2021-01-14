@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Bootstrap version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.69
+// @version      0.70
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://viewer.bookwalker.jp/*
@@ -38,6 +38,7 @@
 
 (async function() {
     'use strict';
+    console.log("BNDL Project Userscript Version", GM_info.script.version);
     console.time("Initialization Time");
     let debug_enable = 1;
     //
