@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Bootstrap version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.68
+// @version      0.69
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://viewer.bookwalker.jp/*
@@ -242,7 +242,7 @@
                 toast("Information is a good one to state messages which user may want to acknowlaged. This one will shows up 15 seconds.", "info", 15000, "Information");
                 toast("This is a message when good news here.", "success", 0, "Success");
                 toast("This is a message which you are being warned, stay sharp.\nThis message will hide in 6 seconds.", "warning", 6000, "Warning");
-                toast("Error Message will show up when task catch on error.", "error", 0, "Error");
+                toast("Error Message will show up when task catch on error.", "danger", 0, "Error");
             } else {
                 toast(...args);
             }
@@ -323,17 +323,16 @@
             bnto = $("<div>").addClass('sticky-top toast w-100 p-0 bg-white')
                              .attr({role:'alert','aria-live':'assertive','aria-atomic':'true'});
             bnto.toast({autohide:false});
-            let bntoh = $('<div>').addClass('toast-header text-truncate text-start font-weight-bold').html('<span id="header" class="container-fluid"></span>');
+            let bntoh = $('<div>').addClass('toast-header text-truncate text-start font-weight-bold');
             bntoh.appendTo(bnto);
             let bntob = $('<div>').attr({id:"toast-body"}).addClass('toast-body collapse show text-dark font-weight-normal').html('<span class="container-fluid"></span>');
             bntob.appendTo(bnto);
             let bntof = $('<div>').addClass('toast-footer text-muted text-right font-weight-light font-italic').html('<small class="timebadge container-fluid"></small><div class="timebar"></div>');
             bntof.appendTo(bnto);
-            $('<button>').addClass('btn collapsed')
-                          .attr({type:'button', 'data-toggle':'collapse', 'aria-expanded':'true', 'aria-label':'Minimize'})
-                          .css({transform:'rotate(90deg)'})
-                          .html('<span aria-hidden="true">&harr;</span>').appendTo(bntoh);
-            $('<button>').addClass('close')
+            $('<a>').addClass('collapsed container-fluid text-decoration-none')
+                          .attr({id:'header', role:'button', href:'#', 'data-toggle':'collapse', 'aria-expanded':'true', 'aria-label':'Header'})
+                          .appendTo(bntoh);
+            $('<a>').addClass('close')
                           .attr({type:'button','data-bs-dismiss':'toast','aria-label':'Close'})
                           .html('<span aria-hidden="true">&times;</span>').appendTo(bntoh);
             setInterval(function() {
@@ -362,7 +361,7 @@
             cid = pad(Math.floor(Math.random()*99999), 5);
         }
         nT.find('.toast-body').attr({id:'toast'+cid});
-        nT.find('.collapsed').attr({'data-target':'#toast'+cid, 'aria-controls':'toast'+cid});
+        nT.find('.collapsed').attr({href:'#toast'+cid, 'data-target':'#toast'+cid, 'aria-controls':'toast'+cid});
         nT.find('.toast-footer').attr({'aria-timestamp':Date.now()});
         const type = {
             info:['text-white', 'bg-primary'],
@@ -374,8 +373,8 @@
         for(const k of type[_$t].keys()) {
             if(type[_$t][k] == '') type[_$t][k] = type['default'][k];
         }
-        nT.find('.toast-header').addClass(type[_$t].join(' ')).find('#header').text($_t ? $_t : _$t);
-        if($_msg) { nT.find('.toast-body').addClass(type[_$t]['b']).find('span').html($_msg); } else { nT.find('.toast-body').hide(); nT.find('.collapsed').remove(); }
+        nT.find('.toast-header').addClass(type[_$t][1]).find('#header').addClass(type[_$t][0]).text($_t ? $_t : _$t);
+        if($_msg) { nT.find('.toast-body').addClass(type[_$t]['b']).find('span').html($_msg); } else { nT.find('.toast-body').hide(); nT.find('.collapsed').off(); }
         nT.find('.close').addClass(type[_$t]['h']);
         if(_hT != 0) {
             nT.find(".close:not(.collapsed)").remove();
