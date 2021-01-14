@@ -68,7 +68,7 @@
     let bd = {};
     let Ci = new comicinfo(); //Build XML class for ComicInfo.xml(which mainly used by Comic Reader)
     let pages;
-    let scan = "Scaned By BNDL v0.57(ag0609)";
+    let scan = "Scaned By BNDL "+GM_info.script.version+"(ag0609)";
     //Main UI
     const maindiv = document.createElement('div');
     const maindiv$extend = {width:'100vw',height:'100vh'};
