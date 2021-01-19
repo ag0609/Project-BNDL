@@ -201,7 +201,7 @@
                 zip.file("ComicInfo.xml", xmlblob);
             }
             let ext = '';
-            if(gcurp && gcurp > 1) ext = '-'+ curp;
+            if(gcurp && gcurp > 1) ext = '-'+ gcurp;
             zip.generateAsync({type:"blob"}, function updateCallback(metadata) {
                 //Do nothing
             }).then(function(blob) {
