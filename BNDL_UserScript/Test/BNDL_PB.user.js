@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Bootstrap version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.75
+// @version      0.76
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://viewer.bookwalker.jp/*
@@ -129,6 +129,8 @@
     $(bndlBTN).appendTo($(maindiv));
     $(canBTN).appendTo($(maindiv));
     $(maindiv).appendTo('body');
+    //initial toaster
+    toast(null, null, 0, null, {containerPos:"RB"});
     //For Debug
     if(debug_enable) {
         bndl_d = document.createElement('bndl-debug');
