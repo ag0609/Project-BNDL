@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20210119.0");
+console.log("Bookwalker Japan", "v20210203.0");
 console.log("Reference:", "https://blog.jixun.moe/intercept-bookwalker-tw-image", "by JiXun");
 let _detail$retry_ = 0;
 let backup;
@@ -38,7 +38,7 @@ if(mode == 2) {
 		ptrialtime.lT = 600000; //10 minutes => 600 seconds in MilliSeconds
 		localStorage.setItem("10min", JSON.stringify(ptrialtime));
 	}
-	toast($(ptrialcountdown).addClass('position-fixed bg-lightgrey p-3').text("00:00"), "warning", ptrialtime.lT > 0 ? ptrialtime.lT : 1000, "10 minutes countdown");
+	toast($(ptrialcountdown).addClass('position-fixed bg-lightgrey p-3').text("00:00"), "warning", ptrialtime.lT > 0 ? ptrialtime.lT : 1000, "10 minutes countdown", {"htmlBody":true});
 	ptrialtimer = setInterval(function() {
 		ptrialtime.lT -= interval;
 		localStorage.setItem("10min", JSON.stringify(ptrialtime));
@@ -286,7 +286,7 @@ function main() {
 						if(document.hidden) popout("Collect Completed.", fn, "https://viewer.bookwalker.jp/favicon.ico");
 						_job_time = new Date() - _job_time;
 						console.log("Book Download Time:", _job_time/1000, "sec");
-						toast($(a), "success", -1, "Job Done");
+						toast($(a), "success", -1, "Job Done", {"htmlBody":true});
 						setTimeout(function() {
 							$(pc).attr('height', '0px');
 							ss.pause();
@@ -397,8 +397,8 @@ const ___$loopcheckdead = setInterval(function() {
 			bndl_d.dlzip();
 		});
 		a1.appendTo(_$content);
-		toast(_$content, "danger", -1, "Job frozen")
-        clearInterval(___$loopcheckdead);
+		toast(_$content, "danger", -1, "Job frozen?", {"htmlBody":true})
+        	clearInterval(___$loopcheckdead);
 	}
 }, 1000);
 let stage = 0;
