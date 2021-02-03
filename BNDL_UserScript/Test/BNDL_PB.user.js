@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Bootstrap version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.74
+// @version      0.75
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://viewer.bookwalker.jp/*
@@ -14,11 +14,12 @@
 // @require      https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js
 // @require      https://cdn.jsdelivr.net/npm/jszip@3.5.0/dist/jszip.js
 // @require      https://cdn.jsdelivr.net/npm/jszip-utils@0.1.0/dist/jszip-utils.min.js
-// @require      https://cdn.jsdelivr.net/npm/pdfjs-dist@2.5.207/build/pdf.min.js
+// @require      https://cdn.jsdelivr.net/npm/pdfjs-dist@2.5.207/build/pdf.min.j
 // @require      https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/String.class.js
 // @require      https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/Array.class.js
 // @require      https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/comicinfo.class.js
 // @require      https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/jsonHandler.class.js
+// @require      https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Test/Plugin/Bootstrap-Extend.inc.js
 // @resource     customCSS https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css
 // @resource     BWJP https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Test/Plugin/bookwalkerjp.inc.js
 // @resource     DLJP https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Test/Plugin/dlsitejp.inc.js
@@ -317,99 +318,6 @@
         let args = arguments;
         GM.notification({text:args[0], title:args[1], image:args[2], onclick:()=>{window.focus()}});
     }//popout notification
-    function toast($_msg, _$t='default', _hT, $_t, _0pts={}) {
-        let _reTi = 5000;
-        let no_Co = false;
-        for(let k in _0pts) {
-            switch(k) {
-                case "noCollaspe":
-                    no_Co = _0pts[k] ? true : false;
-                    break;
-                case "refreshTime":
-                    _reTi = parseInt(_0pts[k]) || 0;
-                    break;
-            }
-        }
-        if(!bnt) {
-            bnt = $("<div>").addClass('toast-container container position-fixed float-end overflow-auto w-25 h-100 p-3').css({top:0, right:0, 'overflow-x':'hidden', 'z-index':1070000});
-            bnt.appendTo('body');
-            bnto = $("<div>").addClass('sticky-top toast w-100 p-0 bg-white')
-                .attr({role:'alert','aria-live':'assertive','aria-atomic':'true'});
-            bnto.toast({autohide:false});
-            let bntoh = $('<div>').addClass('toast-header text-truncate text-start font-weight-bold user-select-none');
-            bntoh.appendTo(bnto);
-            let bntob = $('<div>').attr({id:"toast-body"}).addClass('toast-body collapse show text-dark font-weight-normal p-0').html('<span class="container-fluid d-block"></span>');
-            bntob.appendTo(bnto);
-            let bntof = $('<div>').addClass('toast-footer text-muted text-right font-weight-light font-italic user-select-none').html('<small class="timebadge container-fluid"></small><div class="timebar"></div>');
-            bntof.appendTo(bnto);
-            $('<a>').addClass('collapsed container-fluid text-decoration-none')
-                .attr({id:'header', role:'button', href:'#', 'data-toggle':'collapse', 'aria-expanded':'true', 'aria-label':'Header'})
-                .appendTo(bntoh);
-            $('<a>').addClass('close')
-                .attr({type:'button','data-bs-dismiss':'toast','aria-label':'Close'})
-                .html('<span aria-hidden="true">&times;</span>').appendTo(bntoh);
-            setInterval(function() {
-                const toastList = $('.toast:not(.latest)').find('.toast-footer');
-                toastList.find('.timebadge').text(function() {
-                    const diff = (Date.now() - $(this).parent().attr('aria-timestamp'))/1000;
-                    if(Math.abs(diff) >= 60*60*24*365) {
-                        return Math.floor(diff/(60*60*24*365)) + " years ago.";
-                    } else if(Math.abs(diff) >= 60*60*24*30) {
-                        return Math.floor(diff/(60*60*24*30)) + " months ago.";
-                    } else if(Math.abs(diff) >= 60*60*24) {
-                        return Math.floor(diff/(60*60*24)) + " days ago.";
-                    } else if(Math.abs(diff) >= 60*60) {
-                        return Math.floor(diff/(60*60)) + " hours " + Math.floor((diff/60)%60) + " minutes ago.";
-                    } else if(Math.abs(diff) >= 60) {
-                        return Math.floor(diff/60) + " minutes " + Math.floor(diff%60) + " seconds ago.";
-                    } else {
-                        return Math.floor(diff) + " seconds ago.";
-                    }
-                });
-            }, _reTi);
-        }
-        const nT = bnto.clone();
-        let cid = '00000';
-        while($('#toast'+cid).length) {
-            cid = pad(Math.floor(Math.random()*99999), 5);
-        }
-        nT.find('.toast-body').attr({id:'toast'+cid});
-        if(!no_Co) nT.find('.collapsed').attr({href:'#toast'+cid, 'data-target':'#toast'+cid, 'aria-controls':'toast'+cid});
-        nT.find('.toast-footer').attr({'aria-timestamp':Date.now()});
-        const type = {
-            info:['text-white', 'bg-primary'],
-            success:['text-white', ''],
-            warning:['text-white', ''],
-            danger:['text-white', ''],
-            default:['text-dark', 'bg-'+_$t]
-        };
-        if(!_$t) _$t = 'default';
-        for(const k of type[_$t].keys()) {
-            if(type[_$t][k] == '') type[_$t][k] = type['default'][k];
-        }
-        nT.find('.toast-header').addClass(type[_$t][1]).find('#header').addClass(type[_$t][0]).text($_t ? $_t : _$t);
-        if($_msg) { nT.find('.toast-body').addClass(type[_$t]['b']).find('span').html($_msg); } else { nT.find('.toast-body').hide(); nT.find('.collapsed').off(); }
-        nT.find('.close').addClass(type[_$t]['h']);
-        if(_hT != 0) {
-            nT.find(".close:not(.collapsed)").remove();
-            if(_hT > 0) {
-                nT.toast({autohide:false});
-                nT.find('.toast-footer > .timebar').css({height:'4px', width:'100%'}).addClass('bg-'+_$t).delay(250).animate({width:['toggle','linear']},_hT,function() {nT.animate({height:['toggle','linear'], opacity:['toggle','swing']}, 250, function() {nT.toast('dispose').remove();});});
-            } else {
-                nT.toast({autohide:false});
-            }
-        } else {
-            nT.toast({autohide:false});
-            nT.find('.close').on("click", function() {nT.animate({height:['toggle','linear'], opacity:['toggle','swing']}, 250, function() {nT.toast('dispose').remove();});});
-        }
-        nT.find('.toast-footer > .timebadge').text('now.');
-        nT.appendTo(bnt);
-        nT.toast('show');
-    }//toast out
-    function DisposeAllToast() {
-        $('.toast').find('.timebar').stop();
-        $('.toast').animate({opacity:['toggle','swing']}, 250, function() {$('.toast').toast('dispose').remove();});
-    }
     function cENS() {
         let ar9s = arguments;
         let $3_ = document.createElementNS(ar9s[2] || null, ar9s[0] || "Node");
