@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20210112.1");
+console.log("Dlsite Play Japan ver20210223.0");
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
@@ -30,7 +30,7 @@ let URL = window.webkitURL || window.URL;
 let autoplay, spread, next, prev;
 
 let dIdelay = 2500 / retry_max;
-if(pdfjsLib)
+if(typeof(pdfjsLib) != "undefined")
     pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
 
 function loadcache(startidx=0, path=tp) {
