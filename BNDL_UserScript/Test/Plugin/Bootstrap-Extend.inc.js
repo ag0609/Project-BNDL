@@ -43,10 +43,10 @@ function toast($_msg, _$t='default', _hT, $_t, _0pts={}) {
 				break;
 		}
 	}
-	
+
 	if(!tc.length) {
-		let bnt = $("<div>").addClass('toast-container container position-fixed overflow-auto w-25 mh-100 h-auto p-3').css(pos).css({'overflow-x':'hidden', 'z-index':1070000});
-		let bnto = $("<div>").addClass('toast w-100 p-0 bg-white overflow-hidden')
+		let bnt = $("<div>").addClass('toast-container position-fixed overflow-auto w-25 mh-100 h-auto p-3').css(pos).css({'overflow-x':'hidden', 'z-index':1070000});
+		let bnto = $("<div>").addClass('toast position-relative ml-auto w-100 p-0 bg-white overflow-hidden').css({bottom:'auto',left:'auto'})
 						 .attr({role:'alert','aria-live':'assertive','aria-atomic':'true'});
 		bnto.toast({autohide:false});
 		let bntoh = $('<div>').addClass('toast-header text-truncate text-start user-select-none p-1');
