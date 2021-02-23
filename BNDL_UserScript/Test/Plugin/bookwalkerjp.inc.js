@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20210210.0");
+console.log("Bookwalker Japan", "v20210223.1");
 console.log("Reference:", "https://blog.jixun.moe/intercept-bookwalker-tw-image", "by JiXun");
 let _detail$retry_ = 0;
 let backup;
@@ -210,6 +210,7 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 } // Get Detail of Book
 function main() {
 	console.log("main");
+	const ptc = toastchart('Page Time', _pdb);
 	backup = unsafeWindow.NFBR.a6G.a5x.prototype.b9b;
 	unsafeWindow.NFBR.a6G.a5x.prototype.b9b = function () {
 		let [targetCanvas, page, image, drawRect, flag] = arguments;
@@ -335,7 +336,9 @@ function main() {
 					}
 				};
 			}, 'image/jpeg', quality);
-			console.log("Page generation time:", (new Date() - _page_time)/1000, "sec");
+			let cpt = (new Date() - _page_time)/1000;
+			ptc.updatechart(curp, cpt);
+			console.log("Page generation time:", cpt, "sec");
 			_page_time = new Date();
 			console.groupEnd();
 		}
@@ -347,6 +350,7 @@ start = function() {
 	$(bndlBTN).attr({disabled:true});
 	$(maindiv).addClass('w-100 h-100');
 	startf = ($('#pageSliderCounter').text()).split('/')[0] * 1;;
+	_page_time = new Date();
 	firekey($('#renderer')[0], 34);
 }
 cancel = function() {
