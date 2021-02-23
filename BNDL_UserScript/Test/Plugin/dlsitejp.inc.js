@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20210223.1");
+console.log("Dlsite Play Japan ver20210223.2");
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
@@ -519,7 +519,7 @@ function zip2pdf2img(url=null) {
                                             $(pc).css({height:'0px'});
                                             $(pcv).removeClass('bg-success');
                                             $(pcv).find('span').text('');
-                                            toast($(a), "success", -1, "Job Success");
+                                            toast($(a), "success", -1, "Job Success", {htmlBody:true});
                                             console.timeEnd('Job Time');
                                             startf=0;
                                             $(bndlBTN).attr({disabled:false});
