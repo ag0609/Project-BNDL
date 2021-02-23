@@ -350,7 +350,7 @@
         return chart;
     }
     const halfwidthValue = (value) => {return value.replace(/(?:！？|!\?)/g, "⁉").replace(/[\uff01-\uff5e]/g, fullwidthChar => String.fromCharCode(fullwidthChar.charCodeAt(0) - 0xfee0)).replace(/\u3000/g, '\u0020')}
-    toast('', "success", 5, bndl_ver);
+    toast('', "success", 5000, bndl_ver);
     let jsMain = "";
     let start = ()=>{}, cancel = ()=>{};
     if(/viewer(?:\-(?:p?trial|subscription))?\.bookwalker\.jp/i.test(window.location.href)) jsMain = GM_getResourceText("BWJP");
