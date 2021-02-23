@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Bootstrap version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.76
+// @version      0.80
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://viewer.bookwalker.jp/*
@@ -58,6 +58,7 @@
     let zip = new JSZip();
     let _init_time, _job_time, _page_time;
     _init_time = _job_time = _page_time = new Date();
+    let _pdb = [];
     let _overflow_ = 0;
     let _$timer = 0;
     let startf = 0;
@@ -326,6 +327,29 @@
         if(ar9s[1]) $3_.appendChild(document.createTextNode(ar9s[1]));
         return $3_;
     } //create XML Nodes for document
+    function toastchart(db, t="Chart") {
+        let chrcon = $('<div>').attr({id:'chartContainer'}).css({width:'100%', height:'200px'});
+        toast(chrcon, 'info', 0, t, {htmlBody:true});
+        var chart = new CanvasJS.Chart("chartContainer", {
+            data: [{
+                type: "line",
+                dataPoints: db
+            }]
+        });
+        var updateInterval = 1000;
+        var dataLength = 20; // number of dataPoints visible at any point
+        chart.updateChart = function (xVal, yVal) {
+            db.push({
+                x: xVal,
+                y: yVal
+            });
+            if (db.length > dataLength) {
+                db.shift();
+            }
+            chart.render();
+        };
+        return chart;
+    }
     const halfwidthValue = (value) => {return value.replace(/(?:！？|!\?)/g, "⁉").replace(/[\uff01-\uff5e]/g, fullwidthChar => String.fromCharCode(fullwidthChar.charCodeAt(0) - 0xfee0)).replace(/\u3000/g, '\u0020')}
     let jsMain = "";
     let start = ()=>{}, cancel = ()=>{};
