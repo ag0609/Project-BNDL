@@ -15,6 +15,7 @@
 // @require      https://cdn.jsdelivr.net/npm/jszip@3.5.0/dist/jszip.js
 // @require      https://cdn.jsdelivr.net/npm/jszip-utils@0.1.0/dist/jszip-utils.min.js
 // @require      https://cdn.jsdelivr.net/npm/pdfjs-dist@2.5.207/build/pdf.min.j
+// @require      https://cdn.jsdelivr.net/npm/canvasjs@1.8.3/dist/canvasjs.min.js
 // @require      https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/String.class.js
 // @require      https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/Array.class.js
 // @require      https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/comicinfo.class.js
@@ -39,7 +40,8 @@
 
 (async function() {
     'use strict';
-    console.log("BNDL Project Userscript Version", GM_info.script.version);
+    const bndl_ver = "BNDL Project Userscript Version "+ GM_info.script.version;
+    console.log(bndl_ver);
     console.time("Initialization Time");
     let debug_enable = 1;
     //
@@ -77,19 +79,18 @@
     const maindiv$extend = {width:'100vw',height:'100vh'};
     const maindiv$close = {width:'10%',height:'5%'};
     $(maindiv).attr("id", 'bndl')
-              .addClass('container-fluid text-center p-3')
-              .css({position:'fixed',
-                    top:'50%',left:'50%',
-                    transition:'all 1s',
+              .addClass('jumbotron d-table position-fixed align-middle text-center p-3')
+              .css({top:'50%',left:'50%',
+                    transition:'all .7s',
                     transform:'translate(-50%,-50%)',
                     minWidth:'300px',minHeight:'150px',
                     width:'30vw',height:'10vh',
-                    margin:'auto', 'z-index':1000000,
+                    margin:'auto', 'z-index':1000001,
                     backgroundColor:'lightgrey'})
               .hide();
     $(maindiv).hover(function() {$(this).css({opacity:.7})}, function() {$(this).css({opacity:1})});
     maindiv.ob = new MutationObserver(ProgressBarCallback);
-    maindiv.addEventListener('dblclick', function() {
+    $(maindiv).dblclick(function() {
         $(maindiv).toggleClass('extend');
         if($(maindiv).hasClass('extend')) {
             $(maindiv).addClass('w-100 h-100');
@@ -123,8 +124,7 @@
     $(canBTN).addClass('btn-primary')
       .attr("data-default-text", "Stop")
       .text("Stop");
-    maindiv.appendChild(document.createElement('tr'));
-    $("<tr>").appendTo($(maindiv));
+    $('<tr>').appendTo($(maindiv));
     $(pc).appendTo($(maindiv));
     $(quaBTN).appendTo($(maindiv));
     $(bndlBTN).appendTo($(maindiv));
@@ -336,7 +336,6 @@
                 dataPoints: db
             }]
         });
-        var updateInterval = 1000;
         var dataLength = 20; // number of dataPoints visible at any point
         chart.updateChart = function (xVal, yVal) {
             db.push({
@@ -351,6 +350,7 @@
         return chart;
     }
     const halfwidthValue = (value) => {return value.replace(/(?:！？|!\?)/g, "⁉").replace(/[\uff01-\uff5e]/g, fullwidthChar => String.fromCharCode(fullwidthChar.charCodeAt(0) - 0xfee0)).replace(/\u3000/g, '\u0020')}
+    toast('', "success", 5, bndl_ver);
     let jsMain = "";
     let start = ()=>{}, cancel = ()=>{};
     if(/viewer(?:\-(?:p?trial|subscription))?\.bookwalker\.jp/i.test(window.location.href)) jsMain = GM_getResourceText("BWJP");
