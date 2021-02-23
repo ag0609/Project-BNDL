@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20210223.0");
+console.log("Dlsite Play Japan ver20210223.1");
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
@@ -187,7 +187,9 @@ XMLHttpRequest.prototype.send = function() {
                     fn = "[" + (pr.author_name || (tags != null && tags.find(v=>v.class == "created_by") ? pr.maker_name + " (" + tags.find(v=>v.class == "created_by").name + ")" : null) || pr.maker_name) + "] " + pr.work_name+" ("+pr.workno+")";
                     fn = fn.replace(/\s?【[^【】]*(無料|お試し|試し読み)[^【】]*】\s?/g, " ").replace(/\s?【[^【】]*(期間限定|特典)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm, '');
                     console.log("%cFilename: %s", "background-color:azure", fn);
-                    toast(fn, "info", 0, "Title");
+                    let gw = $('<a>').text(fn);
+                    gw.on('click', () => { debug.dlzip(1) });
+                    toast(gw, "info", 0, "Title", {htmlBody:true});
                 }
                 if(!pl) { //purchase list not granted
                     GM.xmlHttpRequest({
