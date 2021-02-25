@@ -341,6 +341,7 @@
         });
         var dataLength = 20; // number of dataPoints visible at any point
         chart.updateChart = function (val) {
+            const db = this.config.data[0].datasets.data;
             db.push(val);
             if (db.length > dataLength) {
                 db.shift();
