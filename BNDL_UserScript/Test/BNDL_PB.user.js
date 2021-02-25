@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Bootstrap version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.80
+// @version      0.81
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://viewer.bookwalker.jp/*
@@ -11,17 +11,18 @@
 // @match        https://play.dlsite.com/*
 // @match        https://booklive.jp/bviewer/s/*
 // @require      https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js
-// @require      https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js
+// @require      https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js
 // @require      https://cdn.jsdelivr.net/npm/jszip@3.5.0/dist/jszip.js
 // @require      https://cdn.jsdelivr.net/npm/jszip-utils@0.1.0/dist/jszip-utils.min.js
 // @require      https://cdn.jsdelivr.net/npm/pdfjs-dist@2.5.207/build/pdf.min.j
-// @require      https://cdn.jsdelivr.net/npm/canvasjs@1.8.3/dist/canvasjs.min.js
+// @require      https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js
 // @require      https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/String.class.js
 // @require      https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/Array.class.js
 // @require      https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/comicinfo.class.js
 // @require      https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/jsonHandler.class.js
 // @require      https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Test/Plugin/Bootstrap-Extend.inc.js
-// @resource     customCSS https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css
+// @resource     bsCSS https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css
+// @resource     chartCSS https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.css
 // @resource     BWJP https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Test/Plugin/bookwalkerjp.inc.js
 // @resource     DLJP https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Test/Plugin/dlsitejp.inc.js
 // @resource     BLJP https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Test/Plugin/booklivejp.inc.js
@@ -48,8 +49,8 @@
     let show_org = 0;
     let overflow_limit = 100;
     //Read External CSS
-    const cssTxt = GM_getResourceText("customCSS");
-    GM_addStyle(cssTxt);
+    resourceCSS("bsCSS");
+    resourceCSS("chartCSS");
     //Empty Audio Loop for retain tab active
     const emptyAudioFile = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU3LjcxLjEwMAAAAAAAAAAAAAAA/+M4wAAAAAAAAAAAAEluZm8AAAAPAAAAEAAABVgANTU1NTU1Q0NDQ0NDUFBQUFBQXl5eXl5ea2tra2tra3l5eXl5eYaGhoaGhpSUlJSUlKGhoaGhoaGvr6+vr6+8vLy8vLzKysrKysrX19fX19fX5eXl5eXl8vLy8vLy////////AAAAAExhdmM1Ny44OQAAAAAAAAAAAAAAACQCgAAAAAAAAAVY82AhbwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/+MYxAALACwAAP/AADwQKVE9YWDGPkQWpT66yk4+zIiYPoTUaT3tnU487uNhOvEmQDaCm1Yz1c6DPjbs6zdZVBk0pdGpMzxF/+MYxA8L0DU0AP+0ANkwmYaAMkOKDDjmYoMtwNMyDxMzDHE/MEsLow9AtDnBlQgDhTx+Eye0GgMHoCyDC8gUswJcMVMABBGj/+MYxBoK4DVpQP8iAtVmDk7LPgi8wvDzI4/MWAwK1T7rxOQwtsItMMQBazAowc4wZMC5MF4AeQAGDpruNuMEzyfjLBJhACU+/+MYxCkJ4DVcAP8MAO9J9THVg6oxRMGNMIqCCTAEwzwwBkINOPAs/iwjgBnMepYyId0PhWo+80PXMVsBFzD/AiwwfcKGMEJB/+MYxDwKKDVkAP8eAF8wMwIxMlpU/OaDPLpNKkEw4dRoBh6qP2FC8jCJQFcweQIPMHOBtTBoAVcwOoCNMYDI0u0Dd8ANTIsy/+MYxE4KUDVsAP8eAFBVpgVVPjdGeTEWQr0wdcDtMCeBgDBkgRgwFYB7Pv/zqx0yQQMCCgKNgonHKj6RRVkxM0GwML0AhDAN/+MYxF8KCDVwAP8MAIHZMDDA3DArAQo3K+TF5WOBDQw0lgcKQUJxhT5sxRcwQQI+EIPWMA7AVBoTABgTgzfBN+ajn3c0lZMe/+MYxHEJyDV0AP7MAA4eEwsqP/PDmzC/gNcwXUGaMBVBIwMEsmB6gaxhVuGkpoqMZMQjooTBwM0+S8FTMC0BcjBTgPwwOQDm/+MYxIQKKDV4AP8WADAzAKQwI4CGPhWOEwCFAiBAYQnQMT+uwXUeGzjBWQVkwTcENMBzA2zAGgFEJfSPkPSZzPXgqFy2h0xB/+MYxJYJCDV8AP7WAE0+7kK7MQrATDAvQRIwOADKMBuA9TAYQNM3AiOSPjGxowgHMKFGcBNMQU1FMy45OS41VVU/31eYM4sK/+MYxKwJaDV8AP7SAI4y1Yq0MmOIADGwBZwwlgIJMztCM0qU5TQPG/MSkn8yEROzCdAxECVMQU1FMy45OS41VTe7Ohk+Pqcx/+MYxMEJMDWAAP6MADVLDFUx+4J6Mq7NsjN2zXo8V5fjVJCXNOhwM0vTCDAxFpMYYQU+RlVMQU1FMy45OS41VVVVVVVVVVVV/+MYxNcJADWAAP7EAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV/+MYxOsJwDWEAP7SAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV/+MYxPMLoDV8AP+eAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV/+MYxPQL0DVcAP+0AFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV';
     const ss = new Audio(emptyAudioFile);
@@ -260,6 +261,10 @@
         unsafeWindow.debug = bndl_d;
     }
     //
+    function resourceCSS(l) {
+        const cssTxt = GM_getResourceText(l);
+        GM_addStyle(cssTxt);
+    }
     function ProgressBarCallback($$e,_f_) {
         const v = $(pcv);
         v.css('width', ((v.attr('aria-valuenow') - v.attr('aria-valuemin')) * 100 / v.attr('aria-valuemax')) + "%");
@@ -327,25 +332,20 @@
         if(ar9s[1]) $3_.appendChild(document.createTextNode(ar9s[1]));
         return $3_;
     } //create XML Nodes for document
-    function toastchart(db, t="Chart") {
-        let chrcon = $('<div>').attr({id:'chartContainer'}).css({width:'100%', height:'200px'});
+    function toastchart(_data, opts, t="Chart") {
+        let chrcon = $('<canvas>').css({width:'100%', height:'200px'});
         toast(chrcon, 'info', 0, t, {htmlBody:true});
-        var chart = new CanvasJS.Chart("chartContainer", {
-            data: [{
-                type: "line",
-                dataPoints: db
-            }]
+        var chart = new Chart(chrcon, {
+            data: _data,
+            options: opts
         });
         var dataLength = 20; // number of dataPoints visible at any point
-        chart.updateChart = function (xVal, yVal) {
-            db.push({
-                x: xVal,
-                y: yVal
-            });
+        chart.updateChart = function (val) {
+            db.push(val);
             if (db.length > dataLength) {
                 db.shift();
             }
-            chart.render();
+            chart.update();
         };
         return chart;
     }
