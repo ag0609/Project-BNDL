@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Bootstrap version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.81
+// @version      0.82
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://viewer.bookwalker.jp/*
@@ -336,16 +336,15 @@
         let chrcon = $('<canvas>').css({width:'100%', height:'200px'});
         toast(chrcon, 'info', 0, t, {htmlBody:true});
         var chart = new Chart(chrcon, {
+            type: 'line',
             data: _data,
             options: opts
         });
-        var dataLength = 20; // number of dataPoints visible at any point
-        chart.updateChart = function (val) {
-            const db = this.config.data[0].datasets[0].data;
+        chart.updateChart = function (val, lab=null) {
+            const db = this.config.data.datasets[0].data;
+            const la = this.config.data.labels;
             db.push(val);
-            if (db.length > dataLength) {
-                db.shift();
-            }
+            la.push(lab?lab:(val.x!=undefined?val.x:val));
             chart.update();
         };
         return chart;
