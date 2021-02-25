@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20210223.2");
+console.log("Bookwalker Japan", "v20210225.2");
 console.log("Reference:", "https://blog.jixun.moe/intercept-bookwalker-tw-image", "by JiXun");
 let _detail$retry_ = 0;
 let backup;
@@ -210,8 +210,14 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 } // Get Detail of Book
 function main() {
 	console.log("main");
-	const data = [{datasets:[{label:'usetime', fill:'start', data:_pdb}]}];
-	const options = {scales:{responsive:true,xAxes:[{ticks:{callback:function(d,i){i%2==0?d:null}}}]}};
+	let _sdb=[];
+	const data = {labels:[],datasets:[{backgroundColor:'rgba(99,99,222,0.2)',borderColor:'rgba(99,99,222,0.8)',type:'line',label:'usetime',fill:'start',pointRadius:0,data:_pdb},
+            	{backgroundColor:'rgba(99,222,99,0.2)',borderColor:'rgba(99, 222, 99, 0.8)',yAxisID:'y-axis-2',type:'line',label:'size',fill:'end',pointRadius:0,data:_sdb}]};
+	const options = {scales:{responsive:true,xAxes:[{display:false}],
+		yAxes:[{position:'left'},{id:'y-axis-2',reverse:true,position:'right'}],},
+        	tooltips: {mode:'index',intersect:false},
+        	hover: {mode: 'index',intersect: false}};
+	const ptc = toastchart(data, options, 'Page Time');
 	const ptc = toastchart(data, options, 'Page Time');
 	backup = unsafeWindow.NFBR.a6G.a5x.prototype.b9b;
 	unsafeWindow.NFBR.a6G.a5x.prototype.b9b = function () {
@@ -339,7 +345,8 @@ function main() {
 				};
 			}, 'image/jpeg', quality);
 			let cpt = (new Date() - _page_time)/1000;
-			ptc.updateChart({cpt});
+			_sdb.push({x:curp-1,y:Math.round(img$size[curp])});
+			ptc.updateChart({x:curp-1,y:cpt});
 			console.log("Page generation time:", cpt, "sec");
 			_page_time = new Date();
 			console.groupEnd();
