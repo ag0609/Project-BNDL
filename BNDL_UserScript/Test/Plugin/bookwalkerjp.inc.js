@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20210225.2");
+console.log("Bookwalker Japan", "v20210225.3");
 console.log("Reference:", "https://blog.jixun.moe/intercept-bookwalker-tw-image", "by JiXun");
 let _detail$retry_ = 0;
 let backup;
@@ -217,7 +217,6 @@ function main() {
 		yAxes:[{position:'left'},{id:'y-axis-2',reverse:true,position:'right'}],},
         	tooltips: {mode:'index',intersect:false},
         	hover: {mode: 'index',intersect: false}};
-	const ptc = toastchart(data, options, 'Page Time');
 	const ptc = toastchart(data, options, 'Page Time');
 	backup = unsafeWindow.NFBR.a6G.a5x.prototype.b9b;
 	unsafeWindow.NFBR.a6G.a5x.prototype.b9b = function () {
