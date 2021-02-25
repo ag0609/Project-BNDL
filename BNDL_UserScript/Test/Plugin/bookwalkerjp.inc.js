@@ -210,7 +210,9 @@ const getDetail = async function(bn, st=5, on="", ta=0) {
 } // Get Detail of Book
 function main() {
 	console.log("main");
-	const ptc = toastchart(_pdb, 'Page Time');
+	const data = [{datasets:[{label:'usetime', fill:'start', data:_pdb}]}];
+	const options = {scales:{responsive:true,xAxes:[{ticks:{callback:function(d,i){i%2==0?d:null}}}]}};
+	const ptc = toastchart(data, options, 'Page Time');
 	backup = unsafeWindow.NFBR.a6G.a5x.prototype.b9b;
 	unsafeWindow.NFBR.a6G.a5x.prototype.b9b = function () {
 		let [targetCanvas, page, image, drawRect, flag] = arguments;
@@ -337,7 +339,7 @@ function main() {
 				};
 			}, 'image/jpeg', quality);
 			let cpt = (new Date() - _page_time)/1000;
-			ptc.updateChart(curp, cpt);
+			ptc.updateChart({cpt});
 			console.log("Page generation time:", cpt, "sec");
 			_page_time = new Date();
 			console.groupEnd();
