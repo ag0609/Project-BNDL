@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Bootstrap version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.82
+// @version      0.85
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://viewer.bookwalker.jp/*
@@ -51,6 +51,7 @@
     //Read External CSS
     resourceCSS("bsCSS");
     resourceCSS("chartCSS");
+    GM_addStyle(".overflow-visible { overflow:visible!important }");
     //Empty Audio Loop for retain tab active
     const emptyAudioFile = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU3LjcxLjEwMAAAAAAAAAAAAAAA/+M4wAAAAAAAAAAAAEluZm8AAAAPAAAAEAAABVgANTU1NTU1Q0NDQ0NDUFBQUFBQXl5eXl5ea2tra2tra3l5eXl5eYaGhoaGhpSUlJSUlKGhoaGhoaGvr6+vr6+8vLy8vLzKysrKysrX19fX19fX5eXl5eXl8vLy8vLy////////AAAAAExhdmM1Ny44OQAAAAAAAAAAAAAAACQCgAAAAAAAAAVY82AhbwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/+MYxAALACwAAP/AADwQKVE9YWDGPkQWpT66yk4+zIiYPoTUaT3tnU487uNhOvEmQDaCm1Yz1c6DPjbs6zdZVBk0pdGpMzxF/+MYxA8L0DU0AP+0ANkwmYaAMkOKDDjmYoMtwNMyDxMzDHE/MEsLow9AtDnBlQgDhTx+Eye0GgMHoCyDC8gUswJcMVMABBGj/+MYxBoK4DVpQP8iAtVmDk7LPgi8wvDzI4/MWAwK1T7rxOQwtsItMMQBazAowc4wZMC5MF4AeQAGDpruNuMEzyfjLBJhACU+/+MYxCkJ4DVcAP8MAO9J9THVg6oxRMGNMIqCCTAEwzwwBkINOPAs/iwjgBnMepYyId0PhWo+80PXMVsBFzD/AiwwfcKGMEJB/+MYxDwKKDVkAP8eAF8wMwIxMlpU/OaDPLpNKkEw4dRoBh6qP2FC8jCJQFcweQIPMHOBtTBoAVcwOoCNMYDI0u0Dd8ANTIsy/+MYxE4KUDVsAP8eAFBVpgVVPjdGeTEWQr0wdcDtMCeBgDBkgRgwFYB7Pv/zqx0yQQMCCgKNgonHKj6RRVkxM0GwML0AhDAN/+MYxF8KCDVwAP8MAIHZMDDA3DArAQo3K+TF5WOBDQw0lgcKQUJxhT5sxRcwQQI+EIPWMA7AVBoTABgTgzfBN+ajn3c0lZMe/+MYxHEJyDV0AP7MAA4eEwsqP/PDmzC/gNcwXUGaMBVBIwMEsmB6gaxhVuGkpoqMZMQjooTBwM0+S8FTMC0BcjBTgPwwOQDm/+MYxIQKKDV4AP8WADAzAKQwI4CGPhWOEwCFAiBAYQnQMT+uwXUeGzjBWQVkwTcENMBzA2zAGgFEJfSPkPSZzPXgqFy2h0xB/+MYxJYJCDV8AP7WAE0+7kK7MQrATDAvQRIwOADKMBuA9TAYQNM3AiOSPjGxowgHMKFGcBNMQU1FMy45OS41VVU/31eYM4sK/+MYxKwJaDV8AP7SAI4y1Yq0MmOIADGwBZwwlgIJMztCM0qU5TQPG/MSkn8yEROzCdAxECVMQU1FMy45OS41VTe7Ohk+Pqcx/+MYxMEJMDWAAP6MADVLDFUx+4J6Mq7NsjN2zXo8V5fjVJCXNOhwM0vTCDAxFpMYYQU+RlVMQU1FMy45OS41VVVVVVVVVVVV/+MYxNcJADWAAP7EAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV/+MYxOsJwDWEAP7SAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV/+MYxPMLoDV8AP+eAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV/+MYxPQL0DVcAP+0AFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV';
     const ss = new Audio(emptyAudioFile);
@@ -77,18 +78,19 @@
     let scan = "Scaned By BNDL "+GM_info.script.version+"(ag0609)";
     //Main UI
     const maindiv = document.createElement('div');
+    const maincontent = $('<div>').appendTo($(maindiv));
     const maindiv$extend = {width:'100vw',height:'100vh'};
     const maindiv$close = {width:'10%',height:'5%'};
     $(maindiv).attr("id", 'bndl')
-              .addClass('jumbotron d-table position-fixed align-middle text-center p-3')
+              .addClass('jumbotron position-fixed')
               .css({top:'50%',left:'50%',
                     transition:'all .7s',
                     transform:'translate(-50%,-50%)',
                     minWidth:'300px',minHeight:'150px',
-                    width:'30vw',height:'10vh',
                     margin:'auto', 'z-index':1000001,
                     backgroundColor:'lightgrey'})
               .hide();
+    $(maincontent).addClass('align-middle text-center d-table w-100 h-100 p-3');
     $(maindiv).hover(function() {$(this).css({opacity:.7})}, function() {$(this).css({opacity:1})});
     maindiv.ob = new MutationObserver(ProgressBarCallback);
     $(maindiv).dblclick(function() {
@@ -104,17 +106,18 @@
       .css({height:'0px'})
       .addClass("progress user-select-none");
     const pcv = document.createElement('div');
-    $(pcv).addClass("progress-bar progress-bar-striped progress-bar-animated")
+    $(pcv).addClass("progress-bar progress-bar-striped progress-bar-animated overflow-visible")
       .attr({"role":"progress-bar", "aria-valuemin":0, "aria-valuemax":0, "aria-valuenow":0})
+      .css({"overflow":"visible!important"})
       .appendTo($(pc));
-    $('<span>').addClass('progress-label container-fluid position-absolute').css({'mix-blend-mode':'difference'}).appendTo($(pcv));
+    $('<span>').addClass('progress-label container w-auto text-nowrap').css({'text-shadow':'-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000'}).appendTo($(pcv));
     maindiv.ob.observe(pcv, {attributes:true});
     const btn_obj = document.createElement('button');
     $(btn_obj).attr("type", "button").addClass("btn");
     const bndlBTN = btn_obj.cloneNode();
     $(bndlBTN).attr("id", 'bndl4')
       .attr({"data-default-text":"BNDL", disabled:"true"})
-      .addClass('btn-primary')
+      .addClass('btn-success')
       .text('BNDL');
     const quaBTN = btn_obj.cloneNode();
     $(quaBTN).addClass('btn-primary')
@@ -122,14 +125,14 @@
       .text('Quality('+quality*100+')')
       .click(async ()=>{let tmpq = prompt("Quality?(0-100)"); if(tmpq < 100 && tmpq > 0) {quality = tmpq/100; await GM.setValue('quality', quality);} $(quaBTN).text('Quality('+quality*100+')');});
     const canBTN = btn_obj.cloneNode();
-    $(canBTN).addClass('btn-primary')
+    $(canBTN).addClass('btn-danger')
       .attr("data-default-text", "Stop")
       .text("Stop");
-    $('<tr>').appendTo($(maindiv));
-    $(pc).appendTo($(maindiv));
-    $(quaBTN).appendTo($(maindiv));
-    $(bndlBTN).appendTo($(maindiv));
-    $(canBTN).appendTo($(maindiv));
+    //$('<tr>').appendTo($(maincontent));
+    $(pc).appendTo($(maincontent));
+    $(quaBTN).appendTo($(maincontent));
+    $(bndlBTN).appendTo($(maincontent));
+    $(canBTN).appendTo($(maincontent));
     $(maindiv).appendTo('body');
     //initial toaster
     toast(null, null, 0, null, {containerPos:"RB"});
@@ -253,6 +256,7 @@
                 toast(...args);
             }
         }
+        bndl_d.eval = function(cmd) { eval(cmd); }
         bndl_d.next = () => { console.warn("no function yet"); }
         bndl_d.prev = () => { console.warn("no function yet"); }
         bndl_d.ob = new MutationObserver(bndl_d.attrchg);
