@@ -53,7 +53,7 @@ function toast($_msg, _$t='default', _hT, $_t, _0pts={}) {
 		bntoh.appendTo(bnto);
 		let bntob = $('<div>').attr({id:"toast-00000"}).addClass('toast-body text-dark collapse show font-weight-normal p-0').html('<span class="d-block ml-4 mr-2 mt-2 mb-1"></span>');
 		bntob.appendTo(bnto);
-		let bntof = $('<div>').addClass('toast-footer text-muted text-right font-weight-light font-italic user-select-none').html('<small class="timebadge container-fluid"></small><div class="timebar"></div>');
+		let bntof = $('<div>').addClass('toast-footer text-muted text-truncate text-right font-weight-light font-italic user-select-none').html('<small class="timebadge container-fluid"></small><div class="timebar"></div>');
 		bntof.appendTo(bnto);
 		$('<a>').addClass('collapsed container-fluid text-decoration-none')
 					  .attr({id:'header', role:'button', href:'#', 'data-toggle':'collapse', 'aria-expanded':'true', 'aria-label':'Header'})
