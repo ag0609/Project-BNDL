@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20210223.2");
+console.log("Dlsite Play Japan ver20210303.0");
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
@@ -626,17 +626,11 @@ const hashcheck = setInterval(function() {
                     clearBlob();
                 }
                 $(maindiv).hide();
-                clearInterval(hideimg);
                 if(debug_enable && !show_org) {
-                    let last_img=0;
-                    hideimg = setInterval(function() {
-                        if($("div.thumbnail").length > last_img) {
-                            last_img = $("div.thumbnail").length;
-                            $("div.thumbnail").css({opacity:0});
-                        } else {
-                            clearInterval(hideimg);
-                        }
-                    }, 1000);
+                    if(!hideimg) {
+                        GM_addStyle("div.thumbnail { opacity:0; visibility:hidden!important;}");
+                        hideimg = 1
+                    }
                 }
                 tp = decodeURIComponent(cl.split(/tree/)[1].substr(1));
             }
@@ -648,17 +642,11 @@ const hashcheck = setInterval(function() {
             }
         } else {
             $(maindiv).hide();
-            clearInterval(hideimg);
             if(debug_enable && !show_org) {
-                let last_img=0;
-                hideimg = setInterval(function() {
-                    if($("div.thumbnail").length > last_img) {
-                        last_img = $("div.thumbnail").length;
-                        $("div.thumbnail").css({opacity:0});
-                    } else {
-                        clearInterval(hideimg);
-                    }
-                }, 1000);
+                if(!hideimg) {
+                    GM_addStyle("div.thumbnail { opacity:0; visibility:hidden!important;}");
+                    hideimg = 1
+                }
             }
         }
     }
