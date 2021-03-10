@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Bootstrap version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.85
+// @version      0.90
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://viewer.bookwalker.jp/*
@@ -10,6 +10,7 @@
 // @match        https://viewer-subscription.bookwalker.jp/*
 // @match        https://play.dlsite.com/*
 // @match        https://booklive.jp/bviewer/s/*
+// @match        https://play.google.com/books/reader*
 // @require      https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js
 // @require      https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js
 // @require      https://cdn.jsdelivr.net/npm/jszip@3.5.0/dist/jszip.js
@@ -26,6 +27,7 @@
 // @resource     BWJP https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Test/Plugin/bookwalkerjp.inc.js
 // @resource     DLJP https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Test/Plugin/dlsitejp.inc.js
 // @resource     BLJP https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Test/Plugin/booklivejp.inc.js
+// @resource     GB https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Test/Plugin/GB.inc.js
 // @connect      bookwalker.jp
 // @connect      play.dl.dlsite.com
 // @connect      download.dlsite.com
@@ -361,6 +363,7 @@
     //if(/bookwalker\.tw/i.test(window.location.href)) jsMain = GM_getResourceText("BWTW");
     if(/booklive\.jp/i.test(window.location.href)) jsMain = GM_getResourceText("BLJP");
     if(/play\.dlsite\.com/i.test(window.location.href)) jsMain = GM_getResourceText("DLJP");
+    if(/play\.google\.com\/books\/reader/i.test(window.location.href)) jsMain = GM_getResourceText("GB");
     eval(jsMain);
     $(bndlBTN).on("click", ()=>{start()});
     $(canBTN).on("click", ()=>{cancel()});
