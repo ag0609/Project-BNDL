@@ -15,7 +15,7 @@
 // @require      https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js
 // @require      https://cdn.jsdelivr.net/npm/jszip@3.5.0/dist/jszip.js
 // @require      https://cdn.jsdelivr.net/npm/jszip-utils@0.1.0/dist/jszip-utils.min.js
-// @require      https://cdn.jsdelivr.net/npm/pdfjs-dist@2.5.207/build/pdf.min.j
+// @require      https://cdn.jsdelivr.net/npm/pdfjs-dist@2.5.207/build/pdf.min.js
 // @require      https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js
 // @require      https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/String.class.js
 // @require      https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/Array.class.js
