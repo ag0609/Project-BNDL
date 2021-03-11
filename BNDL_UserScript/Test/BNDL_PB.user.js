@@ -10,7 +10,6 @@
 // @match        https://viewer-subscription.bookwalker.jp/*
 // @match        https://play.dlsite.com/*
 // @match        https://booklive.jp/bviewer/s/*
-// @match        https://play.google.com/books/reader*
 // @require      https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js
 // @require      https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js
 // @require      https://cdn.jsdelivr.net/npm/jszip@3.5.0/dist/jszip.js
@@ -363,7 +362,6 @@
     //if(/bookwalker\.tw/i.test(window.location.href)) jsMain = GM_getResourceText("BWTW");
     if(/booklive\.jp/i.test(window.location.href)) jsMain = GM_getResourceText("BLJP");
     if(/play\.dlsite\.com/i.test(window.location.href)) jsMain = GM_getResourceText("DLJP");
-    if(/play\.google\.com\/books\/reader/i.test(window.location.href)) jsMain = GM_getResourceText("GB");
     eval(jsMain);
     $(bndlBTN).on("click", ()=>{start()});
     $(canBTN).on("click", ()=>{cancel()});
