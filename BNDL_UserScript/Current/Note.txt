@@ -1,0 +1,20 @@
+NFBR.a6G.Initializer.F5W.menu.a6l
+moveToFirst(), moveToEnd(), moveToPrevious(), moveToNext(), moveToPage(idx)
+
+NFBR.a6G.Initializer.F5W.menu.model.attributes.a2I.attributes.image.bitmap
+
+NFBR.a6G.Initializer.F5W.menu.model.attributes.h2j => current page info
+.left => Page canvas setting
+
+NFBR.a6G.Initializer.F5W.menu.model.attributes.a2u.u5K => pages info
+[idx] => page index
+[idx].left => Page canvas setting
+
+NFBR.a6G.Initializer.F5W.menu.model.attributes.a2u.book.content.normal_default.toc_
+[idx] => indexing
+.href => index of K2e(should look like: "item/xhtml/p-123.html")
+.label => TOC Label
+
+NFBR.a6G.Initializer.F5W.menu.model.attributes.a2u.book.content.normal_default.K2e
+[idx] => should use .href of toc_(should look like: "item/xhtml/p-123.html")
+value => page index
