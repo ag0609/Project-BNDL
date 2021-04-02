@@ -1,5 +1,6 @@
 NFBR.a6G.Initializer.F5W.menu.a6l
-moveToFirst(), moveToEnd(), moveToPrevious(), moveToNext(), moveToPage(idx)
+moveToFirst(), moveToEnd(), moveToPrevious(), moveToNext(), moveToPage(idx) => bookcontrol?
+load(a1,a2,a3,a4,a5,a6) => ???
 
 NFBR.a6G.Initializer.F5W.menu.model.attributes.a2I.attributes.image.bitmap
 
