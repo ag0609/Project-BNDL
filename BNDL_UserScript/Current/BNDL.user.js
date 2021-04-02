@@ -1,16 +1,24 @@
 // ==UserScript==
 // @name         BNDL
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.59
+// @version      0.60
 // @description  try to take copy of yours books! Book-worm!
 // @author       ag0609
 // @include      https://*.bookwalker.jp/*/viewer.html?*
-// @require      https://stuk.github.io/jszip/dist/jszip.js
+// @require      tampermonkey://vendor/jquery.js
+// @require      https://raw.githubusercontent.com/Stuk/jszip/master/dist/jszip.js
+// @require      https://raw.githubusercontent.com/Stuk/jszip-utils/master/dist/jszip-utils.min.js
+// @require      https://mozilla.github.io/pdf.js/build/pdf.js
+// @require      https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/String.class.js
+// @require      https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/Array.class.js
+// @require      https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/comicinfo.class.js
+// @require      https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/jsonHandler.class.js
 // @require      http://lab.ejci.net/favico.js/favico.min.js
 // @resource     customCSS https://raw.githubusercontent.com/ag0609/Project-BNDL/master/css/BNDL.user.css
 // @run-at       document-end
 // @grant        GM_addStyle
 // @grant        GM_getResourceText
+// @grant        GM.xmlHttpRequest
 // ==/UserScript==
 
 (function() {
@@ -18,11 +26,15 @@
     var [cx, cy, cw, ch] = [0, 0, 0, 0];
     var fn = "xxx";
 
+    const zip = new JSZip();
     const cssTxt = GM_getResourceText("customCSS");
     GM_addStyle(cssTxt);
     const emptyAudioFile = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU3LjcxLjEwMAAAAAAAAAAAAAAA/+M4wAAAAAAAAAAAAEluZm8AAAAPAAAAEAAABVgANTU1NTU1Q0NDQ0NDUFBQUFBQXl5eXl5ea2tra2tra3l5eXl5eYaGhoaGhpSUlJSUlKGhoaGhoaGvr6+vr6+8vLy8vLzKysrKysrX19fX19fX5eXl5eXl8vLy8vLy////////AAAAAExhdmM1Ny44OQAAAAAAAAAAAAAAACQCgAAAAAAAAAVY82AhbwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/+MYxAALACwAAP/AADwQKVE9YWDGPkQWpT66yk4+zIiYPoTUaT3tnU487uNhOvEmQDaCm1Yz1c6DPjbs6zdZVBk0pdGpMzxF/+MYxA8L0DU0AP+0ANkwmYaAMkOKDDjmYoMtwNMyDxMzDHE/MEsLow9AtDnBlQgDhTx+Eye0GgMHoCyDC8gUswJcMVMABBGj/+MYxBoK4DVpQP8iAtVmDk7LPgi8wvDzI4/MWAwK1T7rxOQwtsItMMQBazAowc4wZMC5MF4AeQAGDpruNuMEzyfjLBJhACU+/+MYxCkJ4DVcAP8MAO9J9THVg6oxRMGNMIqCCTAEwzwwBkINOPAs/iwjgBnMepYyId0PhWo+80PXMVsBFzD/AiwwfcKGMEJB/+MYxDwKKDVkAP8eAF8wMwIxMlpU/OaDPLpNKkEw4dRoBh6qP2FC8jCJQFcweQIPMHOBtTBoAVcwOoCNMYDI0u0Dd8ANTIsy/+MYxE4KUDVsAP8eAFBVpgVVPjdGeTEWQr0wdcDtMCeBgDBkgRgwFYB7Pv/zqx0yQQMCCgKNgonHKj6RRVkxM0GwML0AhDAN/+MYxF8KCDVwAP8MAIHZMDDA3DArAQo3K+TF5WOBDQw0lgcKQUJxhT5sxRcwQQI+EIPWMA7AVBoTABgTgzfBN+ajn3c0lZMe/+MYxHEJyDV0AP7MAA4eEwsqP/PDmzC/gNcwXUGaMBVBIwMEsmB6gaxhVuGkpoqMZMQjooTBwM0+S8FTMC0BcjBTgPwwOQDm/+MYxIQKKDV4AP8WADAzAKQwI4CGPhWOEwCFAiBAYQnQMT+uwXUeGzjBWQVkwTcENMBzA2zAGgFEJfSPkPSZzPXgqFy2h0xB/+MYxJYJCDV8AP7WAE0+7kK7MQrATDAvQRIwOADKMBuA9TAYQNM3AiOSPjGxowgHMKFGcBNMQU1FMy45OS41VVU/31eYM4sK/+MYxKwJaDV8AP7SAI4y1Yq0MmOIADGwBZwwlgIJMztCM0qU5TQPG/MSkn8yEROzCdAxECVMQU1FMy45OS41VTe7Ohk+Pqcx/+MYxMEJMDWAAP6MADVLDFUx+4J6Mq7NsjN2zXo8V5fjVJCXNOhwM0vTCDAxFpMYYQU+RlVMQU1FMy45OS41VVVVVVVVVVVV/+MYxNcJADWAAP7EAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV/+MYxOsJwDWEAP7SAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV/+MYxPMLoDV8AP+eAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV/+MYxPQL0DVcAP+0AFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV';
     const ss = new Audio(emptyAudioFile);
     ss.loop = true;
+
+    let Ci = new comicinfo(); //Build XML class for ComicInfo.xml(which mainly used by Comic Reader)
+    let pages;
 
     var icon = [].slice.call(document.head.getElementsByTagName('link')).find( k => k.rel === 'icon' );
     if(icon == undefined) {
@@ -48,11 +60,7 @@
         ctx.strokeRect(x, y, w, h);
         ctx.fillRect(x/2, y/2, w/2, h/2);
     }
-    function chopCanvas(canvas, x, y, w, h) {
-        x = x ? x : 0;
-        y = y ? y : 0;
-        w = w ? w : canvas.width;
-        h = h ? h : canvas.height;
+    function chopCanvas(canvas, x=0, y=0, w=canvas.width, h=canvas.height) {
         console.log("chop:",[x, y, w, h]);
         const context = canvas.getContext('2d');
         const croppedCanvas = document.createElement('canvas');
@@ -159,6 +167,177 @@
         }
         return new Blob([ia], {type:mimeString});
     } //canvas to blob
+    function getQuery(v) {
+        if(URLSearchParams) {
+            return ((new URLSearchParams(window.location.search)).get(v) || null);
+        } else {
+            var results = new RegExp('[\?&]' + v + '=([^&#]*)').exec(window.location.search);
+            if (results == null){
+               return null;
+            }
+            else {
+               return decodeURI(results[1]) || 0;
+            }
+        }
+    }
+    const halfwidthValue = (value) => {return value.replace(/(?:！？|!\?)/g, "⁉").replace(/[\uff01-\uff5e]/g, fullwidthChar => String.fromCharCode(fullwidthChar.charCodeAt(0) - 0xfee0)).replace(/\u3000/g, '\u0020')}
+    let _detail$retry_ = 0;
+    let bd = {};
+    const getDetail = function(bn, st=5, on="", ta=0) {
+        console.debug("getDetail()", bn, st, on);
+        return new Promise(function(resolve) {
+            let cty = parseInt(getQuery("cty"));
+            let bwhp = "https://bookwalker.jp/";
+            let eventapi = "https://eventapi.bookwalker.jp/api/";
+            let autocom = "https://bookwalker.jp/louis-api/autocomplete/";
+            let cat = cty ? 2 : 0; //category { 1 = Novel, 2 = Manga, 3 = Light Novel, 9 = Web Novel }
+            console.debug("getDetail()", autocom + "?category="+ cat +"&term=" + bn);
+            GM.xmlHttpRequest({
+                method: "GET",
+                url: autocom + "?category="+ cat +"&term=" + bn,
+                onload: async function(res) {
+                    let j = JSON.parse(res.responseText);
+                    let f;
+                    if(j.contents) { //type 1 = Series, 2 = Artist, 3 = Company, 4 = Label, 5 = Book
+                        console.debug("getDetail(contents)", "auto_result:", j.contents.length);
+                        f= j.contents.filter(v => (new RegExp(escape(bn)+"(?:%(?:[0-9A-F]{2}|u[0-9A-F]{4})|$)+","i")).test(escape(v.value))).find(v => (v.type == st && (ta == 999 || !(/(期間限定|お試し|試し読み)/.test(v.value)))));
+                    } else {
+                        console.debug("getDetail()", "auto_result:", j.length);
+                        f = j.filter(v => (new RegExp(escape(bn)+"(?:%(?:[0-9A-F]{2}|u[0-9A-F]{4})|$)+","i")).test(escape(v.value))).find(v => (v.type == st && (ta == 999 || !(/(期間限定|お試し|試し読み)/.test(v.value)))));
+                    }
+                    console.debug("getDetail()", "find_result:", f != undefined ? true : false);
+                    let bid;
+                    let askhelp = 0;
+                    if(f) { //have matched records
+                        if(st == 5) { //congrates! exact match found
+                            bid = "de" + f.typeId;
+                        } else { //Series search
+                            console.debug("getDetail()", bwhp + "series/"+ f.typeId +"/list/");
+                            bid = await new Promise((resolve) => {
+                                GM.xmlHttpRequest({
+                                    method: "GET",
+                                    url: bwhp + "series/"+ f.typeId +"/list/",
+                                    onload: function(reS) {
+                                        let h = reS.responseText;
+                                        let parser = new DOMParser();
+                                        let html = parser.parseFromString(h, "text/html");
+                                        let non;
+                                        try {
+                                            switch(_detail$retry_) {
+                                                case 1: //clean out whitespace
+                                                    non = on.replace(/\s/g, "");
+                                                    console.debug("getDetail()", on, "=>", non);
+                                                    break;
+                                                case 2: //convert full-widthed character to half-widthed
+                                                    non = halfwidthValue(on);
+                                                    console.debug("getDetail()", on, "=>", non);
+                                                    break;
+                                                default: //no retry or looped?
+                                                    non = on;
+                                            }
+                                            let auuid = document.evaluate(".//div[@title='"+ non +"']", html, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.getAttribute('data-uuid');
+                                            resolve('de' + auuid);
+                                        } catch(e) {
+                                            switch(_detail$retry_) {
+                                                case 2: //Free-in-Period books? let's try using full-tagged original title
+                                                    console.debug("getDetail()", "use document.title");
+                                                    return getDetail(document.title, 5, document.title, 999);
+                                                    break;
+                                                default:
+                                                    _detail$retry_++;
+                                                    return getDetail(bn, st, on);
+                                            }
+                                        } //The name pattern changed!! maybe will add a blur search in future
+                                    }
+                                });
+                            });
+                        }
+                    } else if(st == 5 && (j.length || j.contents)) { //Try search by series
+                        return await getDetail(bn.replace(/^\s?(.*?)\s?(?:[：\:]{0,1}\s?[\d０-９]+|[（\(][\d０-９]+[\)）]|[第]?[\d０-９]+[巻話]?)$/g, "$1"), 1, bn);
+                    } else { //Strange... nothing found
+                        askhelp = 1;
+                    }
+                    if(askhelp) { //Try ask user for help
+                        let userbid = prompt("Sorry, Record not found. Please help search "+ bn +" at bookwalker.jp and paste bookID or detail page link here");
+                        //de8a5395a0-df91-4c3c-a676-3c948fbc30ed
+                        if(/de[0-9a-f]{8}\-(?:[0-9a-f]{4}\-){3}[0-9a-f]{12}/.test(userbid)) {
+                            bid = userbid.match(/de[0-9a-f]{8}\-(?:[0-9a-f]{4}\-){3}[0-9a-f]{12}/);
+                        } else { //Giveup maybe the best choice for saving lives...
+                            Ci.add("/ComicInfo", 'Web', bwhp + bid + '/');
+                            return;
+                        }
+                    }
+                    Ci.add("/ComicInfo", 'Web', bwhp + bid + '/');
+                    console.debug("getDetail()", bwhp + bid + '/');
+                    GM.xmlHttpRequest({
+                        method: "GET",
+                        url: bwhp + bid,
+                        onload: function(res) {
+                            let h = res.responseText;
+                            let parser = new DOMParser();
+                            let html = parser.parseFromString(h, "text/html");
+                            //bd.author = [].slice.call(html.getElementsByClassName('author-name')).map(e => e.innerHTML).join('×');
+                            let authors = html.querySelectorAll("dl.author");
+                            bd.author = [];
+                            let wt, pcl;
+                            for(let i=0;i<authors.length;i++) {
+                                try {
+                                    const at = authors[i].getElementsByClassName('author-head')[0].innerText.split('・');
+                                    const an = authors[i].getElementsByClassName('author-name')[0].innerText.replace(/(（.*?）|\s)/g, "");
+                                    at.forEach((v) => {
+                                        if(/キャラ|設定/.test(v)) { //キャラクター原案
+                                            bd.author.push({'p':4, 'type':v, 'name':an});
+                                        } else if(/^([原][著作])$/g.test(v)) { //原作, 原著
+                                            bd.author.push({'p':0, 'type':v, 'name':an});
+                                        } else if(/^[著作][者]?$/.test) { //著, 作, 著者, 作者
+                                            bd.author.push({'p':1, 'type':v, 'name':an});
+                                        } else if(/(画|マンガ|イラスト)/g.test(v)) { //漫画, マンガ, イラスト
+                                            bd.author.push({'p':2, 'type':v, 'name':an});
+                                        } else if(v != "") {
+                                            bd.author.push({'p':5, 'type':v, 'name':an});
+                                        }
+                                    });
+                                } catch(e){};
+                            }
+                            bd.author.sort(function(a,b) { return a.p - b.p; }); //sort by priority
+                            pcl = [];
+                            bd.author.forEach((v) => {
+                                if(!wt || (!wt && v.p == 1)) {
+                                    wt = v.name;
+                                } else if(v.p < 4) {
+                                    pcl.push(v.name);
+                                }
+                            });
+                            //bd.author.sort(function(a,b) { if(a.name < b.name) { return -1 } else if(a.name > b.name) { return 1 } return 0; }); //sort by name
+                            Ci.add("/ComicInfo", "Writer", wt);
+                            if(pcl.length) Ci.add("/ComicInfo", "Penciller", pcl.join(','));
+                            let author_filtered = [wt];
+                            author_filtered = author_filtered.concat(pcl.uniquify("name"));
+                            console.table(author_filtered);
+                            if(author_filtered.length) {
+                                fn = '[' + author_filtered.splice(0,Math.min(author_filtered.length,3)).join('×') + '] ' + fn;
+                            } else {
+                                fn = '[' + bd.author.splice(0,Math.min(bd.author.length,3)).map(e=>e.name).join('×') + '] ' + fn;
+                            }
+                            console.log(fn);
+                            document.title = fn;
+                            const pD = document.evaluate("//dt[text()='配信開始日']", html, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.nextElementSibling.innerText;
+                            const pDate = pD.split('/');
+                            Ci.add("/ComicInfo", "Year", pDate[0]);
+                            Ci.add("/ComicInfo", "Month", pDate[1]);
+                            Ci.add("/ComicInfo", "Day", pDate[2]);
+                            console.debug("Published Date: %s/%s/%s", ...pDate);
+                            Ci.add("/ComicInfo", "LanguageISO", "ja");
+                            Ci.add("/ComicInfo", "BlackAndWhite", "Yes");
+                            cty ? Ci.add("/ComicInfo", "Manga", "YesAndRightToLeft") : Ci.add("/ComicInfo", "Manga", "No");
+                            //toast(fn, "info", 0, "Title");
+                            resolve(fn);
+                        }
+                    });
+                }
+            });
+        });
+    } // Get Detail of Book
     function wait_for_canvas_loaded() {
         const canvas_containers = document.getElementsByClassName("currentScreen");
         if(!canvas_containers.length) return setTimeout(wait_for_canvas_loaded, 500);
@@ -218,12 +397,12 @@
         console.group("JSZip");
         const pc = document.getElementById('bndl-progress');
         pc.classList.add('zip');
-        const zip = new JSZip();
         console.groupCollapsed("Insert");
         for(var i in ba) {
             console.log("<-- [%s] %i bytes", pad(i,5) +".jpg", ba[i].size);
             zip.file(pad(i,5) +".jpg", ba[i], {base64: true});
         }
+        zip.file("ComicInfo.xml", Ci.toString(), {type: "text/xml"});
         console.log('xxx Clean up canvas caches xxx');
         ba = null;
         console.groupEnd();
@@ -262,7 +441,7 @@
             ss.pause();
         });
     } //Zip Canvas and Download archive
-    function saveFile() {
+    async function saveFile() {
         let obj = document.getElementById('bndl4');
         let pc = document.getElementById('bndl-progress');
         let phl = document.getElementById('bndl');
@@ -284,6 +463,31 @@
         let [fp, tmpS] = [0, 0];
         let totp = (document.getElementById('pageSliderCounter').innerText).split('/')[1] * 1;
         pc.setAttribute("max", totp);
+        if(!pages) {
+            pages = new comicInfoPages(totp);
+            let on = fn.replace(/\s?【[^【】]*(無料|お試し|試し読み)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,''); //[Only for Period] will left for Bookwalker Stupid Retarded Search Engine
+            await getDetail(on).then(v => {
+                fn = v.replace(/\s?【[^【】]*(限定|特典)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,'');; //Now I can remove them for series name
+                const ser = v.replace(/^\s?(.*?)\s?(?:[：\:]{0,1}\s?([\d０-９]+)|[（\(]([\d０-９]+)[\)）]|[第]?([\d０-９]+)[巻話]?)$/, function(...args) {
+                    const [match, p, offset, string] = [args[0], args.slice(1, -2).filter(v=>v), args[args.length-2], args[args.length-1]];
+                    return p[0];
+                });
+                let num = halfwidthValue(v).replace(/.*?[第\:]?(\d+)[巻話\)]?$/, "$1");
+                if(isNaN(parseInt(num))) { //Books may only have single volume, so no volume number
+                    fn = ser;
+                    num = 1;
+                } else {
+                    fn = ser + " 第"+pad(num, 2)+"巻";
+                }
+                //Get Table of Contents(Bookmarks)
+                //Encrypted in configuration_pack.json => configuration["nav-list"] => BUT NO SOLUTION YET
+                //
+                Ci.add("/ComicInfo", "Number", pad(num,2));
+                Ci.add("/ComicInfo", 'Title', fn);
+                Ci.add("/ComicInfo", 'Series', ser);
+                Ci.add("/ComicInfo", 'PageCount', totp);
+            });
+        }
         ba = new Array();
         ss.play();
         let jumped = 0;
@@ -360,6 +564,7 @@
                 clearInterval(job);
                 dragpad.ctx.clearRect(0, 0, c.width, c.height);
                 console.log("Captrue Completed");
+                Ci.addPageCollection(pages);
                 job = 0;
                 DLFile();
                 obj.innerText = "BNDL";
