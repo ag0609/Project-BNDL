@@ -400,7 +400,7 @@
         console.groupCollapsed("Insert");
         for(var i in ba) {
             console.log("<-- [%s] %i bytes", pad(i,5) +".jpg", ba[i].size);
-            zip.file(pad(i,5) +".jpg", ba[i], {base64: true});
+            zip.file('P'+ pad(i,5) +".jpg", ba[i], {base64: true});
         }
         zip.file("ComicInfo.xml", Ci.toString(), {type: "text/xml"});
         console.log('xxx Clean up canvas caches xxx');
