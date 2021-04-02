@@ -7,7 +7,7 @@
 // @include      https://*.bookwalker.jp/*/viewer.html?*
 // @require      https://stuk.github.io/jszip/dist/jszip.js
 // @require      http://lab.ejci.net/favico.js/favico.min.js
-// @resource     customCSS https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/BNDL.user.css
+// @resource     customCSS https://raw.githubusercontent.com/ag0609/Project-BNDL/master/css/BNDL.user.css
 // @run-at       document-end
 // @grant        GM_addStyle
 // @grant        GM_getResourceText
