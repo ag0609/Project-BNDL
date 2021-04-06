@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.60
+// @version      0.61
 // @description  try to take copy of yours books! Book-worm!
 // @author       ag0609
 // @include      https://*.bookwalker.jp/*/viewer.html?*
@@ -19,6 +19,7 @@
 // @grant        GM_addStyle
 // @grant        GM_getResourceText
 // @grant        GM.xmlHttpRequest
+// @grant        unsafeWindow
 // ==/UserScript==
 
 (function() {
@@ -331,6 +332,16 @@
                             Ci.add("/ComicInfo", "BlackAndWhite", "Yes");
                             cty ? Ci.add("/ComicInfo", "Manga", "YesAndRightToLeft") : Ci.add("/ComicInfo", "Manga", "No");
                             //toast(fn, "info", 0, "Title");
+                            try {
+                                const toc = unsafeWindow.NFBR.a6G.Initializer.F5W.menu.model.attributes.a2u.book.content.normal_default.toc_;
+                                const tocidx = unsafeWindow.NFBR.a6G.Initializer.F5W.menu.model.attributes.a2u.book.content.normal_default.K2e;
+                                toc.forEach(function(v,i) {
+                                    pages.setPageAttr(parseInt(tocidx[v.href]), "Bookmark", v.label);
+                                });
+                                console.log(pages);
+                            } catch(e) {
+                                //Do nothing
+                            }
                             resolve(fn);
                         }
                     });
@@ -400,7 +411,7 @@
         console.groupCollapsed("Insert");
         for(var i in ba) {
             console.log("<-- [%s] %i bytes", pad(i,5) +".jpg", ba[i].size);
-            zip.file('P'+ pad(i,5) +".jpg", ba[i], {base64: true});
+            zip.file(pad(i,5) +".jpg", ba[i], {base64: true});
         }
         zip.file("ComicInfo.xml", Ci.toString(), {type: "text/xml"});
         console.log('xxx Clean up canvas caches xxx');
@@ -429,9 +440,11 @@
             console.groupEnd();
             const e = new MouseEvent("click");
             const a = document.createElement('a');
+            a.innerText = 'Download';
             a.download = fn +".zip";
             a.href = Url;
-            a.dispatchEvent(e);
+            //a.dispatchEvent(e);
+            document.getElementById("bndl").appendChild(a);
             pc.setAttribute("data-label", "Completed. Pushing zip to download.");
             favicon.badge("&#x2B07;");
             setTimeout(function() {
@@ -506,7 +519,7 @@
                 console.group("Progress: %i/%i", curp, totp);
                 console.groupCollapsed("Zooming...");
                 c = document.getElementsByClassName("currentScreen")[0].getElementsByTagName("canvas")[0];
-                while(document.getElementById('zoomRatio').innerText != '200%') {
+                while(document.getElementById('zoomRatio').innerText != '300%') {
                     console.log("Zoomrate: %s", document.getElementById('zoomRatio').innerText);
                     document.getElementById("zoomInBtn").click();
                 }
@@ -545,11 +558,6 @@
                 } else {
                     if(tmpS >= 10) {
                         console.error("Error occured by too many retries when triming canvas\n Seems first page we want to trim almost whitespace...\n original canvas will be stored, proceeding to next page...");
-                        if(curp == 0) {
-                            ba[curp] = dataURItoBlob(c.toDataURL('image/jpeg'));
-                        } else {
-                            ba[curp] = chopCanvas(c, cx, cy, cw, ch);
-                        }
                     }
                     tmpS = 0;
                     fireKey(document.getElementById('renderer'), 34);
