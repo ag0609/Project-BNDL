@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.63
+// @version      0.64
 // @description  try to take copy of yours books! Book-worm!
 // @author       ag0609
 // @include      https://*.bookwalker.jp/*/viewer.html?*
@@ -500,6 +500,7 @@
             console.log("<-- [%s] %i bytes", pad(i,5) +".jpg", ba[i].size);
             zip.file(pad(i,5) +".jpg", ba[i], {base64: true});
         }
+        Ci.addPageCollection(pages);
         zip.file("ComicInfo.xml", Ci.toString(), {type: "text/xml"});
         console.log('xxx Clean up canvas caches xxx');
         ba = null;
@@ -626,7 +627,7 @@
                 }
                 const picDe = unsafeWindow.NFBR.a6G.Initializer.F5W.menu.model.attributes.h2j.left;
                 if(img.width != picDe.width || img.height != picDe.height) {
-                    const ratio = Math.min(Math.max(picDe.width,minW)/img.width,Math.max(picDe.height,minH)/img.height);
+                    const ratio = Math.max(Math.max(picDe.width,minW)/img.width,Math.max(picDe.height,minH)/img.height);
                     console.log("ratio: ", img, picDe, ratio);
                     const imgctx = img.getContext("2d");
                     imgctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, img.width*ratio, img.height*ratio);
@@ -670,7 +671,6 @@
                 clearInterval(job);
                 dragpad.ctx.clearRect(0, 0, c.width, c.height);
                 console.log("Captrue Completed");
-                Ci.addPageCollection(pages);
                 job = 0;
                 DLFile();
                 obj.innerText = "BNDL";
