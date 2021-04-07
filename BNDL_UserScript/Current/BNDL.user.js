@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.64
+// @version      0.65
 // @description  try to take copy of yours books! Book-worm!
 // @author       ag0609
 // @include      https://*.bookwalker.jp/*/viewer.html?*
@@ -625,7 +625,7 @@
                 } else {
                     img = chopCanvas(c, cx, cy, cw, ch);
                 }
-                const picDe = unsafeWindow.NFBR.a6G.Initializer.F5W.menu.model.attributes.h2j.left;
+                const picDe = unsafeWindow.NFBR.a6G.Initializer.F5W.menu.model.attributes.a2u.u5K[curp-1].left;
                 if(img.width != picDe.width || img.height != picDe.height) {
                     const ratio = Math.max(Math.max(picDe.width,minW)/img.width,Math.max(picDe.height,minH)/img.height);
                     console.log("ratio: ", img, picDe, ratio);
