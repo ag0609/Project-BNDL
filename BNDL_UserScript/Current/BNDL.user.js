@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.65
+// @version      0.70
 // @description  try to take copy of yours books! Book-worm!
 // @author       ag0609
 // @include      https://*.bookwalker.jp/*/viewer.html?*
@@ -422,6 +422,7 @@
                         Ci.add("/ComicInfo", "BlackAndWhite", "Yes");
                         cty ? Ci.add("/ComicInfo", "Manga", "YesAndRightToLeft") : Ci.add("/ComicInfo", "Manga", "No");
                         //toast(fn, "info", 0, "Title");
+                        // TOC
                         try {
                             const toc = unsafeWindow.NFBR.a6G.Initializer.F5W.menu.model.attributes.a2u.book.content.normal_default.toc_;
                             const tocidx = unsafeWindow.NFBR.a6G.Initializer.F5W.menu.model.attributes.a2u.book.content.normal_default.K2e;
@@ -457,7 +458,6 @@
         btn.id = 'bndl';
         btn.ob = new MutationObserver(ProgressBarCallback);
         btn.addEventListener('dblclick', function() {
-            //btn.style.display='none';
             btn.classList.toggle('close');
         });
         btn.classList.add('open');
@@ -497,8 +497,9 @@
         pc.classList.add('zip');
         console.groupCollapsed("Insert");
         for(var i in ba) {
-            console.log("<-- [%s] %i bytes", pad(i,5) +".jpg", ba[i].size);
-            zip.file(pad(i,5) +".jpg", ba[i], {base64: true});
+            let img = ba[i];
+            console.log("<-- [%s] %i bytes", pad(i,5) +".jpg", img.size);
+            zip.file(pad(i,5) +".jpg", img, {base64: true});
         }
         Ci.addPageCollection(pages);
         zip.file("ComicInfo.xml", Ci.toString(), {type: "text/xml"});
@@ -575,14 +576,11 @@
                 });
                 let num = halfwidthValue(on).replace(/.*?[第\:]?(\d+)[巻話\)]?$/, "$1");
                 if(isNaN(parseInt(num))) { //Books may only have single volume, so no volume number
-                    fn = v +' '+ ser;
+                    fn = v + ser;
                     num = 1;
                 } else {
-                    fn = v +' '+ ser +" 第"+ pad(num, 2) +"巻";
+                    fn = v + ser +" 第"+ pad(num, 2) +"巻";
                 }
-                //Get Table of Contents(Bookmarks)
-                //Encrypted in configuration_pack.json => configuration["nav-list"] => BUT NO SOLUTION YET
-                //
                 Ci.add("/ComicInfo", "Number", pad(num,2));
                 Ci.add("/ComicInfo", 'Title', on);
                 Ci.add("/ComicInfo", 'Series', ser);
@@ -604,6 +602,9 @@
             const curp = (document.getElementById('pageSliderCounter').innerText).split('/')[0] * 1;
             const dragpad = document.getElementById('bndl-dp');
             if(!load) {
+                pc.setAttribute("data-label", "Capture Canvas: "+curp +"/"+ totp);
+                pc.setAttribute("value", curp);
+                favicon.badge(Math.ceil(100*curp/totp), {'bgColor':'#06c'})
                 console.group("Progress: %i/%i", curp, totp);
                 console.groupCollapsed("Zooming...");
                 c = document.getElementsByClassName("currentScreen")[0].getElementsByTagName("canvas")[0];
@@ -613,15 +614,14 @@
                 }
                 console.groupEnd();
                 obj.innerText = "Stop";
-                pc.setAttribute("data-label", "Capture Canvas: "+curp +"/"+ totp);
-                pc.setAttribute("value", curp);
-                favicon.badge(Math.ceil(100*curp/totp), {'bgColor':'#06c'})
                 let skip=48;
                 let fuzz=10;
+
                 let img;
                 if(!ba.length) {
                     skip=4;
-                    img = trimCanvas(c, [255,255,255], fuzz, skip, [cx,cy,cw,ch]);
+                    let ld = latest_dummy;
+                    img = chopCanvas(c, ld[5], ld[6], ld[7], ld[8]);
                 } else {
                     img = chopCanvas(c, cx, cy, cw, ch);
                 }
@@ -629,30 +629,27 @@
                 if(img.width != picDe.width || img.height != picDe.height) {
                     const ratio = Math.max(Math.max(picDe.width,minW)/img.width,Math.max(picDe.height,minH)/img.height);
                     console.log("ratio: ", img, picDe, ratio);
-                    const imgctx = img.getContext("2d");
-                    imgctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, img.width*ratio, img.height*ratio);
-                    img = chopCanvas(img, 0, 0, img.width*ratio, img.height*ratio);
+                    let newimg = document.createElement("canvas");
+                    newimg.width = picDe.width;
+                    newimg.height = picDe.height;
+                    let ctx = newimg.getContext('2d');
+                    drawBKUP.call(ctx, img, 0, 0, img.width, img.height, 0, 0, picDe.width, picDe.height);
+                    img = newimg;
                 }
-                dragpad.width = c.width;
-                dragpad.height = c.height;
-                dragpad.style.width = c.style.width;
-                dragpad.style.height = c.style.height;
-                dragpad.ctx = dragpad.getContext("2d");
-                dragpad.ctx.drawImage(c, 0, 0);
-                drawdp(dragpad, cx, cy, cw, ch);
                 ba[curp] = dataURItoBlob(img.toDataURL('image/jpeg'));
                 let trimBlack = 0;
                 try {
-                    trimBlack = (dataURItoBlob(trimCanvas(img, [0,0,0], 10, 48).toDataURL('image/jpeg'))).size;
-                } catch(e){};
+                    //trimBlack = (dataURItoBlob(trimCanvas(img, [0,0,0], 10, 48).toDataURL('image/jpeg'))).size;
+                    trimBlack = (dataURItoBlob(img.toDataURL('image/jpeg'))).size;
+                } catch(e){console.error("ERROR")};
                 console.debug("[%i] size: %i bytes", curp, ba[curp].size);
                 console.debug("[B%i] size: %i bytes", curp, trimBlack);
-                if(ba[curp].size < 20000 && trimBlack < 1000 && tmpS < 10) {
+                if(ba[curp].size < 20000 && trimBlack < 20000 && tmpS < 10) {
                     console.warn("[%i] too small(< 20000 bytes), retrying %i times for capture canvas", curp, tmpS+1);
                     tmpS++;
                     if(curp == 0) [cx, cy, cw, ch] = [-1, -1, -1, -1];
-                } else if(trimBlack < 1000 && tmpS < 10) {
-                    console.warn("[B%i] too small(< 1000 bytes), retrying %i times for capture canvas", curp, tmpS+1);
+                } else if(trimBlack < 20000 && tmpS < 10) {
+                    console.warn("[B%i] too small(< 20000 bytes), retrying %i times for capture canvas", curp, tmpS+1);
                     tmpS++;
                 } else {
                     if(tmpS >= 10) {
@@ -669,7 +666,7 @@
                 fireKey(document.getElementById('renderer'), 36);
             } else if(curp == totp && tmpS == 0) {
                 clearInterval(job);
-                dragpad.ctx.clearRect(0, 0, c.width, c.height);
+                //dragpad.ctx.clearRect(0, 0, c.width, c.height);
                 console.log("Captrue Completed");
                 job = 0;
                 DLFile();
@@ -678,8 +675,21 @@
             }
         },500);
     } //Store canvas to memory
+    let latest_dummy;
     let favicon = new Favico({
         animation:'none'
     });
     window.onLoad = setTimeout(wait_for_canvas_loaded, 50);
+    let drawBKUP = CanvasRenderingContext2D.prototype.drawImage;
+    CanvasRenderingContext2D.prototype.drawImage = function() {
+        let args = arguments;
+        if(args[0].tagName == "CANVAS") {
+            latest_dummy = args;
+            //console.debug(args);
+            [cx, cy, cw, ch] = [args[1], args[2], args[3], args[4]];
+            drawBKUP.call(this, args[0], args[1], args[2], args[3], args[4], 0, 0, args[3], args[4]);
+        } else {
+            drawBKUP.apply(this, args);
+        }
+    }
 })();
