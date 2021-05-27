@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.70
+// @version      0.75
 // @description  try to take copy of yours books! Book-worm!
 // @author       ag0609
 // @include      https://*.bookwalker.jp/*/viewer.html?*
@@ -191,7 +191,7 @@
             }
         }
     }
-    const halfwidthValue = (value) => {return value.replace(/(?:！？|!\?)/g, "⁉").replace(/[\uff01-\uff5e]/g, fullwidthChar => String.fromCharCode(fullwidthChar.charCodeAt(0) - 0xfee0)).replace(/\u3000/g, '\u0020')}
+    const halfwidthValue = (value) => {return value.replace(/(?:！？|!\?)/g, "⁉").replace(/[\uff01\uff03—\uff09\uff0b-\uff0e\uff10-\uff19\uff1b\uff1d\uff20-\uff3b\uff3d-\uff5b\uff5d-\uff5e]/g, fullwidthChar => String.fromCharCode(fullwidthChar.charCodeAt(0) - 0xfee0)).replace(/\u3000/g, '\u0020')}
     let _detail$retry_ = 0;
     let bd = {};
     const getDetail = async function(bn, st=5, on="", ta=0, bid=null) {
@@ -202,7 +202,6 @@
             let eventapi = "https://eventapi.bookwalker.jp/api/";
             let autocom = "https://bookwalker.jp/louis-api/autocomplete/";
             let cat = cty ? 2 : 0; //category { 1 = Novel, 2 = Manga, 3 = Light Novel, 9 = Web Novel }
-            if(mode==0 && unsafeWindow.NFBR.a6G.Initializer.F5W.menu.model.attributes) bid='de'+unsafeWindow.NFBR.a6G.Initializer.F5W.menu.model.attributes.contentId;
             if(mode==1 || !bid) {
                 console.debug("getDetail()", autocom + "?category="+ cat +"&term=" + bn);
                 GM.xmlHttpRequest({
@@ -218,6 +217,7 @@
                             console.debug("getDetail()", "auto_result:", j.length);
                             f = j.filter(v => (new RegExp(escape(bn)+"(?:%(?:[0-9A-F]{2}|u[0-9A-F]{4})|$)+","i")).test(escape(v.value))).find(v => (v.type == st && (ta == 999 || !(/(期間限定|お試し|試し読み)/.test(v.value)))));
                         }
+                        if(!f && mode==0 && unsafeWindow.NFBR.a6G.Initializer.F5W.menu.model.attributes) bid='de'+unsafeWindow.NFBR.a6G.Initializer.F5W.menu.model.attributes.contentId;
                         console.debug("getDetail()", "find_result:", f != undefined ? true : false);
                         let askhelp = 0;
                         if(f) { //have matched records
@@ -279,81 +279,7 @@
                                 return;
                             }
                         }
-                        Ci.add("/ComicInfo", 'Web', bwhp + bid + '/');
-                        console.debug("getDetail()", bwhp + bid + '/');
-                        GM.xmlHttpRequest({
-                            method: "GET",
-                            url: bwhp + bid,
-                            onload: function(res) {
-                                let h = res.responseText;
-                                let parser = new DOMParser();
-                                let html = parser.parseFromString(h, "text/html");
-                                //bd.author = [].slice.call(html.getElementsByClassName('author-name')).map(e => e.innerHTML).join('×');
-                                let authors = html.querySelectorAll("dl.author");
-                                bd.author = [];
-                                let wt, pcl;
-                                for(let i=0;i<authors.length;i++) {
-                                    try {
-                                        const at = authors[i].getElementsByClassName('author-head')[0].innerText.split('・');
-                                        const an = authors[i].getElementsByClassName('author-name')[0].innerText.replace(/(（.*?）|\s)/g, "");
-                                        at.forEach((v) => {
-                                            if(/キャラ|設定/.test(v)) { //キャラクター原案
-                                                bd.author.push({'p':4, 'type':v, 'name':an});
-                                            } else if(/^([原][著作])$/g.test(v)) { //原作, 原著
-                                                bd.author.push({'p':0, 'type':v, 'name':an});
-                                            } else if(/^[著作][者]?$/.test) { //著, 作, 著者, 作者
-                                                bd.author.push({'p':1, 'type':v, 'name':an});
-                                            } else if(/(画|マンガ|イラスト)/g.test(v)) { //漫画, マンガ, イラスト
-                                                bd.author.push({'p':2, 'type':v, 'name':an});
-                                            } else if(v != "") {
-                                                bd.author.push({'p':5, 'type':v, 'name':an});
-                                            }
-                                        });
-                                    } catch(e){};
-                                }
-                                bd.author.sort(function(a,b) { return a.p - b.p; }); //sort by priority
-                                pcl = [];
-                                bd.author.forEach((v) => {
-                                    if(!wt || (!wt && v.p == 1)) {
-                                        wt = v.name;
-                                    } else if(v.p < 4) {
-                                        pcl.push(v.name);
-                                    }
-                                });
-                                //bd.author.sort(function(a,b) { if(a.name < b.name) { return -1 } else if(a.name > b.name) { return 1 } return 0; }); //sort by name
-                                Ci.add("/ComicInfo", "Writer", wt);
-                                if(pcl.length) Ci.add("/ComicInfo", "Penciller", pcl.join(','));
-                                let author_filtered = [wt];
-                                author_filtered = author_filtered.concat(pcl.uniquify("name"));
-                                console.table(author_filtered);
-                                if(author_filtered.length) {
-                                    fn = '[' + author_filtered.splice(0,Math.min(author_filtered.length,3)).join('×') + '] ' + bn;
-                                } else {
-                                    fn = '[' + bd.author.splice(0,Math.min(bd.author.length,3)).map(e=>e.name).join('×') + '] ' + bn;
-                                }
-                                console.log(fn);
-                                document.title = fn;
-                                const pD = document.evaluate("//dt[text()='配信開始日']", html, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.nextElementSibling.innerText;
-                                const pDate = pD.split('/');
-                                Ci.add("/ComicInfo", "Year", pDate[0]);
-                                Ci.add("/ComicInfo", "Month", pDate[1]);
-                                Ci.add("/ComicInfo", "Day", pDate[2]);
-                                console.debug("Published Date: %s/%s/%s", ...pDate);
-                                Ci.add("/ComicInfo", "LanguageISO", "ja");
-                                Ci.add("/ComicInfo", "BlackAndWhite", "Yes");
-                                cty ? Ci.add("/ComicInfo", "Manga", "YesAndRightToLeft") : Ci.add("/ComicInfo", "Manga", "No");
-                                //toast(fn, "info", 0, "Title");
-                                try {
-                                    const toc = unsafeWindow.NFBR.a6G.Initializer.F5W.menu.model.attributes.a2u.book.content.normal_default.toc_;
-                                    const tocidx = unsafeWindow.NFBR.a6G.Initializer.F5W.menu.model.attributes.a2u.book.content.normal_default.K2e;
-                                    toc.forEach(function(v,i) {
-                                        pages.setPageAttr(parseInt(tocidx[v.href]), "Bookmark", v.label);
-                                    });
-                                    console.log(pages);
-                                } catch(e) {};
-                                resolve(fn);
-                            }
-                        });
+                        resolve(await getDetail(bn, st, on, ta, bid));
                     }
                 });
             } else {
@@ -579,8 +505,9 @@
                     fn = v + ser;
                     num = 1;
                 } else {
-                    fn = v + ser +" 第"+ pad(num, 2) +"巻";
+                    fn = v + on;
                 }
+                fn = halfwidthValue(fn);
                 Ci.add("/ComicInfo", "Number", pad(num,2));
                 Ci.add("/ComicInfo", 'Title', on);
                 Ci.add("/ComicInfo", 'Series', ser);
