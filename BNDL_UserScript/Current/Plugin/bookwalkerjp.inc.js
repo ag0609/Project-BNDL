@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20210928.0");
+console.log("Bookwalker Japan", "v20210928.1");
 console.log("Reference:", "https://fireattack.wordpress.com/2021/08/27/a-better-way-to-dump-bookwalker", "by fireattack");
 let _detail$retry_ = 0;
 let backup;
@@ -324,7 +324,7 @@ function main() {
 				}
 				if(startf) {
 					window.document.title = "["+curp+"/"+totp+"] "+on;
-					firekey(document.getElementById('renderer'), 34);
+					NFBR_control.moveToNext();
 				} else {
 					if(!wait && img$size[curp] > 20000) { //Detail collect will only do once and Cover should be larger than 20KB
 						wait = 1;
@@ -365,7 +365,7 @@ function main() {
 start = function() {
 	bndlBTN.disabled = true;
 	startf = (document.getElementById('pageSliderCounter').innerHTML).split('/')[0] * 1;;
-	firekey(document.getElementById('renderer'), 34);
+	NFBR_control.moveToNext();
 }
 cancel = function() {
 	if(startf) {
@@ -379,7 +379,7 @@ cancel = function() {
 let NFBR_model, NFBR_control;
 const _$IfuBW_NFBR$_ = setInterval(function() {
 	if(!NFBR) NFBR = (unsafeWindow ? unsafeWindow.NFBR : window.NFBR) || null;
-	if(NFBR.a6G && NFBR.a6G.a5x) {
+	if(NFBR.a6G && NFBR.a6G.a5x && NFBR.a6G.Initializer.F5W.menu) {
 		NFBR_control = NFBR.a6G.Initializer.F5W.menu.a6l;
 		NFBR_model = NFBR.a6G.Initializer.F5W.menu.model;
 		clearInterval(_$IfuBW_NFBR$_);
@@ -400,4 +400,10 @@ const ___$nospeard = setInterval(async function() {
 		clearInterval(___$nospeard);
 	}
 }, 100);
+const __$noidle = setInterval(function() {
+    if((new Date() - _page_time) > 500 && startf) {
+        NFBR_control.moveToNext();
+        _page_time = new Date();
+    }
+},100);
 btn.style.display = "flex";
