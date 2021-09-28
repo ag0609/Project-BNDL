@@ -1,6 +1,6 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20201216.0");
-console.log("Reference:", "https://blog.jixun.moe/intercept-bookwalker-tw-image", "by JiXun");
+console.log("Bookwalker Japan", "v20210928.0");
+console.log("Reference:", "https://fireattack.wordpress.com/2021/08/27/a-better-way-to-dump-bookwalker", "by fireattack");
 let _detail$retry_ = 0;
 let backup;
 //Check if reading a trial version of a book
@@ -12,6 +12,7 @@ if(window.location.hostname.match(/viewer-trial/)) { //A trial version of a book
 	console.warn("Ptrial viewer mode is running");
 	mode = 2;
 }
+
 //10 minutes novel reading scheme
 let ptrialtime = {"fT":0, "lT":0};
 let interval = 250;
@@ -60,171 +61,188 @@ if(mode == 2) {
 	}, interval);
 }
 //
-const getDetail = async function(bn, st=5, on="", ta=0) {
-	console.debug("getDetail()", bn, st, on);
-	let cty = parseInt(getQuery("cty"));
-	let bwhp = "https://bookwalker.jp/";
-	let eventapi = "https://eventapi.bookwalker.jp/api/";
-	let autocom = "https://bookwalker.jp/louis-api/autocomplete/";
-	let cat = cty ? 2 : 0; //category { 1 = Novel, 2 = Manga, 3 = Light Novel, 9 = Web Novel }
-	console.debug("getDetail()", autocom + "?category="+ cat +"&term=" + bn);
+let bd = {};
+const getDetail = async function(bn, st=5, on="", ta=null, bid=null) {
+console.debug("getDetail()", bn, st, on);
+return new Promise(function(resolve) {
+    let cty = parseInt(getQuery("cty"));
+    let bwhp = "https://bookwalker.jp/";
+    let eventapi = "https://eventapi.bookwalker.jp/api/";
+    let autocom = "https://bookwalker.jp/louis-api/autocomplete/";
+    let cat = ta==null ? (cty ? 2 : 1) : ta; //category { 1 = Novel, 2 = Manga, 3 = Light Novel, 9 = Web Novel }
+	if(mode==0 && unsafeWindow.NFBR.a6G.Initializer.F5W.menu.model.attributes) bid='de'+unsafeWindow.NFBR.a6G.Initializer.F5W.menu.model.attributes.contentId;
+    if(mode==1 || !bid) {
+	console.debug("getDetail()", autocom + "?category="+ cat +"&term=" + encodeURIComponent(bn));
 	GM.xmlHttpRequest({
-		method: "GET",
-		url: autocom + "?category="+ cat +"&term=" + bn,
-		onload: async function(res) {
-			let j = JSON.parse(res.responseText);
-			let f;
-			if(j.contents) { //type 1 = Series, 2 = Artist, 3 = Company, 4 = Label, 5 = Book
-				console.debug("getDetail(contents)", "auto_result:", j.contents.length);
-				f= j.contents.filter(v => (new RegExp(escape(bn)+"(?:%(?:[0-9A-F]{2}|u[0-9A-F]{4})|$)+","i")).test(escape(v.value))).find(v => (v.type == st && (ta == 999 || !(/(期間限定|お試し|試し読み)/.test(v.value)))));
-			} else {
-				console.debug("getDetail()", "auto_result:", j.length);
-				f = j.filter(v => (new RegExp(escape(bn)+"(?:%(?:[0-9A-F]{2}|u[0-9A-F]{4})|$)+","i")).test(escape(v.value))).find(v => (v.type == st && (ta == 999 || !(/(期間限定|お試し|試し読み)/.test(v.value)))));
-			}
-			console.debug("getDetail()", "find_result:", f != undefined ? true : false);
-			let bid;
-			let askhelp = 0;
-			if(f) { //have matched records
-				if(st == 5) { //congrates! exact match found
-					bid = "de" + f.typeId;
-				} else { //Series search
-					console.debug("getDetail()", bwhp + "series/"+ f.typeId +"/list/");
-					bid = await new Promise((resolve) => {
-						GM.xmlHttpRequest({
-							method: "GET",
-							url: bwhp + "series/"+ f.typeId +"/list/",
-							onload: function(reS) {
-								let h = reS.responseText;
-								let parser = new DOMParser();
-								let html = parser.parseFromString(h, "text/html");
-								let non;
-								try {
-									switch(_detail$retry_) {
-										case 1: //clean out whitespace
-											non = on.replace(/\s/g, "");
-											console.debug("getDetail()", on, "=>", non);
-											break;
-										case 2: //convert full-widthed character to half-widthed
-											non = halfwidthValue(on);
-											console.debug("getDetail()", on, "=>", non);
-											break;
-										default: //no retry or looped?
-											non = on;
-									}
-									let auuid = document.evaluate(".//div[@title='"+ non +"']", html, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.getAttribute('data-uuid');
-									resolve('de' + auuid);
-								} catch(e) {
-									switch(_detail$retry_) {
-										case 2: //Free-in-Period books? let's try using full-tagged original title
-											console.debug("getDetail()", "use document.title");
-											return getDetail(document.title, 5, document.title, 999);
-											break;
-										default:
-											_detail$retry_++;
-											return getDetail(bn, st, on);
-									}
-								} //The name pattern changed!! maybe will add a blur search in future
-							}
-						});
-					});
-				}
-			} else if(st == 5 && (j.length || j.contents)) { //Try search by series
-				return await getDetail(bn.replace(/^\s?(.*?)\s?(?:[：\:]{0,1}\s?[\d０-９]+|[（\(][\d０-９]+[\)）]|[第]?[\d０-９]+[巻話]?)$/g, "$1"), 1, bn);
-			} else { //Strange... nothing found
-				askhelp = 1;
-			}
-			if(askhelp) { //Try ask user for help
-				let userbid = prompt("Sorry, Record not found. Please help search "+ bn +" at bookwalker.jp and paste bookID or detail page link here");
-				if(/^[\/]?de/.test(userbid)) {
-					bid = userbid.match(/de[0-9a-z\-]+/);
-				} else { //Giveup maybe the best choice for saving lives...
-					Ci.add("/ComicInfo", 'Web', bwhp + bid + '/');
-					return;
-				}
-			}
-			Ci.add("/ComicInfo", 'Web', bwhp + bid + '/');
-			console.debug("getDetail()", bwhp + bid + '/');
-			GM.xmlHttpRequest({
-				method: "GET",
-				url: bwhp + bid,
-				onload: function(res) {
-					let h = res.responseText;
-					let parser = new DOMParser();
-					let html = parser.parseFromString(h, "text/html");
-					//bd.author = [].slice.call(html.getElementsByClassName('author-name')).map(e => e.innerHTML).join('×');
-					let authors = html.querySelectorAll("dl.author");
-					bd.author = [];
-					let wt, pcl;
-					for(let i=0;i<authors.length;i++) {
-						try {
-							const at = authors[i].getElementsByClassName('author-head')[0].innerText.split('・');
-							const an = authors[i].getElementsByClassName('author-name')[0].innerText.replace(/(（.*?）|\s)/g, "");
-							at.forEach((v) => {
-								if(/キャラ|設定/.test(v)) { //キャラクター原案
-									bd.author.push({'p':4, 'type':v, 'name':an});
-								} else if(/^([原][著作])$/g.test(v)) { //原作, 原著
-									bd.author.push({'p':0, 'type':v, 'name':an});
-								} else if(/^[著作][者]?$/.test) { //著, 作, 著者, 作者
-									bd.author.push({'p':1, 'type':v, 'name':an});
-								} else if(/(画|マンガ|イラスト)/g.test(v)) { //漫画, マンガ, イラスト
-									bd.author.push({'p':2, 'type':v, 'name':an});
-								} else if(v != "") {
-									bd.author.push({'p':5, 'type':v, 'name':an});
-								}
-							});
-						} catch(e){};
-					}
-					bd.author.sort(function(a,b) { return a.p - b.p; }); //sort by priority
-					pcl = [];
-					bd.author.forEach((v) => {
-						if(!wt || (!wt && v.p == 1)) {
-							wt = v.name;
-						} else if(v.p < 4) {
-							pcl.push(v.name);
-						}
-					});
-					//bd.author.sort(function(a,b) { if(a.name < b.name) { return -1 } else if(a.name > b.name) { return 1 } return 0; }); //sort by name
-					Ci.add("/ComicInfo", "Writer", wt);
-					if(pcl.length) Ci.add("/ComicInfo", "Penciller", pcl.join(','));
-					let author_filtered = [wt];
-					author_filtered = author_filtered.concat(pcl.uniquify("name"));
-					console.table(author_filtered);
-					if(author_filtered.length) {
-					        fn = '[' + author_filtered.splice(0,Math.min(author_filtered.length,3)).join('×') + '] ' + fn;
-					} else {
-					        fn = '[' + bd.author.splice(0,Math.min(bd.author.length,3)).map(e=>e.name).join('×') + '] ' + fn;
-					}
-					console.log(fn);
-					document.title = fn;
-					const pD = document.evaluate("//dt[text()='配信開始日']", html, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.nextElementSibling.innerText;
-					const pDate = pD.split('/');
-					Ci.add("/ComicInfo", "Year", pDate[0]);
-					Ci.add("/ComicInfo", "Month", pDate[1]);
-					Ci.add("/ComicInfo", "Day", pDate[2]);
-					console.debug("Published Date: %s/%s/%s", ...pDate);
-					Ci.add("/ComicInfo", "LanguageISO", "ja");
-					Ci.add("/ComicInfo", "BlackAndWhite", "Yes");
-					cty ? Ci.add("/ComicInfo", "Manga", "YesAndRightToLeft") : Ci.add("/ComicInfo", "Manga", "No");
-				}
-			});
+	    method: "GET",
+	    url: autocom + "?category="+ cat +"&term=" + encodeURIComponent(bn),
+	    onload: async function(res) {
+		let j = JSON.parse(res.responseText);
+		let f;
+		if(j.contents) { //type 1 = Series, 2 = Artist, 3 = Company, 4 = Label, 5 = Book
+		    console.debug("getDetail(contents)", "auto_result:", j.contents.length);
+		    f= j.contents.filter(v => (new RegExp(escape(bn)+"(?:%(?:[0-9A-F]{2}|u[0-9A-F]{4})|$)+","i")).test(escape(v.value))).find(v => (v.type == st && (ta == 999 || !(/(期間限定|お試し|試し読み)/.test(v.value)))));
+		} else {
+		    console.debug("getDetail()", "auto_result:", j.length);
+		    f = j.filter(v => (new RegExp(escape(bn)+"(?:%(?:[0-9A-F]{2}|u[0-9A-F]{4})|$)+","i")).test(escape(v.value))).find(v => (v.type == st && (ta == 999 || !(/(期間限定|お試し|試し読み)/.test(v.value)))));
 		}
+		console.debug("getDetail()", "find_result:", f != undefined ? true : false);
+		let askhelp = 0;
+		console.log("retried: "+ _detail$retry_);
+		_detail$retry_++;
+		if(f && _detail$retry_ < 20) { //have matched records
+		    if(st == 5) { //congrates! exact match found
+			bid = "de" + f.typeId;
+		    } else { //Series search
+			console.debug("getDetail()", bwhp + "series/"+ f.typeId +"/list/");
+			bid = await new Promise((resolve) => {
+			    GM.xmlHttpRequest({
+				method: "GET",
+				url: bwhp + "series/"+ f.typeId +"/list/",
+				onload: async function(reS) {
+				    let h = reS.responseText;
+				    let parser = new DOMParser();
+				    let html = parser.parseFromString(h, "text/html");
+				    let non, nno;
+				    try {
+					switch(_detail$retry_) {
+					    case 1: //clean out whitespace
+						non = on.replace(/\s/g, "");
+						console.debug("getDetail()", on, "=>", non);
+						break;
+					    case 2: //convert full-widthed character to half-widthed
+						non = halfwidthValue(on);
+						console.debug("getDetail()", on, "=>", non);
+						break;
+					    default: //no retry or looped?
+						non = on.match(/[（\(][\d\uff10-\uff19]+[）\)]|[\d\uff10-\uff19]+\s|[\d\uff10-\uff19]+$|[\d\uff10-\uff19]+[巻話]/).pop();
+					}
+					//let auuid = document.evaluate(".//div[@title='"+ non +"']", html, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.getAttribute('data-uuid');
+					let auuid = html.querySelector("a[title$='"+ non +"']").href.split('/')[3];
+					return resolve(auuid);
+				    } catch(e) {} //The name pattern changed!! maybe will add a blur search in future
+				}
+			    });
+			});
+		    }
+		} else if(st == 5 && (j.length || j.contents) && _detail$retry_ < 20) { //Try search by series
+		    return resolve(await getDetail(bn.replace(/^\s?(.*?)\s?(?:[：\:]{0,1}\s?[\d０-９]+|[（\(][\d０-９]+[\)）]|[第]?[\d０-９]+[巻話]?)$/g, "$1"), 1, bn));
+		} else if(_detail$retry_ < 20) {
+		    return resolve(await getDetail(bn, st, on, 0));
+		} else { //Strange... nothing found
+		    askhelp = 1;
+		}
+		if(askhelp) { //Try ask user for help
+		    let userbid = prompt("Sorry, Record not found. Please help search "+ bn +" at bookwalker.jp and paste bookID or detail page link here");
+		    //de8a5395a0-df91-4c3c-a676-3c948fbc30ed
+		    if(/de[0-9a-f]{8}\-(?:[0-9a-f]{4}\-){3}[0-9a-f]{12}/.test(userbid)) {
+			bid = userbid.match(/de[0-9a-f]{8}\-(?:[0-9a-f]{4}\-){3}[0-9a-f]{12}/);
+		    } else { //Giveup maybe the best choice for saving lives...
+			if(unsafeWindow.NFBR.a6G.Initializer.F5W.menu.model.attributes) bid='de'+unsafeWindow.NFBR.a6G.Initializer.F5W.menu.model.attributes.contentId;
+			Ci.add("/ComicInfo", 'Web', bwhp + bid + '/');
+		    }
+		}
+		return resolve(await getDetail(bn, st, on, ta, bid));
+	    }
 	});
+    } else {
+	if(!bid.startsWith("de")) bid = 'de'+bid;
+	Ci.add("/ComicInfo", 'Web', bwhp + bid + '/');
+	console.debug("getDetail()", bwhp + bid + '/');
+	GM.xmlHttpRequest({
+	    method: "GET",
+	    url: bwhp + bid,
+	    onload: function(res) {
+		let h = res.responseText;
+		let parser = new DOMParser();
+		let html = parser.parseFromString(h, "text/html");
+		//bd.author = [].slice.call(html.getElementsByClassName('author-name')).map(e => e.innerHTML).join('×');
+		let authors = html.querySelectorAll("dl.author");
+		bd.author = [];
+		let wt, pcl;
+		for(let i=0;i<authors.length;i++) {
+		    try {
+			const at = authors[i].getElementsByClassName('author-head')[0].innerText.split('・');
+			const an = authors[i].getElementsByClassName('author-name')[0].innerText.replace(/(（.*?）|\s)/g, "");
+			at.forEach((v) => {
+			    if(/キャラ|設定/.test(v)) { //キャラクター原案
+				bd.author.push({'p':4, 'type':v, 'name':an});
+			    } else if(/^([原][著作])$/g.test(v)) { //原作, 原著
+				bd.author.push({'p':0, 'type':v, 'name':an});
+			    } else if(/^[著作][者]?$/.test) { //著, 作, 著者, 作者
+				bd.author.push({'p':1, 'type':v, 'name':an});
+			    } else if(/(画|マンガ|イラスト)/g.test(v)) { //漫画, マンガ, イラスト
+				bd.author.push({'p':2, 'type':v, 'name':an});
+			    } else if(v != "") {
+				bd.author.push({'p':5, 'type':v, 'name':an});
+			    }
+			});
+		    } catch(e){};
+		}
+		bd.author.sort(function(a,b) { return a.p - b.p; }); //sort by priority
+		pcl = [];
+		bd.author.forEach((v) => {
+		    if(!wt || (!wt && v.p == 1)) {
+			wt = v.name;
+		    } else if(v.p < 4) {
+			pcl.push(v.name);
+		    }
+		});
+		//bd.author.sort(function(a,b) { if(a.name < b.name) { return -1 } else if(a.name > b.name) { return 1 } return 0; }); //sort by name
+		Ci.add("/ComicInfo", "Writer", wt);
+		if(pcl.length) Ci.add("/ComicInfo", "Penciller", pcl.join(','));
+		let author_filtered = [wt];
+		author_filtered = author_filtered.concat(pcl.uniquify("name"));
+		console.table(author_filtered);
+		let autag = '';
+		if(author_filtered.length) {
+		    autag = '[' + author_filtered.splice(0,Math.min(author_filtered.length,3)).join('×') + '] ';
+		} else {
+		    autag = '[' + bd.author.splice(0,Math.min(bd.author.length,3)).map(e=>e.name).join('×') + '] ';
+		}
+		console.log('getDetaik(fn): '+ fn);
+		document.title = fn;
+		//const pD = document.evaluate("//dt[text()='配信開始日']", html, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.nextElementSibling.innerText;
+		const pD = html.querySelector("dd.work-detail-contents:last-child").innerText;
+		const pDate = pD.split('/');
+		Ci.add("/ComicInfo", "Year", pDate[0]);
+		Ci.add("/ComicInfo", "Month", pDate[1]);
+		Ci.add("/ComicInfo", "Day", pDate[2]);
+		console.debug("Published Date: %s/%s/%s", ...pDate);
+		Ci.add("/ComicInfo", "LanguageISO", "ja");
+		Ci.add("/ComicInfo", "BlackAndWhite", "Yes");
+		cty ? Ci.add("/ComicInfo", "Manga", "YesAndRightToLeft") : Ci.add("/ComicInfo", "Manga", "No");
+		//toast(fn, "info", 0, "Title");
+		// TOC
+		try {
+		    const toc = unsafeWindow.NFBR.a6G.Initializer.F5W.menu.model.attributes.a2u.book.content.normal_default.toc_;
+		    const tocidx = unsafeWindow.NFBR.a6G.Initializer.F5W.menu.model.attributes.a2u.book.content.normal_default.K2e;
+		    toc.forEach(function(v,i) {
+			pages.setPageAttr(parseInt(tocidx[v.href]), "Bookmark", v.label);
+		    });
+		    console.log(pages);
+		} catch(e) {};
+		return resolve(autag);
+	    }
+	});
+    }
+});
 } // Get Detail of Book
 function main() {
-	backup = unsafeWindow.NFBR.a6G.a5x.prototype.b9b;
-	unsafeWindow.NFBR.a6G.a5x.prototype.b9b = function () {
+	backup = NFBR.a6G.a5x.prototype['U8j'];
+	NFBR.a6G.a5x.prototype['U8j'] = function () {
 		let [targetCanvas, page, image, drawRect, flag] = arguments;
-		const totp = (document.getElementById('pageSliderCounter').innerHTML).split('/')[1] * 1;
+		const totp = NFBR_model.get('F8O');
 		if(!pages) {
 			pages = new comicInfoPages(totp);
 		}
 		let curp = page.index+1;
 		if(_$canvas[curp] == undefined) {
 			_$canvas[curp] = [];
-			if(!_$canvas[1] && curp > 1) return firekey(document.getElementById('renderer'), 36); //Home
+			NFBR_control.moveToFirst(); //Home
 		} else {
-			if(retry && img$size[curp]) return firekey(document.getElementById('renderer'), 34); //Page Down
-			if(startf && curp > startf && !img$size[curp-1]) return firekey(document.getElementById('renderer'), 33); //Page Up
+			if(retry && img$size[curp]) return NFBR_control.moveToNext();; //Page Down
+			if(startf && curp > startf && !img$size[curp-1]) NFBR_control.moveToPrevious(); //Page Up
 		}
 		if (image && !img$size[curp]) {
 			console.groupCollapsed("Page", curp, "/", totp);
@@ -312,29 +330,27 @@ function main() {
 						wait = 1;
 						on = document.getElementById("pagetitle").innerText;
 						on = on.replace(/\s?【[^【】]*(無料|お試し|試し読み)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,''); //[Only for Period] will left for Bookwalker Stupid Retarded Search Engine
-						await getDetail(on);
-						on = on.replace(/\s?【[^【】]*(期間限定|特典)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,'');; //Now I can remove them for series name
-						const ser = on.replace(/^\s?(.*?)\s?(?:[：\:]{0,1}\s?([\d０-９]+)|[（\(]([\d０-９]+)[\)）]|[第]?([\d０-９]+)[巻話]?)$/, "$1");
-						let num = halfwidthValue(on).replace(/.*?[第\:]?(\d+)[巻話\)]?$/, "$1");
-						if(isNaN(parseInt(num))) { //Books may only have single volume, so no volume number
-							fn = ser;
-							num = 1;
-						} else {
-							fn = ser + " 第"+pad(num, 2)+"巻";
-						}
-						//Get Table of Contents(Bookmarks)
-						//Encrypted in configuration_pack.json => configuration["nav-list"] => BUT NO SOLUTION YET
-						//
-						Ci.add("/ComicInfo", "Number", pad(num,2));
-						Ci.add("/ComicInfo", 'Title', fn);
-						Ci.add("/ComicInfo", 'Series', ser);
-						if(mode != 1) Ci.add("/ComicInfo", 'PageCount', totp);
-						bndlBTN.disabled = false;
-						btn.classList.add('extend');
-						pc.classList.add("start");
-						ss.play();
-						_init_time = new Date() - _init_time;
-						console.log("Initialization time used:", _init_time/1000, "sec");
+						await getDetail(on).then(() => {
+							on = on.replace(/\s?【[^【】]*(期間限定|特典)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,'');; //Now I can remove them for series name
+							const ser = on.replace(/^\s?(.*?)\s?(?:[：\:]{0,1}\s?([\d０-９]+)|[（\(]([\d０-９]+)[\)）]|[第]?([\d０-９]+)[巻話]?)$/, "$1");
+							let num = halfwidthValue(on).replace(/.*?[第\:]?(\d+)[巻話\)]?$/, "$1");
+							if(isNaN(parseInt(num))) { //Books may only have single volume, so no volume number
+								fn = ser;
+								num = 1;
+							} else {
+								fn = on;
+							}
+							Ci.add("/ComicInfo", "Number", pad(num,2));
+							Ci.add("/ComicInfo", 'Title', fn);
+							Ci.add("/ComicInfo", 'Series', ser);
+							if(mode != 1) Ci.add("/ComicInfo", 'PageCount', totp);
+							bndlBTN.disabled = false;
+							btn.classList.add('extend');
+							pc.classList.add("start");
+							ss.play();
+							_init_time = new Date() - _init_time;
+							console.log("Initialization time used:", _init_time/1000, "sec");
+						});
 					}
 				};
 			}, 'image/jpeg', quality);
@@ -356,12 +372,16 @@ cancel = function() {
 		bndlBTN.disabled = false;
 		startf = 0;
 	} else {
-		unsafeWindow.NFBR.a6G.a5x.prototype.b9b = backup;
+		unsafeWindow.NFBR.a6G.a5x.prototype['U8j'] = backup;
 		document.body.removeChild(btn);
 	}
 }
+let NFBR_model, NFBR_control;
 const _$IfuBW_NFBR$_ = setInterval(function() {
-	if(unsafeWindow.NFBR.a6G && unsafeWindow.NFBR.a6G.a5x.prototype.b9b) {
+	if(!NFBR) NFBR = (unsafeWindow ? unsafeWindow.NFBR : window.NFBR) || null;
+	if(NFBR.a6G && NFBR.a6G.a5x) {
+		NFBR_control = NFBR.a6G.Initializer.F5W.menu.a6l;
+		NFBR_model = NFBR.a6G.Initializer.F5W.menu.model;
 		clearInterval(_$IfuBW_NFBR$_);
 		_page_time = _job_time = new Date();
 		main();
