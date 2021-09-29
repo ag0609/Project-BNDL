@@ -55,7 +55,7 @@ if(mode == 2) {
 		}*/
 	}, interval);
 }
-let bndlBTN = tzrStartBTN;
+bndlBTN = tzrStartBTN || bndlBTN;
 [tzr_start, tzr_stop] = [start, cancel];
 //
 const getDetail = async function(bn, st=5, on="", ta=null, bid=null) {
