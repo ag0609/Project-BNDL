@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20210929.2");
+console.log("Bookwalker Japan", "v20210929.3");
 console.log("Reference:", "https://fireattack.wordpress.com/2021/08/27/a-better-way-to-dump-bookwalker", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -198,7 +198,7 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) {
 				} else {
 					autag = '[' + bd.author.splice(0,Math.min(bd.author.length,3)).map(e=>e.name).join('×') + '] ';
 				}
-				fn = halfwidthValue(autag + on);
+				fn = halfwidthValue(autag + (on || bn));
 				console.log('getDetaik(fn): '+ fn);
 				document.title = fn;
 				//const pD = document.evaluate("//dt[text()='配信開始日']", html, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.nextElementSibling.innerText;
