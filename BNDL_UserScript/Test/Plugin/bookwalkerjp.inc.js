@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20210929.1");
+console.log("Bookwalker Japan", "v20210929.2");
 console.log("Reference:", "https://fireattack.wordpress.com/2021/08/27/a-better-way-to-dump-bookwalker", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -55,8 +55,10 @@ if(mode == 2) {
 		}*/
 	}, interval);
 }
-bndlBTN = tzrStartBTN || bndlBTN;
-[tzr_start, tzr_stop] = [start, cancel];
+try {
+	bndlBTN = tzrStartBTN;
+	[tzr_start, tzr_stop] = [start, cancel];
+} catch(e){};
 //
 const getDetail = async function(bn, st=5, on="", ta=null, bid=null) {
 	console.debug("getDetail()", bn, st, on);
@@ -235,7 +237,7 @@ function main() {
         	tooltips: {mode:'index',intersect:false},
         	hover: {mode: 'index',intersect: false}};
 	const ptc = toastchart(data, options, 'Page Time');
-	backup = NFBR.a6G.a5x.prototype.b9b;
+	backup = r1[r2];
 	r1[r2] = function () {
 		let [targetCanvas, page, image, drawRect, flag] = arguments;
 		let totp = ($('#pageSliderCounter').text()).split('/')[1] * 1;
