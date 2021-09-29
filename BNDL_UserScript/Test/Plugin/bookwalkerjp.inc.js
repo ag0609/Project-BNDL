@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20210929.0");
+console.log("Bookwalker Japan", "v20210929.1");
 console.log("Reference:", "https://fireattack.wordpress.com/2021/08/27/a-better-way-to-dump-bookwalker", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -393,7 +393,7 @@ const _$IfuBW_NFBR$_ = setInterval(function() {
 	r1 = NFBR.a6G.a5x.prototype;
 	if(typeof r1 != "undefined" && typeof r1[r2] != "undefined") {
 		menu = NFBR.a6G.Initializer.F5W.menu;
-		control = menu.control;
+		control = menu.a6l;
 		model = menu.model;
 		renderer = NFBR.a6G.Initializer.F5W.renderer;
 		clearInterval(_$IfuBW_NFBR$_);
