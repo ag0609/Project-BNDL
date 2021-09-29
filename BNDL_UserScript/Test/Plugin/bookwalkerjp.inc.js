@@ -55,6 +55,8 @@ if(mode == 2) {
 		}*/
 	}, interval);
 }
+let bndlBTN = tzrStartBTN;
+[tzr_start, tzr_stop] = [start, cancel];
 //
 const getDetail = async function(bn, st=5, on="", ta=null, bid=null) {
 	console.debug("getDetail()", bn, st, on);
@@ -194,6 +196,7 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) {
 				} else {
 					autag = '[' + bd.author.splice(0,Math.min(bd.author.length,3)).map(e=>e.name).join('×') + '] ';
 				}
+				fn = halfwidthValue(autag + on);
 				console.log('getDetaik(fn): '+ fn);
 				document.title = fn;
 				//const pD = document.evaluate("//dt[text()='配信開始日']", html, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.nextElementSibling.innerText;
@@ -294,6 +297,7 @@ function main() {
 						$(pcv).attr('aria-valuenow', pchk).css({width:pchk+"%"});
 					}).then(function (blob) {
 						clearInterval(bchk);
+						$(pcv).find('span').text("Done!");
 						console.groupEnd();
 						startf = 0;
 						const Url = window.URL.createObjectURL(blob);
@@ -310,7 +314,7 @@ function main() {
 						console.log("Book Download Time:", _job_time/1000, "sec");
 						toast($(a), "success", -1, "Job Done", {"htmlBody":true});
 						setTimeout(function() {
-							$(pc).attr('height', '0px');
+							$(pc).hide();
 							ss.pause();
 							startf=0;
 						}, 5000);
@@ -334,10 +338,7 @@ function main() {
 						});
 						let num = halfwidthValue(on).replace(/.*?[第\:]?(\d+)[巻話\)]?$/, "$1");
 						if(isNaN(parseInt(num))) { //Books may only have single volume, so no volume number
-							fn = ser;
 							num = 1;
-						} else {
-							fn = ser + " 第"+pad(num, 2)+"巻";
 						}
 						//Get Table of Contents(Bookmarks)
 						//Encrypted in configuration_pack.json => configuration["nav-list"] => BUT NO SOLUTION YET
@@ -391,7 +392,8 @@ let r1, r2="U8j";
 const _$IfuBW_NFBR$_ = setInterval(function() {
 	if(!NFBR) NFBR = (unsafeWindow ? unsafeWindow.NFBR : window.NFBR) || NFBR;
 	r1 = NFBR.a6G.a5x.prototype;
-	if(typeof r1 != "undefined" && typeof r1[r2] != "undefined") {
+	if(typeof r1 != "undefined" && typeof r1[r2] != "undefined" &&
+       typeof NFBR.a6G.Initializer.F5W.menu != "undefined") {
 		menu = NFBR.a6G.Initializer.F5W.menu;
 		control = menu.a6l;
 		model = menu.model;
