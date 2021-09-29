@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20210929.3");
+console.log("Bookwalker Japan", "v20210929.4");
 console.log("Reference:", "https://fireattack.wordpress.com/2021/08/27/a-better-way-to-dump-bookwalker", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -346,7 +346,7 @@ function main() {
 						//Encrypted in configuration_pack.json => configuration["nav-list"] => BUT NO SOLUTION YET
 						//
 						Ci.add("/ComicInfo", "Number", pad(num,2));
-						Ci.add("/ComicInfo", 'Title', fn);
+						Ci.add("/ComicInfo", 'Title', on);
 						Ci.add("/ComicInfo", 'Series', ser);
 						if(mode != 1) Ci.add("/ComicInfo", 'PageCount', totp);
 						$(bndlBTN).removeAttr("disabled");
