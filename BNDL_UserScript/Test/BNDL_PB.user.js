@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Bootstrap version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.90
+// @version      0.92
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://viewer.bookwalker.jp/*
@@ -16,11 +16,11 @@
 // @require      https://cdn.jsdelivr.net/npm/jszip-utils@0.1.0/dist/jszip-utils.min.js
 // @require      https://cdn.jsdelivr.net/npm/pdfjs-dist@2.5.207/build/pdf.min.js
 // @require      https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js
-// @require      https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/String.class.js
-// @require      https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/Array.class.js
-// @require      https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/comicinfo.class.js
-// @require      https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Current/Plugin/jsonHandler.class.js
+// @require      https://github.com/ag0609/SeLf_UsEs_DoNt_ToUcH/raw/main/Javascript/comicinfo.class.obs.js
+// @require      https://github.com/ag0609/SeLf_UsEs_DoNt_ToUcH/raw/main/Javascript/JSONHandler.class.obs.js
 // @require      https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Test/Plugin/Bootstrap-Extend.inc.js
+// @require      https://github.com/ag0609/SeLf_UsEs_DoNt_ToUcH/raw/main/Javascript/Array.ext.obs.js
+// @require      https://github.com/ag0609/SeLf_UsEs_DoNt_ToUcH/raw/main/Javascript/String.ext.obs.js
 // @resource     bsCSS https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css
 // @resource     chartCSS https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.css
 // @resource     BWJP https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Test/Plugin/bookwalkerjp.inc.js
@@ -72,7 +72,7 @@
     let _$c_wh = {w:0, h:0};
     let gcurp, gtotp;
     let fn, on, retry, wait;
-    let bndl_d, bnt, bnto;
+    let bndl_d, bnt, bnto, start=()=>{}, cancel=()=>{}, next=() => { console.warn("no function yet"); }, prev=() => { console.warn("no function yet"); };
     let bd = {};
     let Ci = new comicinfo(); //Build XML class for ComicInfo.xml(which mainly used by Comic Reader)
     let pages;
@@ -258,8 +258,10 @@
             }
         }
         bndl_d.eval = function(cmd) { eval(cmd); }
-        bndl_d.next = () => { console.warn("no function yet"); }
-        bndl_d.prev = () => { console.warn("no function yet"); }
+        bndl_d.start = ()=>{start()};
+        bndl_d.cancel = ()=>{cancel()};
+        bndl_d.next = ()=>{next()};
+        bndl_d.prev = ()=>{prev()};
         bndl_d.ob = new MutationObserver(bndl_d.attrchg);
         bndl_d.ob.observe(bndl_d, {attributes:true});
         document.body.appendChild(bndl_d);
@@ -357,7 +359,6 @@
     const halfwidthValue = (value) => {return value.replace(/(?:！？|!\?)/g, "⁉").replace(/[\uff01-\uff5e]/g, fullwidthChar => String.fromCharCode(fullwidthChar.charCodeAt(0) - 0xfee0)).replace(/\u3000/g, '\u0020')}
     toast('', "success", 5000, bndl_ver);
     let jsMain = "";
-    let start = ()=>{}, cancel = ()=>{};
     if(/viewer(?:\-(?:p?trial|subscription))?\.bookwalker\.jp/i.test(window.location.href)) jsMain = GM_getResourceText("BWJP");
     //if(/bookwalker\.tw/i.test(window.location.href)) jsMain = GM_getResourceText("BWTW");
     if(/booklive\.jp/i.test(window.location.href)) jsMain = GM_getResourceText("BLJP");
