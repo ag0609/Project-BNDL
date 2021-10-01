@@ -69,7 +69,7 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) {
 		let autocom = "https://bookwalker.jp/louis-api/autocomplete/";
 		let cat = ta==null ? (cty ? 2 : 1) : ta; //category { 1 = Novel, 2 = Manga, 3 = Light Novel, 9 = Web Novel }
 		if(mode==0 && NFBR.a6G.Initializer.F5W.menu.model.attributes) bid='de'+NFBR.a6G.Initializer.F5W.menu.model.attributes.contentId;
-		if(mode==1 || !bid) {
+		if(!bid) {
 			console.debug("getDetail()", autocom + "?category="+ cat +"&term=" + encodeURIComponent(bn));
 			GM.xmlHttpRequest({
 				method: "GET",
@@ -331,6 +331,7 @@ function main() {
 					if(!wait && img$size[curp] > 20000) { //Detail collect will only do once and Cover should be larger than 20KB
 						wait = 1;
 						on = model.get('contentTitle') || $("#pagetitle").text();
+						if(on.match(/\s?【[^【】]*(無料|お試し|試し読み)[^【】]*】\s?/)) mode=1;
 						on = on.replace(/\s?【[^【】]*(無料|お試し|試し読み)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,''); //[Only for Period] will left for Bookwalker Stupid Retarded Search Engine
 						await getDetail(on);
 						on = on.replace(/\s?【[^【】]*(限定|特典)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,'');; //Now I can remove them for series name
