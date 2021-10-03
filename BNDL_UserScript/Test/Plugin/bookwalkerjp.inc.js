@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20210930.0");
+console.log("Bookwalker Japan", "v20211003.0");
 console.log("Reference:", "https://fireattack.wordpress.com/2021/08/27/a-better-way-to-dump-bookwalker", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -90,38 +90,38 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) {
 				_detail$retry_++;
 				if(f && _detail$retry_ < 20) { //have matched records
 					if(st == 5) { //congrates! exact match found
-					bid = "de" + f.typeId;
+						bid = "de" + f.typeId;
 					} else { //Series search
-					console.debug("getDetail()", bwhp + "series/"+ f.typeId +"/list/");
-					bid = await new Promise((resolve) => {
-						GM.xmlHttpRequest({
-						method: "GET",
-						url: bwhp + "series/"+ f.typeId +"/list/",
-						onload: async function(reS) {
-							let h = reS.responseText;
-							let parser = new DOMParser();
-							let html = parser.parseFromString(h, "text/html");
-							let non, nno;
-							try {
-							switch(_detail$retry_) {
-								case 1: //clean out whitespace
-								non = on.replace(/\s/g, "");
-								console.debug("getDetail()", on, "=>", non);
-								break;
-								case 2: //convert full-widthed character to half-widthed
-								non = halfwidthValue(on);
-								console.debug("getDetail()", on, "=>", non);
-								break;
-								default: //no retry or looped?
-								non = on.match(/[（\(][\d\uff10-\uff19]+[）\)]|[\d\uff10-\uff19]+\s|[\d\uff10-\uff19]+$|[\d\uff10-\uff19]+[巻話]/).pop();
-							}
-							//let auuid = document.evaluate(".//div[@title='"+ non +"']", html, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.getAttribute('data-uuid');
-							let auuid = html.querySelector("a[title$='"+ non +"']").href.split('/')[3];
-							return resolve(auuid);
-							} catch(e) {} //The name pattern changed!! maybe will add a blur search in future
-						}
+						console.debug("getDetail()", bwhp + "series/"+ f.typeId +"/list/");
+						bid = await new Promise((resolve) => {
+							GM.xmlHttpRequest({
+								method: "GET",
+								url: bwhp + "series/"+ f.typeId +"/list/",
+								onload: async function(reS) {
+									let h = reS.responseText;
+									let parser = new DOMParser();
+									let html = parser.parseFromString(h, "text/html");
+									let non, nno;
+									try {
+										switch(_detail$retry_) {
+											case 3: //clean out whitespace
+												non = on.replace(/\s/g, "");
+												console.debug("getDetail()", on, "=>", non);
+												break;
+											case 4: //convert full-widthed character to half-widthed
+												non = halfwidthValue(on);
+												console.debug("getDetail()", on, "=>", non);
+												break;
+											default: //no retry or looped?
+												non = on.match(/[（\(][\d\uff10-\uff19]+[）\)]|[\d\uff10-\uff19]+\s|[\d\uff10-\uff19]+$|[\d\uff10-\uff19]+[巻話]/).pop();
+										}
+										//let auuid = document.evaluate(".//div[@title='"+ non +"']", html, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.getAttribute('data-uuid');
+										let auuid = html.querySelector("a[title$='"+ non +"']").href.split('/')[3];
+										return resolve(auuid);
+									} catch(e) {} //The name pattern changed!! maybe will add a blur search in future
+								}
+							});
 						});
-					});
 					}
 				} else if(st == 5 && (j.length || j.contents) && _detail$retry_ < 20) { //Try search by series
 					return resolve(await getDetail(bn.replace(/^\s?(.*?)\s?(?:[：\:]{0,1}\s?[\d０-９]+|[（\(][\d０-９]+[\)）]|[第]?[\d０-９]+[巻話]?)$/g, "$1"), 1, bn));
@@ -134,10 +134,10 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) {
 					let userbid = prompt("Sorry, Record not found. Please help search "+ bn +" at bookwalker.jp and paste bookID or detail page link here");
 					//de8a5395a0-df91-4c3c-a676-3c948fbc30ed
 					if(/de[0-9a-f]{8}\-(?:[0-9a-f]{4}\-){3}[0-9a-f]{12}/.test(userbid)) {
-					bid = userbid.match(/de[0-9a-f]{8}\-(?:[0-9a-f]{4}\-){3}[0-9a-f]{12}/);
+						bid = userbid.match(/de[0-9a-f]{8}\-(?:[0-9a-f]{4}\-){3}[0-9a-f]{12}/);
 					} else { //Giveup maybe the best choice for saving lives...
-					if(NFBR.a6G.Initializer.F5W.menu.model.attributes) bid='de'+NFBR.a6G.Initializer.F5W.menu.model.attributes.contentId;
-					Ci.add("/ComicInfo", 'Web', bwhp + bid + '/');
+						if(NFBR.a6G.Initializer.F5W.menu.model.attributes) bid='de'+NFBR.a6G.Initializer.F5W.menu.model.attributes.contentId;
+						Ci.add("/ComicInfo", 'Web', bwhp + bid + '/');
 					}
 				}
 				return resolve(await getDetail(bn, st, on, ta, bid));
@@ -211,7 +211,7 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) {
 				Ci.add("/ComicInfo", "LanguageISO", "ja");
 				Ci.add("/ComicInfo", "BlackAndWhite", "Yes");
 				cty ? Ci.add("/ComicInfo", "Manga", "YesAndRightToLeft") : Ci.add("/ComicInfo", "Manga", "No");
-				//toast(fn, "info", 0, "Title");
+				toast(fn, "info", 0, "Title");
 				// TOC
 				try {
 					const toc = NFBR.a6G.Initializer.F5W.menu.model.attributes.a2u.book.content.normal_default.toc_;
@@ -221,7 +221,7 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) {
 					});
 					console.log(pages);
 				} catch(e) {};
-				return resolve(autag);
+					return resolve(autag);
 				}
 			});
 		}
@@ -277,10 +277,8 @@ function main() {
 				pages.setPageAttr(curp-1, 'ImageSize', v.size);
 				//if((curp >= totp || mode == 1) && startf) {
 				if(curp >= totp && startf) {
-					if(mode != 1) {
-						Ci.add("/ComicInfo", "ScanInfomation", scan);
-						Ci.addPageCollection(pages);
-					}
+					Ci.add("/ComicInfo", "ScanInfomation", scan);
+					Ci.addPageCollection(pages);
 					zip.file("ComicInfo.xml", Ci.toString(), {type: "text/xml"});
 					console.groupCollapsed('ComicInfo.xml');
 					console.log(Ci.ComicInfo);
@@ -349,7 +347,7 @@ function main() {
 						Ci.add("/ComicInfo", "Number", pad(num,2));
 						Ci.add("/ComicInfo", 'Title', on);
 						Ci.add("/ComicInfo", 'Series', ser);
-						if(mode != 1) Ci.add("/ComicInfo", 'PageCount', totp);
+						Ci.add("/ComicInfo", 'PageCount', totp);
 						$(bndlBTN).removeAttr("disabled");
 						$(maindiv).attr({width:"100%", height:"100%"});
 						$(pc).css({height:'25px'});
