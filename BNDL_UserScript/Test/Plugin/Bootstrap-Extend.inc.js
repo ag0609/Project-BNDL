@@ -1,3 +1,6 @@
+const ver = "20211004.0";
+console.log("Bootstrap-Extended", "version", ":", ver);
+
 function toast($_msg, _$t='default', _hT, $_t, _0pts={}) {
 	let _reTi = 5000;
 	let no_Co = HTML_Con = false;
@@ -43,7 +46,10 @@ function toast($_msg, _$t='default', _hT, $_t, _0pts={}) {
 				break;
 		}
 	}
-
+	if(/^html:/.test($_msg)) {
+		$_msg = $_msg.replace(/^html:/, '');
+		HTML_Con = true;
+	}
 	if(!tc.length) {
 		let bnt = $("<div>").addClass('toast-container position-fixed overflow-auto w-25 mh-100 h-auto p-3').css(pos).css({'overflow-x':'hidden', 'z-index':1070000});
 		let bnto = $("<div>").addClass('toast position-relative ml-auto w-100 p-0 bg-white overflow-hidden').css({bottom:'auto',left:'auto'})
