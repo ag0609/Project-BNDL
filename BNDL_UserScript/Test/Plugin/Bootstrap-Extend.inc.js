@@ -1,11 +1,11 @@
-const ver = "20211004.0";
+const ver = "20211005.0";
 console.log("Bootstrap-Extended", "version", ":", ver);
 
 function toast($_msg, _$t='default', _hT, $_t, _0pts={}) {
 	let _reTi = 5000;
 	let no_Co = HTML_Con = false;
 	let pos = {top:0, left:0};
-	let tc = $('.toast-container');
+	let tc = $('.toasted');
 	let ntc;
 	for(let k in _0pts) {
 		switch(k) {
@@ -51,7 +51,7 @@ function toast($_msg, _$t='default', _hT, $_t, _0pts={}) {
 		HTML_Con = true;
 	}
 	if(!tc.length) {
-		let bnt = $("<div>").addClass('toast-container position-fixed overflow-auto w-25 mh-100 h-auto p-3').css(pos).css({'overflow-x':'hidden', 'z-index':1070000});
+		let bnt = $("<div>").addClass('toasted toast-container position-fixed overflow-auto w-25 mh-100 h-auto p-3').css(pos).css({'overflow-x':'hidden', 'z-index':1070000});
 		let bnto = $("<div>").addClass('toast position-relative ml-auto w-100 p-0 bg-white overflow-hidden').css({bottom:'auto',left:'auto'})
 						 .attr({role:'alert','aria-live':'assertive','aria-atomic':'true'});
 		bnto.toast({autohide:false});
