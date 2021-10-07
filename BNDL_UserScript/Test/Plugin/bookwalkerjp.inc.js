@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20211006.0");
+console.log("Bookwalker Japan", "v20211008.0");
 console.log("Reference:", "https://fireattack.wordpress.com/2021/08/27/a-better-way-to-dump-bookwalker", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -60,7 +60,7 @@ try {
 	[tzr_start, tzr_stop] = [start, cancel];
 } catch(e){};
 //
-const getDetail = async function(bn, st=5, on="", ta=null, bid=null) {
+const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Bookname(keywords), search type, original Title, ???, bookID
 	console.debug("getDetail()", bn, st, on);
 	return new Promise(function(resolve) {
 		let cty = parseInt(getQuery("cty"));
@@ -84,15 +84,16 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) {
 					console.debug("getDetail()", "auto_result:", j.length);
 					f = j.filter(v => (new RegExp(escape(bn)+"(?:%(?:[0-9A-F]{2}|u[0-9A-F]{4})|$)+","i")).test(escape(v.value))).find(v => (v.type == st && (ta == 999 || !(/(期間限定|お試し|試し読み)/.test(v.value)))));
 				}
-				console.debug("getDetail()", "find_result:", f != undefined ? true : false);
+				console.debug("getDetail()", "find_result:", f != undefined ? f.length : false);
 				let askhelp = 0;
 				console.log("retried: "+ _detail$retry_);
 				_detail$retry_++;
 				if(f && _detail$retry_ < 20) { //have matched records
-					if(st == 5) { //congrates! exact match found
+					if(f.length == 1 && st == 5) { //congrates! exact match found
 						bid = "de" + f.typeId;
 					} else { //Series search
 						console.debug("getDetail()", bwhp + "series/"+ f.typeId +"/list/");
+						if(st == 5) _detail$retry_ = 0;
 						bid = await new Promise((resolve) => {
 							GM.xmlHttpRequest({
 								method: "GET",
@@ -117,7 +118,7 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) {
 										}
 										//let auuid = document.evaluate(".//div[@title='"+ non +"']", html, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.getAttribute('data-uuid');
 										let auuid = html.querySelector("a[title$='"+ non +"']").href.split('/')[3];
-										return resolve(auuid);
+										return resolve(await getDetail(non, 1, on, ta, auuid));
 									} catch(e) {} //The name pattern changed!! maybe will add a blur search in future
 								}
 							});
@@ -126,7 +127,9 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) {
 				} else if(st == 5 && (j.length || j.contents) && _detail$retry_ < 20) { //Try search by series
 					return resolve(await getDetail(bn.replace(/^\s?(.*?)\s?(?:[：\:]{0,1}\s?[\d０-９]+|[（\(][\d０-９]+[\)）]|[第]?[\d０-９]+[巻話]?)$/g, "$1"), 1, bn));
 				} else if(_detail$retry_ < 20) {
-					return resolve(await getDetail(bn, st, on, 0));
+					bn = bn.replace(/[（）【】]/,' ')
+                    			bn = non.split(' ').pop();
+					return resolve(await getDetail(bn, st, (on || bn), 0));
 				} else { //Strange... nothing found
 					askhelp = 1;
 				}
