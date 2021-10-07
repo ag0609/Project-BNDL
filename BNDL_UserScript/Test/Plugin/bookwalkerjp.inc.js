@@ -128,7 +128,7 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 					return resolve(await getDetail(bn.replace(/^\s?(.*?)\s?(?:[：\:]{0,1}\s?[\d０-９]+|[（\(][\d０-９]+[\)）]|[第]?[\d０-９]+[巻話]?)$/g, "$1"), 1, bn));
 				} else if(_detail$retry_ < 20) {
 					bn = bn.replace(/[（）【】]/,' ')
-                    			bn = non.split(' ').pop();
+                    			bn = bn.split(' ').pop();
 					return resolve(await getDetail(bn, st, (on || bn), 0));
 				} else { //Strange... nothing found
 					askhelp = 1;
