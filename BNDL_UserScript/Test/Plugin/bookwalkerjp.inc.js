@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20211008.0");
+console.log("Bookwalker Japan", "v20211008.1");
 console.log("Reference:", "https://fireattack.wordpress.com/2021/08/27/a-better-way-to-dump-bookwalker", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -102,34 +102,47 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 									let h = reS.responseText;
 									let parser = new DOMParser();
 									let html = parser.parseFromString(h, "text/html");
-									let non, nno;
-									try {
-										switch(_detail$retry_) {
-											case 3: //clean out whitespace
-												non = on.replace(/\s/g, "");
-												console.debug("getDetail()", on, "=>", non);
-												break;
-											case 4: //convert full-widthed character to half-widthed
-												non = halfwidthValue(on);
-												console.debug("getDetail()", on, "=>", non);
-												break;
-											default: //no retry or looped?
-												non = on.match(/[（\(][\d\uff10-\uff19]+[）\)]|[\d\uff10-\uff19]+\s|[\d\uff10-\uff19]+$|[\d\uff10-\uff19]+[巻話]/).pop();
-										}
-										//let auuid = document.evaluate(".//div[@title='"+ non +"']", html, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.getAttribute('data-uuid');
-										let auuid = html.querySelector("a[title$='"+ non +"']").href.split('/')[3];
-										return resolve(await getDetail(non, 1, on, ta, auuid));
-									} catch(e) {} //The name pattern changed!! maybe will add a blur search in future
+									let non, nno, auuid;
+									let regex = new RegExp("[（）【】]", "g");
+									while(!auuid && _detail$retry_ < 20) {
+                                        _detail$retry_++;
+										try {
+											switch(_detail$retry_) {
+												case 3: //clean out whitespace
+													non = on.replace(/\s/g, "");
+													console.debug("getDetail()", on, "=>", non);
+													break;
+												case 4: //convert full-widthed character to half-widthed
+													non = halfwidthValue(on);
+													console.debug("getDetail()", on, "=>", non);
+													break;
+												default: //no retry or looped?
+													non = on.match(/[（\(][\d\uff10-\uff19]+[）\)]|[\d\uff10-\uff19]+\s|[\d\uff10-\uff19]+$|[\d\uff10-\uff19]+[巻話]/).pop();
+											}
+											//let auuid = document.evaluate(".//div[@title='"+ non +"']", html, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.getAttribute('data-uuid');
+											let tar = html.querySelectorAll("a[title*='"+ non +"']") || html.querySelectorAll("a[title$='"+ halfwidthValue(non) +"']");
+											if(tar) {
+												let last = Array.from(tar).pop();
+												auuid = last.href.split('/')[3] || null;
+											}
+										} catch(e) {} //The name pattern changed!! maybe will add a blur search in future
+									}
+									return resolve(await getDetail(non, 1, on, ta, auuid));
 								}
 							});
 						});
 					}
-				} else if(st == 5 && (j.length || j.contents) && _detail$retry_ < 20) { //Try search by series
+				} else if(_detail$retry_ < 10) {
+					on = on || bn;
+					let regex = new RegExp("[（）【】]", "g");
+					let idx = bn.length, res;
+                    while((res = regex.exec(bn)) != null) { console.log(regex.lastIndex); idx = regex.lastIndex-1 }
+                    bn = bn.substr(0, idx);
+                    console.log(idx, bn);
+					return resolve(await getDetail(bn, st, on, 0));
+				} else if(st == 5 && _detail$retry_ >= 10) { //Try search by series
+					if(st == 5) _detail$retry_ = 0;
 					return resolve(await getDetail(bn.replace(/^\s?(.*?)\s?(?:[：\:]{0,1}\s?[\d０-９]+|[（\(][\d０-９]+[\)）]|[第]?[\d０-９]+[巻話]?)$/g, "$1"), 1, bn));
-				} else if(_detail$retry_ < 20) {
-					bn = bn.replace(/[（）【】]/,' ')
-                    			bn = bn.split(' ').pop();
-					return resolve(await getDetail(bn, st, (on || bn), 0));
 				} else { //Strange... nothing found
 					askhelp = 1;
 				}
@@ -147,6 +160,7 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 				}
 			});
 		} else {
+			if(bid.startsWith("[")) return resolve(bid);
 			if(!bid.startsWith("de")) bid = 'de'+bid;
 			Ci.add("/ComicInfo", 'Web', bwhp + bid + '/');
 			console.debug("getDetail()", bwhp + bid + '/');
@@ -222,7 +236,7 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 				Ci.add("/ComicInfo", "LanguageISO", "ja");
 				Ci.add("/ComicInfo", "BlackAndWhite", "Yes");
 				cty ? Ci.add("/ComicInfo", "Manga", "YesAndRightToLeft") : Ci.add("/ComicInfo", "Manga", "No");
-				toast(fn, "info", 0, "Title");
+				toast('html:<a href="'bwhp+bid+'" target="_blank">'+fn+'</a>', "info", 0, "Title");
 				// TOC
 				try {
 					const toc = NFBR.a6G.Initializer.F5W.menu.model.attributes.a2u.book.content.normal_default.toc_;
