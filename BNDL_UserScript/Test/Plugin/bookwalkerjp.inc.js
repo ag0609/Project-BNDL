@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20211008.1");
+console.log("Bookwalker Japan", "v20211008.2");
 console.log("Reference:", "https://fireattack.wordpress.com/2021/08/27/a-better-way-to-dump-bookwalker", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -236,7 +236,7 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 				Ci.add("/ComicInfo", "LanguageISO", "ja");
 				Ci.add("/ComicInfo", "BlackAndWhite", "Yes");
 				cty ? Ci.add("/ComicInfo", "Manga", "YesAndRightToLeft") : Ci.add("/ComicInfo", "Manga", "No");
-				toast('html:<a href="'bwhp+bid+'" target="_blank">'+fn+'</a>', "info", 0, "Title");
+				toast('html:<a href="'+bwhp+bid+'" target="_blank">'+fn+'</a>', "info", 0, "Title");
 				// TOC
 				try {
 					const toc = NFBR.a6G.Initializer.F5W.menu.model.attributes.a2u.book.content.normal_default.toc_;
