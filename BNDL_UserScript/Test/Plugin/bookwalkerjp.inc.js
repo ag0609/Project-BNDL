@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20211012.2");
+console.log("Bookwalker Japan", "v20211012.3");
 console.log("Reference:", "https://fireattack.wordpress.com/2021/08/27/a-better-way-to-dump-bookwalker", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -62,7 +62,7 @@ try {
 
 const actlist = function(aaa, bbb=[]) {
     const albody = $("<div />");
-    albody.css({'position':'absolute','background':'black', width:'50%',height:'50%','top':0,'left':0, 'transform':'translate(50%,50%)'});
+    albody.css({'background':'black', width:'100%',height:'100%'});
     const tobj = toast(albody, "warning", -1, "Select Book Record", {"htmlBody":true});
     return new Promise((resolve) => {
     for(let i=0;i<aaa.length;i++) {
