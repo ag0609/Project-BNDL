@@ -1,4 +1,4 @@
-const ver = "20211005.0";
+const ver = "20211005.1";
 console.log("Bootstrap-Extended", "version", ":", ver);
 
 function toast($_msg, _$t='default', _hT, $_t, _0pts={}) {
@@ -102,6 +102,7 @@ function toast($_msg, _$t='default', _hT, $_t, _0pts={}) {
 	}
 	if(!$_msg && !$_t) return;
 	const nT = tc.data('bnto').clone();
+	nT.data('close', function() {nT.animate({height:['toggle','linear'], opacity:['toggle','swing']}, 250, function() {nT.toast('dispose').remove();});});
 	let cid = '00000';
 	while($('#toast'+cid).length) {
 		cid = ('0'.repeat(5) + Math.floor(Math.random()*99999)).slice(-5);
@@ -134,12 +135,13 @@ function toast($_msg, _$t='default', _hT, $_t, _0pts={}) {
 		}
 	} else {
 		nT.toast({autohide:false});
-		nT.find('.close').on("click", function() {nT.animate({height:['toggle','linear'], opacity:['toggle','swing']}, 250, function() {nT.toast('dispose').remove();});});
+		nT.find('.close').on("click", nT.data('close'));
 	}
 	nT.find('.toast-footer > .timebadge').text('now.');
 	nT.appendTo(tc);
 	nT.toast('show');
 	nT.parent().scrollTop(nT.parent().prop('scrollHeight'));
+	return nT;
 }//toast out
 function DisposeAllToast() {
 	$('.toast').find('.timebar').stop();
