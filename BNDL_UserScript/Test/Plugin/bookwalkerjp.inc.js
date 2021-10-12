@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20211012.1");
+console.log("Bookwalker Japan", "v20211012.2");
 console.log("Reference:", "https://fireattack.wordpress.com/2021/08/27/a-better-way-to-dump-bookwalker", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -97,7 +97,7 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 				url: autocom + "?category="+ cat +"&term=" + encodeURIComponent(bn),
 				onload: async function(res) {
 				let j = JSON.parse(res.responseText);
-				let f;
+				let f, g;
 				if(j.contents) { //type 1 = Series, 2 = Artist, 3 = Company, 4 = Label, 5 = Book
 					console.debug("getDetail(contents)", "auto_result:", j.contents.length);
 					g = j["contents"];
