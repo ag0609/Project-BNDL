@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20211008.2");
+console.log("Bookwalker Japan", "v20211012.0");
 console.log("Reference:", "https://fireattack.wordpress.com/2021/08/27/a-better-way-to-dump-bookwalker", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -59,6 +59,27 @@ try {
 	bndlBTN = tzrStartBTN;
 	[tzr_start, tzr_stop] = [start, cancel];
 } catch(e){};
+
+const actlist = function(aaa, bbb=[]) {
+    const albody = $("<div />");
+    albody.css({'position':'absolute','background':'black', width:'50%',height:'50%','top':0,'left':0, 'transform':'translate(50%,50%)'});
+    const tobj = toast(albody, "warning", -1, "Select Book Record", {"htmlBody":true});
+    return new Promise((resolve) => {
+    for(let i=0;i<aaa.length;i++) {
+      let item = $("<div />");
+      item.css({'background':'lightgrey'}).text(aaa[i]);
+      item.hover(function(){$(this).css({'background':'grey'})},
+                 function(){$(this).css({'background':'lightgrey'})});
+      item.data({val:bbb[i]||i});
+      item.click(function(){
+      	resolve($(this).data("val"));
+        tobj.data('close')();
+      });
+      albody.append(item);
+    }
+  });
+}
+
 //
 const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Bookname(keywords), search type, original Title, ???, bookID
 	console.debug("getDetail()", bn, st, on);
@@ -91,6 +112,10 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 				if(f && _detail$retry_ < 20) { //have matched records
 					if(f.length == 1 && st == 5) { //congrates! exact match found
 						bid = "de" + f.typeId;
+					} else if(g.length > 1) {
+						let bookname = g.map(v=>v.value);
+						let itemidx = await actlist(bookname);
+						bid = g[itemidx].typeId;
 					} else { //Series search
 						console.debug("getDetail()", bwhp + "series/"+ f.typeId +"/list/");
 						if(st == 5) _detail$retry_ = 0;
@@ -105,7 +130,7 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 									let non, nno, auuid;
 									let regex = new RegExp("[（）【】]", "g");
 									while(!auuid && _detail$retry_ < 20) {
-                                        _detail$retry_++;
+                                        					_detail$retry_++;
 										try {
 											switch(_detail$retry_) {
 												case 3: //clean out whitespace
