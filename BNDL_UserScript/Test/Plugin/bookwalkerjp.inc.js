@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20211012.0");
+console.log("Bookwalker Japan", "v20211012.1");
 console.log("Reference:", "https://fireattack.wordpress.com/2021/08/27/a-better-way-to-dump-bookwalker", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -100,9 +100,11 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 				let f;
 				if(j.contents) { //type 1 = Series, 2 = Artist, 3 = Company, 4 = Label, 5 = Book
 					console.debug("getDetail(contents)", "auto_result:", j.contents.length);
+					g = j["contents"];
 					f= j.contents.filter(v => (new RegExp(escape(bn)+"(?:%(?:[0-9A-F]{2}|u[0-9A-F]{4})|$)+","i")).test(escape(v.value))).find(v => (v.type == st && (ta == 999 || !(/(期間限定|お試し|試し読み)/.test(v.value)))));
 				} else {
 					console.debug("getDetail()", "auto_result:", j.length);
+					g = j;
 					f = j.filter(v => (new RegExp(escape(bn)+"(?:%(?:[0-9A-F]{2}|u[0-9A-F]{4})|$)+","i")).test(escape(v.value))).find(v => (v.type == st && (ta == 999 || !(/(期間限定|お試し|試し読み)/.test(v.value)))));
 				}
 				console.debug("getDetail()", "find_result:", f != undefined ? f.length : false);
@@ -110,7 +112,7 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 				console.log("retried: "+ _detail$retry_);
 				_detail$retry_++;
 				if(f && _detail$retry_ < 20) { //have matched records
-					if(f.length == 1 && st == 5) { //congrates! exact match found
+					if(g.length == 1 && st == 5) { //congrates! exact match found
 						bid = "de" + f.typeId;
 					} else if(g.length > 1) {
 						let bookname = g.map(v=>v.value);
@@ -132,30 +134,24 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 									while(!auuid && _detail$retry_ < 20) {
                                         					_detail$retry_++;
 										try {
-											switch(_detail$retry_) {
-												case 3: //clean out whitespace
-													non = on.replace(/\s/g, "");
-													console.debug("getDetail()", on, "=>", non);
-													break;
-												case 4: //convert full-widthed character to half-widthed
-													non = halfwidthValue(on);
-													console.debug("getDetail()", on, "=>", non);
-													break;
-												default: //no retry or looped?
-													non = on.match(/[（\(][\d\uff10-\uff19]+[）\)]|[\d\uff10-\uff19]+\s|[\d\uff10-\uff19]+$|[\d\uff10-\uff19]+[巻話]/).pop();
-											}
-											//let auuid = document.evaluate(".//div[@title='"+ non +"']", html, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.getAttribute('data-uuid');
-											let tar = html.querySelectorAll("a[title*='"+ non +"']") || html.querySelectorAll("a[title$='"+ halfwidthValue(non) +"']");
-											if(tar) {
-												let last = Array.from(tar).pop();
-												auuid = last.href.split('/')[3] || null;
+											let tar;
+											tar = Array.from(html.querySelectorAll("a[title*='"+ non +"']")).filter(v => !/(期間限定|お試し|試し読み)/.test(v.title));
+											if(!tar.length) tar = Array.from(html.querySelectorAll("a[title*='"+ halfwidthValue(non) +"']")).filter(v => !/(期間限定|お試し|試し読み)/.test(v.title));
+											if(tar.length == 1) {
+												auuid = tar[0].href.split('/')[3] || null;
+											} else if(tar.length > 1) {
+												let linklist = Array.from(html.querySelectorAll(".m-book-item__title > a[title]"));
+												let bookname = linklist.map(v=>v.title);
+												let itemidx = await actlist(bookname);
+												auuid = linklist[itemidx].href('/')[3] || null;
 											}
 										} catch(e) {} //The name pattern changed!! maybe will add a blur search in future
 									}
-									return resolve(await getDetail(non, 1, on, ta, auuid));
+									return resolve(auuid);
 								}
 							});
 						});
+						return resolve(await getDetail(non, 1, on, ta, bid));
 					}
 				} else if(_detail$retry_ < 10) {
 					on = on || bn;
