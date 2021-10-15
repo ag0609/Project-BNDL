@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20211012.3");
+console.log("Bookwalker Japan", "v20211015.0");
 console.log("Reference:", "https://fireattack.wordpress.com/2021/08/27/a-better-way-to-dump-bookwalker", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -32,7 +32,7 @@ if(mode == 2) {
 			ptrialtime.lT = 600000; //10 minutes => 600 seconds in MilliSeconds
 		}
 	} else {
-        	console.log("10min record not exists");
+		console.log("10min record not exists");
 		//ptrialtime not in localStorage, initial one
 		ptrialtime.fT = Date.now();
 		ptrialtime.lT = 600000; //10 minutes => 600 seconds in MilliSeconds
@@ -67,7 +67,7 @@ const actlist = function(aaa, bbb=[]) {
     return new Promise((resolve) => {
     for(let i=0;i<aaa.length;i++) {
       let item = $("<div />");
-      item.css({'background':'lightgrey'}).text(aaa[i]);
+      item.css({'background':'lightgrey','border':'solid 1px','userSelect':'none','cursor':'pointer'}).text(aaa[i]);
       item.hover(function(){$(this).css({'background':'grey'})},
                  function(){$(this).css({'background':'lightgrey'})});
       item.data({val:bbb[i]||i});
@@ -96,88 +96,88 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 				method: "GET",
 				url: autocom + "?category="+ cat +"&term=" + encodeURIComponent(bn),
 				onload: async function(res) {
-				let j = JSON.parse(res.responseText);
-				let f, g;
-				if(j.contents) { //type 1 = Series, 2 = Artist, 3 = Company, 4 = Label, 5 = Book
-					console.debug("getDetail(contents)", "auto_result:", j.contents.length);
-					g = j["contents"];
-					f= j.contents.filter(v => (new RegExp(escape(bn)+"(?:%(?:[0-9A-F]{2}|u[0-9A-F]{4})|$)+","i")).test(escape(v.value))).find(v => (v.type == st && (ta == 999 || !(/(期間限定|お試し|試し読み)/.test(v.value)))));
-				} else {
-					console.debug("getDetail()", "auto_result:", j.length);
-					g = j;
-					f = j.filter(v => (new RegExp(escape(bn)+"(?:%(?:[0-9A-F]{2}|u[0-9A-F]{4})|$)+","i")).test(escape(v.value))).find(v => (v.type == st && (ta == 999 || !(/(期間限定|お試し|試し読み)/.test(v.value)))));
-				}
-				console.debug("getDetail()", "find_result:", f != undefined ? f.length : false);
-				let askhelp = 0;
-				console.log("retried: "+ _detail$retry_);
-				_detail$retry_++;
-				if(f && _detail$retry_ < 20) { //have matched records
-					if(g.length == 1 && st == 5) { //congrates! exact match found
-						bid = "de" + f.typeId;
-					} else if(g.length > 1) {
-						let bookname = g.map(v=>v.value);
-						let itemidx = await actlist(bookname);
-						bid = g[itemidx].typeId;
-					} else { //Series search
-						console.debug("getDetail()", bwhp + "series/"+ f.typeId +"/list/");
-						if(st == 5) _detail$retry_ = 0;
-						bid = await new Promise((resolve) => {
-							GM.xmlHttpRequest({
-								method: "GET",
-								url: bwhp + "series/"+ f.typeId +"/list/",
-								onload: async function(reS) {
-									let h = reS.responseText;
-									let parser = new DOMParser();
-									let html = parser.parseFromString(h, "text/html");
-									let non, nno, auuid;
-									let regex = new RegExp("[（）【】]", "g");
-									while(!auuid && _detail$retry_ < 20) {
-                                        					_detail$retry_++;
-										try {
-											let tar;
-											tar = Array.from(html.querySelectorAll("a[title*='"+ non +"']")).filter(v => !/(期間限定|お試し|試し読み)/.test(v.title));
-											if(!tar.length) tar = Array.from(html.querySelectorAll("a[title*='"+ halfwidthValue(non) +"']")).filter(v => !/(期間限定|お試し|試し読み)/.test(v.title));
-											if(tar.length == 1) {
-												auuid = tar[0].href.split('/')[3] || null;
-											} else if(tar.length > 1) {
-												let linklist = Array.from(html.querySelectorAll(".m-book-item__title > a[title]"));
-												let bookname = linklist.map(v=>v.title);
-												let itemidx = await actlist(bookname);
-												auuid = linklist[itemidx].href('/')[3] || null;
-											}
-										} catch(e) {} //The name pattern changed!! maybe will add a blur search in future
+					let j = JSON.parse(res.responseText);
+					let f, g;
+					if(j.contents) { //type 1 = Series, 2 = Artist, 3 = Company, 4 = Label, 5 = Book
+						console.debug("getDetail(contents)", "auto_result:", j.contents.length);
+						g = j["contents"];
+						f= j.contents.filter(v => (new RegExp(escape(bn)+"(?:%(?:[0-9A-F]{2}|u[0-9A-F]{4})|$)+","i")).test(escape(v.value))).find(v => (v.type == st && (ta == 999 || !(/(期間限定|お試し|試し読み)/.test(v.value)))));
+					} else {
+						console.debug("getDetail()", "auto_result:", j.length);
+						g = j;
+						f = j.filter(v => (new RegExp(escape(bn)+"(?:%(?:[0-9A-F]{2}|u[0-9A-F]{4})|$)+","i")).test(escape(v.value))).find(v => (v.type == st && (ta == 999 || !(/(期間限定|お試し|試し読み)/.test(v.value)))));
+					}
+					console.debug("getDetail()", "find_result:", f != undefined ? f.length : false);
+					let askhelp = 0;
+					console.log("retried: "+ _detail$retry_);
+					_detail$retry_++;
+					if(f && _detail$retry_ < 20) { //have matched records
+						if(g.length == 1 && st == 5) { //congrates! exact match found
+							bid = "de" + f.typeId;
+						} else if(g.length > 1) {
+							let bookname = g.map(v=>v.value);
+							let itemidx = await actlist(bookname);
+							bid = g[itemidx] ? g[itemidx].typeId : null;
+						} else { //Series search
+							console.debug("getDetail()", bwhp + "series/"+ f.typeId +"/list/");
+							if(st == 5) _detail$retry_ = 0;
+							bid = await new Promise((resolve) => {
+								GM.xmlHttpRequest({
+									method: "GET",
+									url: bwhp + "series/"+ f.typeId +"/list/",
+									onload: async function(reS) {
+										let h = reS.responseText;
+										let parser = new DOMParser();
+										let html = parser.parseFromString(h, "text/html");
+										let non, nno, auuid;
+										let regex = new RegExp("[（）【】]", "g");
+										while(!auuid && _detail$retry_ < 20) {
+											_detail$retry_++;
+											try {
+												let tar;
+												tar = Array.from(html.querySelectorAll("a[title*='"+ non +"']")).filter(v => !/(期間限定|お試し|試し読み)/.test(v.title));
+												if(!tar.length) tar = Array.from(html.querySelectorAll("a[title*='"+ halfwidthValue(non) +"']")).filter(v => !/(期間限定|お試し|試し読み)/.test(v.title));
+												if(tar.length == 1) {
+													auuid = tar[0].href.split('/')[3] || null;
+												} else if(tar.length > 1) {
+													let linklist = Array.from(html.querySelectorAll(".m-book-item__title > a[title]"));
+													let bookname = linklist.map(v=>v.title);
+													let itemidx = await actlist(bookname);
+													auuid = linklist[itemidx].href('/')[3] || null;
+												}
+											} catch(e) {} //The name pattern changed!! maybe will add a blur search in future
+										}
+										return resolve(auuid);
 									}
-									return resolve(auuid);
-								}
+								});
 							});
-						});
-						return resolve(await getDetail(non, 1, on, ta, bid));
+							return resolve(await getDetail(non, 1, on, ta, bid));
+						}
+					} else if(_detail$retry_ < 10) {
+						on = on || bn;
+						let regex = new RegExp("[（）【】]", "g");
+						let idx = bn.length, res;
+						while((res = regex.exec(bn)) != null) { console.log(regex.lastIndex); idx = regex.lastIndex-1 }
+						bn = bn.substr(0, idx);
+						console.log(idx, bn);
+						return resolve(await getDetail(bn, st, on, 0));
+					} else if(st == 5 && _detail$retry_ >= 10) { //Try search by series
+						if(st == 5) _detail$retry_ = 0;
+						return resolve(await getDetail(bn.replace(/^\s?(.*?)\s?(?:[：\:]{0,1}\s?[\d０-９]+|[（\(][\d０-９]+[\)）]|[第]?[\d０-９]+[巻話]?)$/g, "$1"), 1, bn));
+					} else { //Strange... nothing found
+						askhelp = 1;
 					}
-				} else if(_detail$retry_ < 10) {
-					on = on || bn;
-					let regex = new RegExp("[（）【】]", "g");
-					let idx = bn.length, res;
-                    while((res = regex.exec(bn)) != null) { console.log(regex.lastIndex); idx = regex.lastIndex-1 }
-                    bn = bn.substr(0, idx);
-                    console.log(idx, bn);
-					return resolve(await getDetail(bn, st, on, 0));
-				} else if(st == 5 && _detail$retry_ >= 10) { //Try search by series
-					if(st == 5) _detail$retry_ = 0;
-					return resolve(await getDetail(bn.replace(/^\s?(.*?)\s?(?:[：\:]{0,1}\s?[\d０-９]+|[（\(][\d０-９]+[\)）]|[第]?[\d０-９]+[巻話]?)$/g, "$1"), 1, bn));
-				} else { //Strange... nothing found
-					askhelp = 1;
-				}
-				if(askhelp) { //Try ask user for help
-					let userbid = prompt("Sorry, Record not found. Please help search "+ bn +" at bookwalker.jp and paste bookID or detail page link here");
-					//de8a5395a0-df91-4c3c-a676-3c948fbc30ed
-					if(/de[0-9a-f]{8}\-(?:[0-9a-f]{4}\-){3}[0-9a-f]{12}/.test(userbid)) {
-						bid = userbid.match(/de[0-9a-f]{8}\-(?:[0-9a-f]{4}\-){3}[0-9a-f]{12}/);
-					} else { //Giveup maybe the best choice for saving lives...
-						if(NFBR.a6G.Initializer.F5W.menu.model.attributes) bid='de'+NFBR.a6G.Initializer.F5W.menu.model.attributes.contentId;
-						Ci.add("/ComicInfo", 'Web', bwhp + bid + '/');
+					if(askhelp) { //Try ask user for help
+						let userbid = prompt("Sorry, Record not found. Please help search "+ bn +" at bookwalker.jp and paste bookID or detail page link here");
+						//de8a5395a0-df91-4c3c-a676-3c948fbc30ed
+						if(/de[0-9a-f]{8}\-(?:[0-9a-f]{4}\-){3}[0-9a-f]{12}/.test(userbid)) {
+							bid = userbid.match(/de[0-9a-f]{8}\-(?:[0-9a-f]{4}\-){3}[0-9a-f]{12}/);
+						} else { //Giveup maybe the best choice for saving lives...
+							if(NFBR.a6G.Initializer.F5W.menu.model.attributes) bid='de'+NFBR.a6G.Initializer.F5W.menu.model.attributes.contentId;
+							Ci.add("/ComicInfo", 'Web', bwhp + bid + '/');
+						}
 					}
-				}
-				return resolve(await getDetail(bn, st, on, ta, bid));
+					return resolve(await getDetail(bn, st, on, ta, bid));
 				}
 			});
 		} else {
