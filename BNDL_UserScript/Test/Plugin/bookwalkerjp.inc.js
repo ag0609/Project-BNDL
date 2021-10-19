@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20211015.0");
+console.log("Bookwalker Japan", "v20211019.0");
 console.log("Reference:", "https://fireattack.wordpress.com/2021/08/27/a-better-way-to-dump-bookwalker", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -89,7 +89,7 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 		let eventapi = "https://eventapi.bookwalker.jp/api/";
 		let autocom = "https://bookwalker.jp/louis-api/autocomplete/";
 		let cat = ta==null ? (cty ? 2 : 1) : ta; //category { 1 = Novel, 2 = Manga, 3 = Light Novel, 9 = Web Novel }
-		if(mode==0 && NFBR.a6G.Initializer.F5W.menu.model.attributes) bid='de'+NFBR.a6G.Initializer.F5W.menu.model.attributes.contentId;
+		if(mode==0 && model.attributes) bid='de'+model.attributes.contentId;
 		if(!bid) {
 			console.debug("getDetail()", autocom + "?category="+ cat +"&term=" + encodeURIComponent(bn));
 			GM.xmlHttpRequest({
@@ -173,7 +173,7 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 						if(/de[0-9a-f]{8}\-(?:[0-9a-f]{4}\-){3}[0-9a-f]{12}/.test(userbid)) {
 							bid = userbid.match(/de[0-9a-f]{8}\-(?:[0-9a-f]{4}\-){3}[0-9a-f]{12}/);
 						} else { //Giveup maybe the best choice for saving lives...
-							if(NFBR.a6G.Initializer.F5W.menu.model.attributes) bid='de'+NFBR.a6G.Initializer.F5W.menu.model.attributes.contentId;
+							if(model.attributes) bid='de'+model.attributes.contentId;
 							Ci.add("/ComicInfo", 'Web', bwhp + bid + '/');
 						}
 					}
@@ -435,21 +435,26 @@ cancel = function() {
 		toast("", "danger", -1, "Job Canceled");
 	}
 }
-let r1, r2="U8j";
+let r1, r2="S4z", m1, m2="c8t";
 const _$IfuBW_NFBR$_ = setInterval(function() {
 	if(!NFBR) NFBR = (unsafeWindow ? unsafeWindow.NFBR : window.NFBR) || NFBR;
 	r1 = NFBR.a6G.a5x.prototype;
+	m1 = NFBR.a6G.Initializer;
 	if(typeof r1 != "undefined" && typeof r1[r2] != "undefined" &&
-       typeof NFBR.a6G.Initializer.F5W.menu != "undefined") {
-		menu = NFBR.a6G.Initializer.F5W.menu;
-		control = menu.a6l;
-		model = menu.model;
-		renderer = NFBR.a6G.Initializer.F5W.renderer;
-		clearInterval(_$IfuBW_NFBR$_);
-		_page_time = _job_time = new Date();
-		next = ()=>{control['moveToNext']()};
-        	prev = ()=>{control['moveToPrevious']()};
-		main();
+       typeof m1[m2] != "undefined") {
+		try {
+			menu = m1[m2].menu;
+			control = menu.a6l;
+			model = menu.model;
+			renderer = m1[m2].renderer;
+			clearInterval(_$IfuBW_NFBR$_);
+			_page_time = _job_time = new Date();
+			next = ()=>{control['moveToNext']()};
+			prev = ()=>{control['moveToPrevious']()};
+			main();
+		} catch {
+				console.debug('r1', r1, 'r2', r1[r2], 'm1', m1, 'm2', m1[m2], 'menu', menu, 'control', control, 'model', model, 'renderer', renderer);
+		}
 	}
 }, 100);
 let nospreadinit;
