@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20211021.3");
+console.log("Bookwalker Japan", "v20211021.4");
 console.log("Reference:", "https://fireattack.wordpress.com/2021/08/27/a-better-way-to-dump-bookwalker", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -119,63 +119,63 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 			let askhelp = 0;
 			console.log("retried: "+ _detail$retry_);
 			_detail$retry_++;
-			if(!bid && f && _detail$retry_ < 20) { //have matched records
-				if(g.length == 1 && st == 5) { //congrates! exact match found
+			if(f && _detail$retry_ < 20) { //have matched records
+				if(!bid && g.length == 1 && st == 5) { //congrates! exact match found
 					bid = "de" + f.typeId;
 				} else if(g.length > 1) {
 					let bookname = g.map(v=>v.value);
 					let itemidx = await actlist(bookname);
 					bid = g[itemidx] ? g[itemidx].typeId : null;
-				} else { //Series search
-					console.debug("getDetail()", bwhp + "series/"+ f.typeId +"/list/");
-					if(st == 5) _detail$retry_ = 0;
-					bid = await new Promise((resolve) => {
-						GM.xmlHttpRequest({
-							method: "GET",
-							url: bwhp + "series/"+ f.typeId +"/list/",
-							onload: async function(reS) {
-								let h = reS.responseText;
-								let parser = new DOMParser();
-								let html = parser.parseFromString(h, "text/html");
-								let non, nno, auuid;
-								let regex = new RegExp("[（）【】]", "g");
-								let linklist = Array.from(html.querySelectorAll(".m-book-item__title > a[title]"));
-								let bookname = linklist.map(v=>v.title);
-								let maxpage = 1;
-								try {
-									let lili;
-									lili = html.querySelector("li.o-pager-last > a");
-									if(!lili) lili = html.querySelector("li.o-pager-next > a");
-									if(lili) maxpage = lili.href.match(/page=(\d+)/)[1];
-									maxpage = maxpage ? maxpage : 1;
-								} catch{};
-								while(!auuid && _detail$retry_ < 20) {
-									_detail$retry_++;
-									try {
-										let tar;
-										tar = Array.from(html.querySelectorAll("a[title*='"+ non +"']")).filter(v => !/(期間限定|お試し|試し読み)/.test(v.title));
-										if(!tar.length) tar = Array.from(html.querySelectorAll("a[title*='"+ halfwidthValue(non) +"']")).filter(v => !/(期間限定|お試し|試し読み)/.test(v.title));
-										if(tar.length == 1) {
-											auuid = tar[0].href.split('/')[3] || null;
-										} else if(tar.length > 1) {
-											let itemidx = await actlist(bookname);
-											auuid = linklist[itemidx].href.split('/')[3] || null;
-										}
-									} catch(e) {} //The name pattern changed!! maybe will add a blur search in future
-								}
-								if(!auuid) {
-									let itemidx = await actlist(bookname);
-									auuid = linklist[itemidx].href.split('/')[3] || null;
-								}
-								if(!auuid && maxpage > page) {
-									ta = page+1;
-								}
-								return resolve(auuid);
-							}
-						});
-					});
-					return resolve(await getDetail(bn, 1, on, ta, bid));
 				}
+			} else if(/^\d+$/.test(bid)) { //Series search
+				console.debug("getDetail()", bwhp + "series/"+ f.typeId +"/list/");
+				if(st == 5) _detail$retry_ = 0;
+				bid = await new Promise((resolve) => {
+					GM.xmlHttpRequest({
+						method: "GET",
+						url: bwhp + "series/"+ f.typeId +"/list/",
+						onload: async function(reS) {
+							let h = reS.responseText;
+							let parser = new DOMParser();
+							let html = parser.parseFromString(h, "text/html");
+							let non, nno, auuid;
+							let regex = new RegExp("[（）【】]", "g");
+							let linklist = Array.from(html.querySelectorAll(".m-book-item__title > a[title]"));
+							let bookname = linklist.map(v=>v.title);
+							let maxpage = 1;
+							try {
+								let lili;
+								lili = html.querySelector("li.o-pager-last > a");
+								if(!lili) lili = html.querySelector("li.o-pager-next > a");
+								if(lili) maxpage = lili.href.match(/page=(\d+)/)[1];
+								maxpage = maxpage ? maxpage : 1;
+							} catch{};
+							while(!auuid && _detail$retry_ < 20) {
+								_detail$retry_++;
+								try {
+									let tar;
+									tar = Array.from(html.querySelectorAll("a[title*='"+ non +"']")).filter(v => !/(期間限定|お試し|試し読み)/.test(v.title));
+									if(!tar.length) tar = Array.from(html.querySelectorAll("a[title*='"+ halfwidthValue(non) +"']")).filter(v => !/(期間限定|お試し|試し読み)/.test(v.title));
+									if(tar.length == 1) {
+										auuid = tar[0].href.split('/')[3] || null;
+									} else if(tar.length > 1) {
+										let itemidx = await actlist(bookname);
+										auuid = linklist[itemidx].href.split('/')[3] || null;
+									}
+								} catch(e) {} //The name pattern changed!! maybe will add a blur search in future
+							}
+							if(!auuid) {
+								let itemidx = await actlist(bookname);
+								auuid = linklist[itemidx].href.split('/')[3] || null;
+							}
+							if(!auuid && maxpage > page) {
+								ta = page+1;
+							}
+							return resolve(auuid);
+						}
+					});
+				});
+				return resolve(await getDetail(bn, 1, on, ta, bid));
 			} else if(_detail$retry_ < 10) {
 				on = on || bn;
 				let regex = new RegExp("[（）【】]", "g");
