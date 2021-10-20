@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20211021.4");
+console.log("Bookwalker Japan", "v20211021.5");
 console.log("Reference:", "https://fireattack.wordpress.com/2021/08/27/a-better-way-to-dump-bookwalker", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -119,8 +119,8 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 			let askhelp = 0;
 			console.log("retried: "+ _detail$retry_);
 			_detail$retry_++;
-			if(f && _detail$retry_ < 20) { //have matched records
-				if(!bid && g.length == 1 && st == 5) { //congrates! exact match found
+			if(!bid && f && _detail$retry_ < 20) { //have matched records
+				if(g.length == 1 && st == 5) { //congrates! exact match found
 					bid = "de" + f.typeId;
 				} else if(g.length > 1) {
 					let bookname = g.map(v=>v.value);
