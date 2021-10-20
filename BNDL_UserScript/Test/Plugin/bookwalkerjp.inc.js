@@ -1,10 +1,11 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20211021.2");
+console.log("Bookwalker Japan", "v20211021.3");
 console.log("Reference:", "https://fireattack.wordpress.com/2021/08/27/a-better-way-to-dump-bookwalker", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
 //Check if reading a trial version of a book
 let mode = 0;
+let pop = false;
 if(window.location.hostname.match(/viewer-trial/)) { //A trial version of a book, we will not fully downloading this, we do only for book detail collect.
 	console.warn("Trial viewer mode is running, this book is not a full version!!");
 	mode = 1;
@@ -100,7 +101,6 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 						url: autocom + "?category="+ cat +"&term=" + encodeURIComponent(bn),
 						onload: async function(res) {
 							let j = JSON.parse(res.responseText);
-							let f, g;
 							if(j.contents) { //type 1 = Series, 2 = Artist, 3 = Company, 4 = Label, 5 = Book
 								console.debug("getDetail(contents)", "auto_result:", j.contents.length);
 								g = j["contents"];
@@ -377,7 +377,7 @@ function main() {
 						$(a).attr({download:fn+".zip", href:Url}).text('Download').appendTo($(maindiv));
 						a.dispatchEvent(e);
 						window.document.title = "\u2705" + on;
-						if(document.hidden) popout("Collect Completed.", fn, "https://viewer.bookwalker.jp/favicon.ico");
+						if(pop && document.hidden) popout("Collect Completed.", fn, "https://viewer.bookwalker.jp/favicon.ico");
 						_job_time = new Date() - _job_time;
 						console.log("Book Download Time:", _job_time/1000, "sec");
 						toast($(a), "success", -1, "Job Done", {"htmlBody":true});
