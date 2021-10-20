@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20211019.0");
+console.log("Bookwalker Japan", "v20211021.0");
 console.log("Reference:", "https://fireattack.wordpress.com/2021/08/27/a-better-way-to-dump-bookwalker", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -90,7 +90,7 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 		let autocom = "https://bookwalker.jp/louis-api/autocomplete/";
 		let cat = ta==null ? (cty ? 2 : 1) : ta; //category { 1 = Novel, 2 = Manga, 3 = Light Novel, 9 = Web Novel }
 		if(mode==0 && model.attributes) bid='de'+model.attributes.contentId;
-		if(!bid) {
+		if(!/[0-9a-f]{8}\-(?:[0-9a-f]{4}\-){3}[0-9a-f]{12}/.test(bid)) {
 			console.debug("getDetail()", autocom + "?category="+ cat +"&term=" + encodeURIComponent(bn));
 			GM.xmlHttpRequest({
 				method: "GET",
@@ -131,6 +131,16 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 										let html = parser.parseFromString(h, "text/html");
 										let non, nno, auuid;
 										let regex = new RegExp("[（）【】]", "g");
+										let linklist = Array.from(html.querySelectorAll(".m-book-item__title > a[title]"));
+										let bookname = linklist.map(v=>v.title);
+										let maxpage = 1;
+										try {
+										    let lili;
+										    lili = html.querySelector("li.o-pager-last > a");
+										    if(!lili) lili = html.querySelector("li.o-pager-next > a");
+										    if(lili) maxpage = lili.href.match(/page=(\d+)/)[1];
+										    maxpage = maxpage ? maxpage : 1;
+										} catch{};
 										while(!auuid && _detail$retry_ < 20) {
 											_detail$retry_++;
 											try {
@@ -140,18 +150,23 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 												if(tar.length == 1) {
 													auuid = tar[0].href.split('/')[3] || null;
 												} else if(tar.length > 1) {
-													let linklist = Array.from(html.querySelectorAll(".m-book-item__title > a[title]"));
-													let bookname = linklist.map(v=>v.title);
 													let itemidx = await actlist(bookname);
-													auuid = linklist[itemidx].href('/')[3] || null;
+													auuid = linklist[itemidx].href.split('/')[3] || null;
 												}
 											} catch(e) {} //The name pattern changed!! maybe will add a blur search in future
+										}
+										if(!auuid) {
+										    let itemidx = await actlist(bookname);
+										    auuid = linklist[itemidx].href.split('/')[3] || null;
+										}
+										if(!auuid && maxpage > page) {
+										    ta = page+1;
 										}
 										return resolve(auuid);
 									}
 								});
 							});
-							return resolve(await getDetail(non, 1, on, ta, bid));
+							return resolve(await getDetail(bn, 1, on, ta, bid));
 						}
 					} else if(_detail$retry_ < 10) {
 						on = on || bn;
