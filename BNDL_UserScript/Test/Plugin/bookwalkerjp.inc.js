@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20211021.5");
+console.log("Bookwalker Japan", "v20211022.0");
 console.log("Reference:", "https://fireattack.wordpress.com/2021/08/27/a-better-way-to-dump-bookwalker", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -210,85 +210,87 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 				method: "GET",
 				url: bwhp + bid,
 				onload: function(res) {
-				let h = res.responseText;
-				let parser = new DOMParser();
-				let html = parser.parseFromString(h, "text/html");
-				//bd.author = [].slice.call(html.getElementsByClassName('author-name')).map(e => e.innerHTML).join('×');
-				let authors = html.querySelectorAll("dl.author");
-				bd.author = [];
-				let wt, pcl;
-				for(let i=0;i<authors.length;i++) {
-					try {
-						const at = authors[i].getElementsByClassName('author-head')[0].innerText.split('・');
-						const an = authors[i].getElementsByClassName('author-name')[0].innerText.replace(/(（.*?）|\s)/g, "");
-						at.forEach((v) => {
-							if(/キャラ|設定/.test(v)) { //キャラクター原案
-								bd.author.push({'p':4, 'type':v, 'name':an});
-							} else if(/^(原[著作])$/g.test(v)) { //原作, 原著
-								bd.author.push({'p':0, 'type':v, 'name':an});
-							} else if(/^[著作][者]?$/.test) { //著, 作, 著者, 作者
-								bd.author.push({'p':1, 'type':v, 'name':an});
-							} else if(/(画|マンガ|イラスト)/g.test(v)) { //画, 漫画, マンガ, イラスト
-								bd.author.push({'p':2, 'type':v, 'name':an});
-							} else if(v != "") {
-								bd.author.push({'p':5, 'type':v, 'name':an});
-							}
-						});
-					} catch(e){};
-				}
-				bd.author = bd.author.sort(function(a,b) { return a.p - b.p; }).uniquify("name"); //sort by priority
-				pcl = [];
-				bd.author.forEach((v) => {
-					if(!wt || (!wt && v.p == 1)) {
-						wt = v.name;
-					} else if(v.p < 4) {
-						pcl.push(v.name);
+					let h = res.responseText;
+					let parser = new DOMParser();
+					let html = parser.parseFromString(h, "text/html");
+					//bd.author = [].slice.call(html.getElementsByClassName('author-name')).map(e => e.innerHTML).join('×');
+					let authors = html.querySelectorAll("dl.author");
+					bd.author = [];
+					let wt, pcl;
+					for(let i=0;i<authors.length;i++) {
+						try {
+							const at = authors[i].getElementsByClassName('author-head')[0].innerText.split('・');
+							const an = authors[i].getElementsByClassName('author-name')[0].innerText.replace(/(（.*?）|\s)/g, "");
+							at.forEach((v) => {
+								if(/キャラ|設定/.test(v)) { //キャラクター原案
+									bd.author.push({'p':4, 'type':v, 'name':an});
+								} else if(/^(原[著作])$/g.test(v)) { //原作, 原著
+									bd.author.push({'p':0, 'type':v, 'name':an});
+								} else if(/^[著作][者]?$/.test) { //著, 作, 著者, 作者
+									bd.author.push({'p':1, 'type':v, 'name':an});
+								} else if(/(画|マンガ|イラスト)/g.test(v)) { //画, 漫画, マンガ, イラスト
+									bd.author.push({'p':2, 'type':v, 'name':an});
+								} else if(v != "") {
+									bd.author.push({'p':5, 'type':v, 'name':an});
+								}
+							});
+						} catch(e){};
 					}
-				});
-				bd.writer = wt;
-				bd.penciler = pcl;
-				//bd.author.sort(function(a,b) { if(a.name < b.name) { return -1 } else if(a.name > b.name) { return 1 } return 0; }); //sort by name
-				Ci.add("/ComicInfo", "Writer", wt);
-				if(pcl.length) {
-					pcl = pcl.uniquify().sort();
-					Ci.add("/ComicInfo", "Penciller", pcl.join(', '));
-				}
-				let author_filtered = Array.isArray(wt) ? wt : [wt];
-				author_filtered = author_filtered.concat(pcl).uniquify();
-				console.table(author_filtered);
-				let autag = '';
-				if(author_filtered.length) {
-					autag = '[' + author_filtered.splice(0,Math.min(author_filtered.length,3)).join('×') + '] ';
-				} else {
-					autag = '[' + bd.author.splice(0,Math.min(bd.author.length,3)).map(e=>e.name).join('×') + '] ';
-				}
-				bd.originalTitle = on || bn;
-				fn = halfwidthValue(autag + (on || bn));
-				bd.fileName = fn;
-				console.log('getDetaik(fn): '+ fn);
-				document.title = fn;
-				//const pD = document.evaluate("//dt[text()='配信開始日']", html, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.nextElementSibling.innerText;
-				const pD = html.querySelector("dd.work-detail-contents:last-child").innerText;
-				const pDate = pD.split('/');
-				bd.publishDate = new Date(pDate[0], pDate[1]-1, pDate[2]);
-				Ci.add("/ComicInfo", "Year", pDate[0]);
-				Ci.add("/ComicInfo", "Month", pDate[1]);
-				Ci.add("/ComicInfo", "Day", pDate[2]);
-				console.debug("Published Date: %s/%s/%s", ...pDate);
-				Ci.add("/ComicInfo", "LanguageISO", "ja");
-				Ci.add("/ComicInfo", "BlackAndWhite", "Yes");
-				cty ? Ci.add("/ComicInfo", "Manga", "YesAndRightToLeft") : Ci.add("/ComicInfo", "Manga", "No");
-				Ci.add("/ComicInfo", "Summary", $(html).find("dd.synopsis-contents--base").text().trim());
-				toast('html:<a href="'+bwhp+bid+'" target="_blank">'+fn+'</a>', "info", 0, "Title");
-				// TOC
-				try {
-					const toc = NFBR.a6G.Initializer.F5W.menu.model.attributes.a2u.book.content.normal_default.toc_;
-					const tocidx = NFBR.a6G.Initializer.F5W.menu.model.attributes.a2u.book.content.normal_default.K2e;
-					toc.forEach(function(v,i) {
-						pages.setPageAttr(parseInt(tocidx[v.href]), "Bookmark", v.label);
+					bd.author = bd.author.sort(function(a,b) { return a.p - b.p; }).uniquify("name"); //sort by priority
+					pcl = [];
+					bd.author.forEach((v) => {
+						if(!wt || (!wt && v.p == 1)) {
+							wt = v.name;
+						} else if(v.p < 4) {
+							pcl.push(v.name);
+						}
 					});
-					console.log(pages);
-				} catch(e) {};
+					bd.writer = wt;
+					bd.penciler = pcl;
+					//bd.author.sort(function(a,b) { if(a.name < b.name) { return -1 } else if(a.name > b.name) { return 1 } return 0; }); //sort by name
+					Ci.add("/ComicInfo", "Writer", wt);
+					if(pcl.length) {
+						pcl = pcl.uniquify().sort();
+						Ci.add("/ComicInfo", "Penciller", pcl.join(', '));
+					}
+					let author_filtered = Array.isArray(wt) ? wt : [wt];
+					author_filtered = author_filtered.concat(pcl).uniquify();
+					console.table(author_filtered);
+					let autag = '';
+					if(author_filtered.length) {
+						autag = '[' + author_filtered.splice(0,Math.min(author_filtered.length,3)).join('×') + '] ';
+					} else {
+						autag = '[' + bd.author.splice(0,Math.min(bd.author.length,3)).map(e=>e.name).join('×') + '] ';
+					}
+					bd.originalTitle = on || bn;
+					fn = halfwidthValue(autag + (on || bn));
+					bd.fileName = fn;
+					console.log('getDetaik(fn): '+ fn);
+					document.title = fn;
+					//const pD = document.evaluate("//dt[text()='配信開始日']", html, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.nextElementSibling.innerText;
+					const pD = html.querySelector("dd.work-detail-contents:last-child").innerText;
+					const pDate = pD.split('/');
+					bd.publishDate = new Date(pDate[0], pDate[1]-1, pDate[2]);
+					Ci.add("/ComicInfo", "Year", pDate[0]);
+					Ci.add("/ComicInfo", "Month", pDate[1]);
+					Ci.add("/ComicInfo", "Day", pDate[2]);
+					console.debug("Published Date: %s/%s/%s", ...pDate);
+					Ci.add("/ComicInfo", "LanguageISO", "ja");
+					Ci.add("/ComicInfo", "BlackAndWhite", "Yes");
+					cty ? Ci.add("/ComicInfo", "Manga", "YesAndRightToLeft") : Ci.add("/ComicInfo", "Manga", "No");
+					Ci.add("/ComicInfo", "Summary", $(html).find("dd.synopsis-contents--base").text().trim());
+					toast('html:<a href="'+bwhp+bid+'" target="_blank">'+fn+'</a>', "info", 0, "Title");
+					// TOC
+					console.groupCollapsed("TOS");
+					try {
+						const toc = model.attributes.a2u.book.content.normal_default.toc_;
+						const tocidx = model.attributes.a2u.book.content.normal_default.m0U;
+						toc.forEach(function(v,i) {
+							pages.setPageAttr(parseInt(tocidx[v.href]), "Bookmark", v.label);
+							console.log(v.label, ":", parseInt(tocidx[v.href]));
+						});
+					} catch(e) {};
+					console.groupEnd();
 					return resolve(autag);
 				}
 			});
