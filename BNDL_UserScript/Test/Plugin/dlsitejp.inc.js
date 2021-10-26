@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20211026.8");
+console.log("Dlsite Play Japan ver20211026.9");
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
@@ -201,6 +201,7 @@ XMLHttpRequest.prototype.send = function() {
                 }
                 if(!pl) { //purchase list not granted
                     pl = {};
+                    console.groupCollapsed('Granting User Purchased List');
                     const d = new Date();
                     let datetxt = [d.getFullYear(), (d.getMonth()+1+'').padStart(2,'0'), (d.getDate()+'').padStart(2,'0'), (d.getHours()+'').padStart(2,'0'), (d.getMinutes()+'').padStart(2,'0')].join('');
                     GM.xmlHttpRequest({
@@ -209,7 +210,9 @@ XMLHttpRequest.prototype.send = function() {
                         onload: function(res) {
                             let pc = JSON.parse(res.responseText);
                             let mp = Math.ceil(pc.user/pc.page_limit);
+                            console.table(pc);
                             function getPList(p=1) {
+                                console.log('obtaining purchased list...', p, 'of', mp);
                                 GM.xmlHttpRequest({
                                     method: "GET",
                                     url: [durl.plist,param.plist.map((v,i)=>v+'='+[p,datetxt][i]).join('&')].join('?'),
@@ -223,6 +226,8 @@ XMLHttpRequest.prototype.send = function() {
                                             }
                                         } catch{};
                                         if(++p > mp) {
+                                            console.debug(pl);
+                                            console.groupEnd();
                                             getDetail();
                                         } else {
                                             getPList(p);
