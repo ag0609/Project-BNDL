@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20210303.0");
+console.log("Dlsite Play Japan ver20211026.0");
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
@@ -7,6 +7,19 @@ let delay_max = 2500; //in miliseconds, please keep it over 2 seconds(2000) or b
 let pdf_minw = 1000, pdf_minh = 1500; //in pixel, minimum resolution of pdf rendering output
 let cache_size = 10; //number of images will be cached before viewer load image, set 5 or above to avoiding CORS error ocuurs
 //
+const url = {
+    base:"dlsite.com",
+    api:[url.base,'api'].join('/'),
+    dtoken:[url.api,'download_token].join('/'),
+    pcount:[url.api,'product_count'].join('/'),
+    plist:[url.api,'purchases'].join('/'),
+};
+
+const param = {
+    dtoken:['workno'],
+    pcount:['last'],
+    plist:['page','_'],
+};
 
 const packtype = [];
 packtype[0] = "Raw";
@@ -192,12 +205,33 @@ XMLHttpRequest.prototype.send = function() {
                     toast(gw, "info", 0, "Title", {htmlBody:true});
                 }
                 if(!pl) { //purchase list not granted
+                    pl = {};
+                    const d = new Date();
+                    let datetxt = [d.getFullYear(), (d.getMonth()+1+'').padStart(2,'0'), (d.getDate()+'').padStart(2,'0'), (d.getHours()+'').padStart(2,'0'), (d.getMinutes()+'').padStart(2,'0')].join('');
                     GM.xmlHttpRequest({
                         method: "GET",
-                        url: "https://play.dlsite.com/api/dlsite/purchases?sync=true&limit=1000",
+                        url: [url.pcount,param.pcount.map(v=>param.pcount[v]+'='+[0][v]).join('&')].join('?'),
                         onload: function(res) {
-                            pl = JSON.parse(res.responseText);
-                            getDetail();
+                            let pc = JSON.parse(res.responseText);
+                            let mp = Math.ceil(pc.user/pc.page_limit);
+                            function getPList(p=1) {
+                                GM.xmlHttpRequest({
+                                    method: "GET",
+                                    url: [url.plist,param.plist.map(v=>param.plist[v]+'='+[p,datetxt][v]).join('&')].join('?'),
+                                    onload: function(r) {
+                                        try {
+                                            let tpl = JSON.parse(r.responseText);
+                                            pl = {...pl, ...tpl};
+                                        } catch{};
+                                        if(++p > mp) {
+                                            getDetail();
+                                        } else {
+                                            getPList(p);   
+                                        }
+                                    }
+                                });
+                            }
+                            getPList();
                         }
                     });
                 } else {
