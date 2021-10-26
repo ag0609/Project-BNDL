@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20211026.3");
+console.log("Dlsite Play Japan ver20211026.4");
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
@@ -204,14 +204,14 @@ XMLHttpRequest.prototype.send = function() {
                     let datetxt = [d.getFullYear(), (d.getMonth()+1+'').padStart(2,'0'), (d.getDate()+'').padStart(2,'0'), (d.getHours()+'').padStart(2,'0'), (d.getMinutes()+'').padStart(2,'0')].join('');
                     GM.xmlHttpRequest({
                         method: "GET",
-                        url: [url.pcount,param.pcount.map(v=>param.pcount[v]+'='+[0][v]).join('&')].join('?'),
+                        url: [durl.pcount,param.pcount.map(v=>param.pcount[v]+'='+[0][v]).join('&')].join('?'),
                         onload: function(res) {
                             let pc = JSON.parse(res.responseText);
                             let mp = Math.ceil(pc.user/pc.page_limit);
                             function getPList(p=1) {
                                 GM.xmlHttpRequest({
                                     method: "GET",
-                                    url: [url.plist,param.plist.map(v=>param.plist[v]+'='+[p,datetxt][v]).join('&')].join('?'),
+                                    url: [durl.plist,param.plist.map(v=>param.plist[v]+'='+[p,datetxt][v]).join('&')].join('?'),
                                     onload: function(r) {
                                         try {
                                             let tpl = JSON.parse(r.responseText);
