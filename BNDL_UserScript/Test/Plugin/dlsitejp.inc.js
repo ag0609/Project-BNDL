@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20211026.6");
+console.log("Dlsite Play Japan ver20211026.7");
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
@@ -191,7 +191,7 @@ XMLHttpRequest.prototype.send = function() {
                     Ci.add("/ComicInfo", "Manga", pr.work_type == "MNG" ? "YesAndRightToLeft" : "No");
                     if(pr.age_category && agecat[pr.age_category] != undefined) Ci.add("/ComicInfo", "AgeRating", agecat[pr.age_category]);
                     Ci.add("/ComicInfo", "Web", "https://dlsite.com/books/"+pr.workno);
-                    fn = "[" + (pr.author_name || (tags != null && tags.find(v=>v.class == "created_by") ? pr.maker.name.ja_JP + " (" + tags.find(v=>v.class == "created_by").name + ")" : null) || pr.maker.name.ja_JP) + "] " + pr.work.name.ja_JP +" ("+pr.workno+")";
+                    fn = "[" + (pr.author_name || (tags != null && tags.find(v=>v.class == "created_by") ? pr.maker.name.ja_JP + " (" + tags.find(v=>v.class == "created_by").name + ")" : null) || pr.maker.name.ja_JP) + "] " + pr.name.ja_JP +" ("+pr.workno+")";
                     fn = fn.replace(/\s?【[^【】]*(無料|お試し|試し読み)[^【】]*】\s?/g, " ").replace(/\s?【[^【】]*(期間限定|特典)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm, '');
                     console.log("%cFilename: %s", "background-color:azure", fn);
                     let gw = $('<a>').text(fn);
