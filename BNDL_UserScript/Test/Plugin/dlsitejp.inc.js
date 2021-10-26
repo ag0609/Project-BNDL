@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20211026.9");
+console.log("Dlsite Play Japan ver20211026.10");
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
@@ -161,7 +161,7 @@ function loadcache(startidx=0, path=tp) {
     }
 }
 XMLHttpRequest.prototype.osend = XMLHttpRequest.prototype.send;
-XMLHttpRequest.prototype.send = function() {
+XMLHttpRequest.prototype.send = async function() {
     let thisobj = this;
     let args = arguments;
     let orsc = this.onreadystatechange;
@@ -174,8 +174,9 @@ XMLHttpRequest.prototype.send = function() {
                 dt = JSON.parse(arguments[0].target.responseText);
                 console.debug(dt);
                 const getDetail = () => {
-                    if(!pl || !pl.work || !pl.work[dt.workno]) return null;
-                    pr = pl.works[dt.workno];
+                    if(!pl || !pl.works) return console.warn("seems obtain purchased list failed");
+                    pr = pl.works.find(x=>x.workno==dt.workno);
+                    if(!pr) return console.warn("seems work", dt.workno, "not in purchased list");
                     console.debug(pr);
                     let tags = pr.tags;
                     console.log("%cPackage Type: %s - %s", (pr.dl_format?"background-color:LemonChiffon; color:DarkOrange":"background-color:PaleGreen; color:Green"), pr.file_type, packtype[pr.dl_format]);
@@ -204,39 +205,42 @@ XMLHttpRequest.prototype.send = function() {
                     console.groupCollapsed('Granting User Purchased List');
                     const d = new Date();
                     let datetxt = [d.getFullYear(), (d.getMonth()+1+'').padStart(2,'0'), (d.getDate()+'').padStart(2,'0'), (d.getHours()+'').padStart(2,'0'), (d.getMinutes()+'').padStart(2,'0')].join('');
-                    GM.xmlHttpRequest({
-                        method: "GET",
-                        url: [durl.pcount,param.pcount.map((v,i)=>v+'='+[0][i]).join('&')].join('?'),
-                        onload: function(res) {
-                            let pc = JSON.parse(res.responseText);
-                            let mp = Math.ceil(pc.user/pc.page_limit);
-                            console.table(pc);
-                            function getPList(p=1) {
-                                console.log('obtaining purchased list...', p, 'of', mp);
-                                GM.xmlHttpRequest({
-                                    method: "GET",
-                                    url: [durl.plist,param.plist.map((v,i)=>v+'='+[p,datetxt][i]).join('&')].join('?'),
-                                    onload: function(r) {
-                                        try {
-                                            let tpl = JSON.parse(r.responseText);
-                                            if(p==1) {
-                                                pl = tpl;
+                    let wait = await new Promise((resolve) => {
+                        GM.xmlHttpRequest({
+                            method: "GET",
+                            url: [durl.pcount,param.pcount.map((v,i)=>v+'='+[0][i]).join('&')].join('?'),
+                            onload: function(res) {
+                                let pc = JSON.parse(res.responseText);
+                                let mp = Math.ceil(pc.user/pc.page_limit);
+                                console.table(pc);
+                                function getPList(p=1) {
+                                    console.log('obtaining purchased list...', p, 'of', mp);
+                                    GM.xmlHttpRequest({
+                                        method: "GET",
+                                        url: [durl.plist,param.plist.map((v,i)=>v+'='+[p,datetxt][i]).join('&')].join('?'),
+                                        onload: function(r) {
+                                            try {
+                                                let tpl = JSON.parse(r.responseText);
+                                                if(p==1) {
+                                                    pl = tpl;
+                                                } else {
+                                                    pl.works = pl.works.concat(tpl.works);
+                                                }
+                                            } catch{};
+                                            if(++p > mp) {
+                                                console.debug(pl);
+                                                console.groupEnd();
+                                                getDetail();
+                                                resolve('NMSL');
                                             } else {
-                                                pl.work = {...pl.work, ...tpl.work};
+                                                getPList(p);
                                             }
-                                        } catch{};
-                                        if(++p > mp) {
-                                            console.debug(pl);
-                                            console.groupEnd();
-                                            getDetail();
-                                        } else {
-                                            getPList(p);
                                         }
-                                    }
-                                });
+                                    });
+                                }
+                                getPList();
                             }
-                            getPList();
-                        }
+                        });
                     });
                 } else {
                     getDetail();
