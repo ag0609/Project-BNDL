@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20211026.0");
+console.log("Dlsite Play Japan ver20211026.1");
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
@@ -10,7 +10,7 @@ let cache_size = 10; //number of images will be cached before viewer load image,
 const url = {
     base:"dlsite.com",
     api:[url.base,'api'].join('/'),
-    dtoken:[url.api,'download_token].join('/'),
+    dtoken:[url.api,'download_token'].join('/'),
     pcount:[url.api,'product_count'].join('/'),
     plist:[url.api,'purchases'].join('/'),
 };
