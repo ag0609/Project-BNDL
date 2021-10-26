@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20211026.7");
+console.log("Dlsite Play Japan ver20211026.8");
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
@@ -174,7 +174,8 @@ XMLHttpRequest.prototype.send = function() {
                 dt = JSON.parse(arguments[0].target.responseText);
                 console.debug(dt);
                 const getDetail = () => {
-                    pr = pl.works.find(x => x.workno == dt.workno);
+                    if(!pl || !pl.work || !pl.work[dt.workno]) return null;
+                    pr = pl.works[dt.workno];
                     console.debug(pr);
                     let tags = pr.tags;
                     console.log("%cPackage Type: %s - %s", (pr.dl_format?"background-color:LemonChiffon; color:DarkOrange":"background-color:PaleGreen; color:Green"), pr.file_type, packtype[pr.dl_format]);
