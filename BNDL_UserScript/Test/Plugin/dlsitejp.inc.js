@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20211026.4");
+console.log("Dlsite Play Japan ver20211026.5");
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
@@ -7,7 +7,7 @@ let delay_max = 2500; //in miliseconds, please keep it over 2 seconds(2000) or b
 let pdf_minw = 1000, pdf_minh = 1500; //in pixel, minimum resolution of pdf rendering output
 let cache_size = 10; //number of images will be cached before viewer load image, set 5 or above to avoiding CORS error ocuurs
 //
-let durl={};durl.base="dlsite.com",durl.play="play."+durl.base,durl.api=[durl.play,'api'].join('/'),durl.dtoken=[durl.api,'download_token'].join('/'),durl.pcount=[durl.api,'product_count'].join('/'),durl.plist=[durl.api,'purchases'].join('/');
+let durl={};durl.pre="https://",durl.base="dlsite.com",durl.play=durl.pre+"play."+durl.base,durl.api=[durl.play,'api'].join('/'),durl.dtoken=[durl.api,'download_token'].join('/'),durl.pcount=[durl.api,'product_count'].join('/'),durl.plist=[durl.api,'purchases'].join('/');
 
 const param = {
     dtoken:['workno'],
@@ -182,16 +182,16 @@ XMLHttpRequest.prototype.send = function() {
                     Ci.add("/ComicInfo", "Year", ptime.getFullYear());
                     Ci.add("/ComicInfo", "Month", ptime.getMonth()+1);
                     Ci.add("/ComicInfo", "Day", ptime.getDate());
-                    Ci.add("/ComicInfo", "Title", pr.work_name);
-                    Ci.add("/ComicInfo", "Series", pr.work_name.replace(/^\s?(.*?)\s?(?:[：\:]{0,1}\s?([\d０-９]+)|[（\(]([\d０-９]+)[\)）]|[第]?([\d０-９]+)[巻話]?)$/, "$1"));
-                    Ci.add("/ComicInfo", "Number", pad((halfwidthValue(pr.work_name).match(/[第\:]?\d+[巻話\)]?/g) || ["1"])[0].match(/\d+/g)[0] || 1, 2));
-                    Ci.add("/ComicInfo", "Imprint", pr.maker_name);
+                    Ci.add("/ComicInfo", "Title", pr.name.ja_JP);
+                    Ci.add("/ComicInfo", "Series", pr.name.ja_JP.replace(/^\s?(.*?)\s?(?:[：\:]{0,1}\s?([\d０-９]+)|[（\(]([\d０-９]+)[\)）]|[第]?([\d０-９]+)[巻話]?)$/, "$1"));
+                    Ci.add("/ComicInfo", "Number", pad((halfwidthValue(pr.work.name.ja_JP).match(/[第\:]?\d+[巻話\)]?/g) || ["1"])[0].match(/\d+/g)[0] || 1, 2));
+                    Ci.add("/ComicInfo", "Imprint", pr.maker.name.ja_JP);
                     Ci.add("/ComicInfo", "Writer", pr.author_name || (tags && tags.find(v=>v.class == "created_by") ? tags.find(v=>v.class == "created_by").name : null) || pr.maker_name);
                     Ci.add("/ComicInfo", "LanguageISO", "ja");
                     Ci.add("/ComicInfo", "Manga", pr.work_type == "MNG" ? "YesAndRightToLeft" : "No");
                     if(pr.age_category && agecat[pr.age_category] != undefined) Ci.add("/ComicInfo", "AgeRating", agecat[pr.age_category]);
                     Ci.add("/ComicInfo", "Web", "https://dlsite.com/books/"+pr.workno);
-                    fn = "[" + (pr.author_name || (tags != null && tags.find(v=>v.class == "created_by") ? pr.maker_name + " (" + tags.find(v=>v.class == "created_by").name + ")" : null) || pr.maker_name) + "] " + pr.work_name+" ("+pr.workno+")";
+                    fn = "[" + (pr.author_name || (tags != null && tags.find(v=>v.class == "created_by") ? pr.maker.name.ja_JP + " (" + tags.find(v=>v.class == "created_by").name + ")" : null) || pr.maker.name.ja_JP) + "] " + pr.work.name.ja_JP +" ("+pr.workno+")";
                     fn = fn.replace(/\s?【[^【】]*(無料|お試し|試し読み)[^【】]*】\s?/g, " ").replace(/\s?【[^【】]*(期間限定|特典)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm, '');
                     console.log("%cFilename: %s", "background-color:azure", fn);
                     let gw = $('<a>').text(fn);
@@ -215,12 +215,16 @@ XMLHttpRequest.prototype.send = function() {
                                     onload: function(r) {
                                         try {
                                             let tpl = JSON.parse(r.responseText);
-                                            pl = {...pl, ...tpl};
+                                            if(p==1) {
+                                                pl = tpl;
+                                            } else {
+                                                pl.work = {...pl.work, ...tpl.work};
+                                            }
                                         } catch{};
                                         if(++p > mp) {
                                             getDetail();
                                         } else {
-                                            getPList(p);   
+                                            getPList(p);
                                         }
                                     }
                                 });
