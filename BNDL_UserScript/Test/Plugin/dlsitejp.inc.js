@@ -204,14 +204,14 @@ XMLHttpRequest.prototype.send = function() {
                     let datetxt = [d.getFullYear(), (d.getMonth()+1+'').padStart(2,'0'), (d.getDate()+'').padStart(2,'0'), (d.getHours()+'').padStart(2,'0'), (d.getMinutes()+'').padStart(2,'0')].join('');
                     GM.xmlHttpRequest({
                         method: "GET",
-                        url: [durl.pcount,param.pcount.map(v=>param.pcount[v]+'='+[0][v]).join('&')].join('?'),
+                        url: [durl.pcount,param.pcount.map((v,i)=>v+'='+[0][i]).join('&')].join('?'),
                         onload: function(res) {
                             let pc = JSON.parse(res.responseText);
                             let mp = Math.ceil(pc.user/pc.page_limit);
                             function getPList(p=1) {
                                 GM.xmlHttpRequest({
                                     method: "GET",
-                                    url: [durl.plist,param.plist.map(v=>param.plist[v]+'='+[p,datetxt][v]).join('&')].join('?'),
+                                    url: [durl.plist,param.plist.map((v,i)=>v+'='+[p,datetxt][i]).join('&')].join('?'),
                                     onload: function(r) {
                                         try {
                                             let tpl = JSON.parse(r.responseText);
