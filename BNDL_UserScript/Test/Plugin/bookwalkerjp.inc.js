@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20211022.0");
+console.log("Bookwalker Japan", "v20211027.0");
 console.log("Reference:", "https://fireattack.wordpress.com/2021/08/27/a-better-way-to-dump-bookwalker", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -283,8 +283,8 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 					// TOC
 					console.groupCollapsed("TOS");
 					try {
-						const toc = model.attributes.a2u.book.content.normal_default.toc_;
-						const tocidx = model.attributes.a2u.book.content.normal_default.m0U;
+						const toc = t1["toc_"];
+						const tocidx = t1[t2];
 						toc.forEach(function(v,i) {
 							pages.setPageAttr(parseInt(tocidx[v.href]), "Bookmark", v.label);
 							console.log(v.label, ":", parseInt(tocidx[v.href]));
@@ -459,7 +459,7 @@ cancel = function() {
 		toast("", "danger", -1, "Job Canceled");
 	}
 }
-let r1, r2="S4z", m1, m2="c8t";
+let r1, r2="G1W", m1, m2="Z4p", t1, t2="L1u";
 const _$IfuBW_NFBR$_ = setInterval(function() {
 	if(!NFBR) NFBR = (unsafeWindow ? unsafeWindow.NFBR : window.NFBR) || NFBR;
 	r1 = NFBR.a6G.a5x.prototype;
@@ -470,6 +470,7 @@ const _$IfuBW_NFBR$_ = setInterval(function() {
 			menu = m1[m2].menu;
 			control = menu.a6l;
 			model = menu.model;
+			t1 = model.attributes.a2u.book.content.normal_default;
 			renderer = m1[m2].renderer;
 			clearInterval(_$IfuBW_NFBR$_);
 			_page_time = _job_time = new Date();
@@ -477,7 +478,7 @@ const _$IfuBW_NFBR$_ = setInterval(function() {
 			prev = ()=>{control['moveToPrevious']()};
 			main();
 		} catch {
-				console.debug('r1', r1, 'r2', r1[r2], 'm1', m1, 'm2', m1[m2], 'menu', menu, 'control', control, 'model', model, 'renderer', renderer);
+			console.debug('r1', r1, 'r2', r1[r2], 'm1', m1, 'm2', m1[m2], 'menu', menu, 'control', control, 'model', model, 'renderer', renderer);
 		}
 	}
 }, 100);
