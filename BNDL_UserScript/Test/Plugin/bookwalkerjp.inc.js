@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("BW Japan", "v20211102.1");
+console.log("BW Japan", "v20211102.2");
 console.log("Reference:", "https://fireattack.wordpress.com/", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -412,14 +412,14 @@ function main() {
 							return p[0];
 						});
 						let num = halfwidthValue(on);
-						if(Number.hasOwnProperty("fromRoman")) num = num.replace(/[\s([IVX]+)(\s|$)/i, Number.fromRoman("$1"));
+						if(Number.hasOwnProperty("fromRoman")) num = num.replace(/\s([IVX]+)(\s.*)?$/i, Number.fromRoman("$1"));
 						num = num.replace(/.*?[第\:]?(\d+)[巻話\)]?.*$/, "$1");
 						if(isNaN(parseInt(num))) { //Books may only have single volume, so no volume number
 							num = 1;
 						}
 						Ci.add("/ComicInfo", "Number", pad(num,2));
 						Ci.add("/ComicInfo", 'Title', on);
-						if(!pages.get("/Comicinfo/Series")) Ci.add("/ComicInfo", 'Series', ser);
+						if(!Ci.get("/ComicInfo/Series")) Ci.add("/ComicInfo", 'Series', ser);
 						Ci.add("/ComicInfo", 'PageCount', totp);
 						$(bndlBTN).removeAttr("disabled");
 						$(maindiv).attr({width:"100%", height:"100%"});
