@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("BW Japan", "v20211102.0");
+console.log("BW Japan", "v20211102.1");
 console.log("Reference:", "https://fireattack.wordpress.com/", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -275,9 +275,9 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 					Ci.add("/ComicInfo", "Month", pDate[1]);
 					Ci.add("/ComicInfo", "Day", pDate[2]);
 					console.debug("Published Date: %s/%s/%s", ...pDate);
-					const imp = $("dt.work-detail-head:contains('レーベル'):last").next().text();
+					const imp = $(html).find("dt.work-detail-head:contains('レーベル'):last").next().text();
 					Ci.add("/ComicInfo", "Imprint", imp);
-					const ser = $("dt.work-detail-head:contains('シリーズ'):last").next().text();
+					const ser = $(html).find("dt.work-detail-head:contains('シリーズ'):last").next().text();
 					Ci.add("/ComicInfo", "Series", ser.replace(/([^（]+)\s*[（]?.*/, "$1").trim());
 					Ci.add("/ComicInfo", "LanguageISO", "ja");
 					Ci.add("/ComicInfo", "BlackAndWhite", "Yes");
@@ -407,17 +407,19 @@ function main() {
 						on = on.replace(/\s?【[^【】]*(無料|お試し|試し読み)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,''); //[Only for Period] will left for BW Stupid Retarded Search Engine
 						await getDetail(on);
 						on = on.replace(/\s?【[^【】]*(限定|特典)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,'');; //Now I can remove them for series name
-						const ser = on.replace(/^\s?(.*?)\s?(?:[：\:]{0,1}\s?([\d０-９]+)|[（\(]([\d０-９]+)[\)）]|[第]?([\d０-９]+)[巻話]?)$/,  function(...args) {
+						let ser = on.replace(/^\s?(.*?)\s?(?:[：\:]{0,1}\s?([\d０-９]+)|[（\(]([\d０-９]+)[\)）]|[第]?([\d０-９]+)[巻話]?)$/,  function(...args) {
 							const [match, p, offset, string] = [args[0], args.slice(1, -2).filter(v=>v), args[args.length-2], args[args.length-1]];
 							return p[0];
 						});
-						let num = halfwidthValue(on).replace(/.*?[第\:]?(\d+)[巻話\)]?$/, "$1");
+						let num = halfwidthValue(on);
+						if(Number.hasOwnProperty("fromRoman")) num = num.replace(/[\s([IVX]+)(\s|$)/i, Number.fromRoman("$1"));
+						num = num.replace(/.*?[第\:]?(\d+)[巻話\)]?.*$/, "$1");
 						if(isNaN(parseInt(num))) { //Books may only have single volume, so no volume number
 							num = 1;
 						}
 						Ci.add("/ComicInfo", "Number", pad(num,2));
 						Ci.add("/ComicInfo", 'Title', on);
-						//Ci.add("/ComicInfo", 'Series', ser);
+						if(!pages.get("/Comicinfo/Series")) Ci.add("/ComicInfo", 'Series', ser);
 						Ci.add("/ComicInfo", 'PageCount', totp);
 						$(bndlBTN).removeAttr("disabled");
 						$(maindiv).attr({width:"100%", height:"100%"});
