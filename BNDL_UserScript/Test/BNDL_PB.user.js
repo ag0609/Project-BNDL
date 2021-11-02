@@ -21,6 +21,7 @@
 // @require      https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Test/Plugin/Bootstrap-Extend.inc.js
 // @require      https://github.com/ag0609/SeLf_UsEs_DoNt_ToUcH/raw/main/Javascript/Array.ext.obs.js
 // @require      https://github.com/ag0609/SeLf_UsEs_DoNt_ToUcH/raw/main/Javascript/String.ext.obs.js
+// @require      https://github.com/ag0609/SeLf_UsEs_DoNt_ToUcH/main/Javascript/Number.ext.obs.js
 // @resource     bsCSS https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css
 // @resource     chartCSS https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.css
 // @resource     BWJP https://raw.githubusercontent.com/ag0609/Project-BNDL/master/BNDL_UserScript/Test/Plugin/bookwalkerjp.inc.js
