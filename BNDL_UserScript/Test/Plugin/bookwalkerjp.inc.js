@@ -1,6 +1,6 @@
 //Reference Discramer
-console.log("Bookwalker Japan", "v20211027.0");
-console.log("Reference:", "https://fireattack.wordpress.com/2021/08/27/a-better-way-to-dump-bookwalker", "by fireattack");
+console.log("BW Japan", "v20211102.0");
+console.log("Reference:", "https://fireattack.wordpress.com/", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
 //Check if reading a trial version of a book
@@ -191,7 +191,7 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 				askhelp = 1;
 			}
 			if(askhelp) { //Try ask user for help
-				let userbid = prompt("Sorry, Record not found. Please help search "+ bn +" at bookwalker.jp and paste bookID or detail page link here");
+				let userbid = prompt("Sorry, Record not found. Please help search "+ bn +" at bwJP site and paste bookID or detail page link here");
 				//de8a5395a0-df91-4c3c-a676-3c948fbc30ed
 				if(/de[0-9a-f]{8}\-(?:[0-9a-f]{4}\-){3}[0-9a-f]{12}/.test(userbid)) {
 					bid = userbid.match(/de[0-9a-f]{8}\-(?:[0-9a-f]{4}\-){3}[0-9a-f]{12}/);
@@ -268,13 +268,17 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 					console.log('getDetaik(fn): '+ fn);
 					document.title = fn;
 					//const pD = document.evaluate("//dt[text()='配信開始日']", html, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.nextElementSibling.innerText;
-					const pD = html.querySelector("dd.work-detail-contents:last-child").innerText;
+					const pD = $(html).find("dt.work-detail-head:contains('配信開始日'):last").next().text();
 					const pDate = pD.split('/');
 					bd.publishDate = new Date(pDate[0], pDate[1]-1, pDate[2]);
 					Ci.add("/ComicInfo", "Year", pDate[0]);
 					Ci.add("/ComicInfo", "Month", pDate[1]);
 					Ci.add("/ComicInfo", "Day", pDate[2]);
 					console.debug("Published Date: %s/%s/%s", ...pDate);
+					const imp = $("dt.work-detail-head:contains('レーベル'):last").next().text();
+					Ci.add("/ComicInfo", "Imprint", imp);
+					const ser = $("dt.work-detail-head:contains('シリーズ'):last").next().text();
+					Ci.add("/ComicInfo", "Series", ser.replace(/([^（]+)\s*[（]?.*/, "$1").trim());
 					Ci.add("/ComicInfo", "LanguageISO", "ja");
 					Ci.add("/ComicInfo", "BlackAndWhite", "Yes");
 					cty ? Ci.add("/ComicInfo", "Manga", "YesAndRightToLeft") : Ci.add("/ComicInfo", "Manga", "No");
@@ -400,7 +404,7 @@ function main() {
 						wait = 1;
 						on = model.get('contentTitle') || $("#pagetitle").text();
 						if(on.match(/\s?【[^【】]*(無料|お試し|試し読み)[^【】]*】\s?/)) mode=1;
-						on = on.replace(/\s?【[^【】]*(無料|お試し|試し読み)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,''); //[Only for Period] will left for Bookwalker Stupid Retarded Search Engine
+						on = on.replace(/\s?【[^【】]*(無料|お試し|試し読み)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,''); //[Only for Period] will left for BW Stupid Retarded Search Engine
 						await getDetail(on);
 						on = on.replace(/\s?【[^【】]*(限定|特典)[^【】]*】\s?/g, " ").replace(/^\s+|\s+$/gm,'');; //Now I can remove them for series name
 						const ser = on.replace(/^\s?(.*?)\s?(?:[：\:]{0,1}\s?([\d０-９]+)|[（\(]([\d０-９]+)[\)）]|[第]?([\d０-９]+)[巻話]?)$/,  function(...args) {
@@ -411,12 +415,9 @@ function main() {
 						if(isNaN(parseInt(num))) { //Books may only have single volume, so no volume number
 							num = 1;
 						}
-						//Get Table of Contents(Bookmarks)
-						//Encrypted in configuration_pack.json => configuration["nav-list"] => BUT NO SOLUTION YET
-						//
 						Ci.add("/ComicInfo", "Number", pad(num,2));
 						Ci.add("/ComicInfo", 'Title', on);
-						Ci.add("/ComicInfo", 'Series', ser);
+						//Ci.add("/ComicInfo", 'Series', ser);
 						Ci.add("/ComicInfo", 'PageCount', totp);
 						$(bndlBTN).removeAttr("disabled");
 						$(maindiv).attr({width:"100%", height:"100%"});
@@ -459,11 +460,13 @@ cancel = function() {
 		toast("", "danger", -1, "Job Canceled");
 	}
 }
-let r1, r2="G1W", m1, m2="Z4p", t1, t2="L1u";
-const _$IfuBW_NFBR$_ = setInterval(function() {
-	if(!NFBR) NFBR = (unsafeWindow ? unsafeWindow.NFBR : window.NFBR) || NFBR;
-	r1 = NFBR.a6G.a5x.prototype;
-	m1 = NFBR.a6G.Initializer;
+let r1, r2="G1W", m1, m2="Z4p", t1, t2="L1u"; //The Legend Keys
+const qwer = "%4e%46%42%52"; //The magic word
+let asdf; //The throne of brave
+const _$IfuBW_FFFF$_ = setInterval(function() {
+	if(!asdf) asdf = (unsafeWindow ? unsafeWindow[decodeURI(qwer)] : window[decodeURI(qwer)]) || eval(decodeURI(qwer));
+	r1 = asdf.a6G.a5x.prototype;
+	m1 = asdf.a6G.Initializer;
 	if(typeof r1 != "undefined" && typeof r1[r2] != "undefined" &&
        typeof m1[m2] != "undefined") {
 		try {
@@ -472,7 +475,7 @@ const _$IfuBW_NFBR$_ = setInterval(function() {
 			model = menu.model;
 			t1 = model.attributes.a2u.book.content.normal_default;
 			renderer = m1[m2].renderer;
-			clearInterval(_$IfuBW_NFBR$_);
+			clearInterval(_$IfuBW_FFFF$_);
 			_page_time = _job_time = new Date();
 			next = ()=>{control['moveToNext']()};
 			prev = ()=>{control['moveToPrevious']()};
@@ -518,7 +521,7 @@ const ___$loopcheckdead = setInterval(function() {
 const path2var = function(patharr) {
 	try {
 		if(Array.isArray(patharr)) {
-			let rtn = NFBR;
+			let rtn = asdf;
 			for(let i=0; i<patharr.length; i++) {
 				if(patharr[i]) {
 					rtn = rtn[patharr[i]];
