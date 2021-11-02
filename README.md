@@ -9,7 +9,7 @@ A Project for decoding canvas and packing into zip file in viewer pages on BN.
 - ***You are acknowledged that you should not do any crime, no matter using any scripts of this site or not.***
 - or simply say "don't use it if you don't know what it is running"
 - You may need python and related plugin for the Chromedriver version. Please read the [README.MD](https://github.com/ag0609/Project-BNDL/blob/master/BNDL_PYChromedriver/README.MD)
-- You may need browser add-ons to run userscript version, like [Tampermonkey](https://www.tampermonkey.net/) or [Greasemonkey](https://www.greasespot.net/).
+- You may need browser add-ons to run userscript version, like [![Chrome Web Store](https://img.shields.io/chrome-web-store/v/dhdgffkkebhmkfjojejmpbldmpobfkfo?label=Tampermonkey&logo=googlechrome&logoColor=white&style=plastic)](https://www.tampermonkey.net/) or [![Mozilla Add-on](https://img.shields.io/amo/v/greasemonkey?label=Greasemonkey&logo=firefox&style=plastic)](https://www.greasespot.net/).
 
 # Installation
 
