@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("BW Japan", "v20211102.3");
+console.log("BW Japan", "v20211104.0");
 console.log("Reference:", "https://fireattack.wordpress.com/", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -413,7 +413,7 @@ function main() {
 						});
 						let num = halfwidthValue(on);
 						if(Number.hasOwnProperty("fromRoman")) num = num.replace(/\s([IVX]+)(\s.*)?$/i, function(m,p,q,r,o,s){return Number.fromRoman(p);});
-						num = num.replace(/.*?[第\:]?(\d+)[巻話\)]?.*$/, "$1");
+						num = num.replace(/.*?[第\:]?(\d+)[巻話\)]?.*?$/, "$1");
 						if(isNaN(parseInt(num))) { //Books may only have single volume, so no volume number
 							num = 1;
 						}
