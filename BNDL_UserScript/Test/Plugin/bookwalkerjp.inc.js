@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("BW Japan", "v20211104.1");
+console.log("BW Japan", "v20211107.0");
 console.log("Reference:", "https://fireattack.wordpress.com/", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -128,12 +128,12 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 					bid = g[itemidx] ? g[itemidx].typeId : null;
 				}
 			} else if(/^\d+$/.test(bid)) { //Series search
-				console.debug("getDetail()", bwhp + "series/"+ f.typeId +"/list/");
+				console.debug("getDetail()", bwhp + "series/"+ bid +"/list/");
 				if(st == 5) _detail$retry_ = 0;
 				bid = await new Promise((resolve) => {
 					GM.xmlHttpRequest({
 						method: "GET",
-						url: bwhp + "series/"+ f.typeId +"/list/",
+						url: bwhp + "series/"+ bid +"/list/",
 						onload: async function(reS) {
 							let h = reS.responseText;
 							let parser = new DOMParser();
