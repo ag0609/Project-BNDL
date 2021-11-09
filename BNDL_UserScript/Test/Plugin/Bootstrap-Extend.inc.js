@@ -1,6 +1,7 @@
-const ver = "20211005.1";
+const ver = "20211109.0";
 console.log("Bootstrap-Extended", "version", ":", ver);
 
+//toast(message, type, showTime, header, options)
 function toast($_msg, _$t='default', _hT, $_t, _0pts={}) {
 	let _reTi = 5000;
 	let no_Co = HTML_Con = false;
@@ -147,3 +148,35 @@ function DisposeAllToast() {
 	$('.toast').find('.timebar').stop();
 	$('.toast').animate({opacity:['toggle','swing']}, 250, function() {$('.toast').toast('dispose').remove();});
 }
+
+//PopList
+//PopList.init()
+//PopList.build([Label Array], twostepFlag, header);
+const PopList = {
+  init:function(){
+    if($('.popmenu').length == 0) {
+      let pm = $('<div>').addClass('popmenu container position-fixed top-50 start-50 translate-middle overflow-auto w-25 bg-secondary border user-select-none p-3').css({'min-height':'150px', 'max-height':'15vh'});
+      return pm;
+    } else {
+      $('.popmenu').last().empty();
+      return $('.popmenu').last();
+    }
+  },
+  build:function(a,b=0,c=null){
+    const root = this["init"](), ul = $('<div>').addClass('list-group');
+    root.append(ul);
+    if(Array.isArray(a)) {
+      for(let i=0;i<a.length;i++) {
+        let li = $('<a>').addClass('list-group-item list-group-item-action').text(a[i]);
+        li.on('click', function(){
+          let text = $(this).text();
+          console.log(`item ${i} clicked, valued ${text}`);
+        });
+        ul.append(li);
+      }
+    } else {
+      
+    }
+    return root;
+  }
+};
