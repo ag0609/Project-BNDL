@@ -1,4 +1,4 @@
-const ver = "20211109.0";
+const ver = "20211111.0";
 console.log("Bootstrap-Extended", "version", ":", ver);
 
 //toast(message, type, showTime, header, options)
@@ -151,32 +151,83 @@ function DisposeAllToast() {
 
 //PopList
 //PopList.init()
-//PopList.build([Label Array], twostepFlag, header);
+//PopList.check(index)
+//PopList.checked()
+//PopList.build([Label Array], twostepFlag, header, parent);
 const PopList = {
   init:function(){
     if($('.popmenu').length == 0) {
-      let pm = $('<div>').addClass('popmenu container position-fixed top-50 start-50 translate-middle overflow-auto w-25 bg-secondary border user-select-none p-3').css({'min-height':'150px', 'max-height':'15vh'});
+      let pm = $('<div>').addClass('popmenu container position-fixed top-50 start-50 translate-middle w-25 bg-secondary border user-select-none p-3').css({'overflow-y':'scroll', 'min-height':'150px', 'max-height':'15vh'});
       return pm;
     } else {
       $('.popmenu').last().empty();
       return $('.popmenu').last();
     }
   },
-  build:function(a,b=0,c=null){
-    const root = this["init"](), ul = $('<div>').addClass('list-group');
-    root.append(ul);
-    if(Array.isArray(a)) {
-      for(let i=0;i<a.length;i++) {
-        let li = $('<a>').addClass('list-group-item list-group-item-action').text(a[i]);
-        li.on('click', function(){
-          let text = $(this).text();
-          console.log(`item ${i} clicked, valued ${text}`);
-        });
-        ul.append(li);
+  check:function(a=null){
+    const root=$('.popmenu'), ul=$(".list-group");
+    if(ul.length==0) return;
+    
+    if(a!=null) {
+      if(ul.find(".list-group-item-selected")[0] != ul.find(".list-group-item-action")[a]) {
+        ul.find(".list-group-item-selected").removeClass("list-group-item-selected");
+      }
+      ul.find(`.list-group-item-action:nth-of-type(${a+1})`).toggleClass("list-group-item-selected");
+      if(ul.find(".list-group-item-selected").length!=0) {
+        ul.find(".list-group-item-action").addClass("list-group-item-checked");
+      } else {
+        ul.find(".list-group-item-action").removeClass("list-group-item-checked");
       }
     } else {
-      
+      ul.find(".list-group-item-action").removeClass("list-group-item-checked");
     }
-    return root;
-  }
+  },
+  checked:function(){
+    const root=$('popmenu'), ul=$("list-group");
+    if(ul.length==0) return;
+    ul.find("list-group-item-action");
+  },
+  build:function(a,b=0,c=null,d=null){
+    if(!d || !$(d).length) d = $('body');
+    return new Promise((resolve) => {
+      const root=this["init"](), obj=this, ul=$('<div>').addClass('list-group');
+      root.append(ul);
+      if(c) {
+        let head = $('<li>').addClass('list-group-item bg-primary text-white').text(c);
+        ul.append(head);
+      }
+      if(Array.isArray(a)) {
+        for(let i=0;i<a.length;i++) {
+          let li = $('<a>').addClass('list-group-item list-group-item-action').css({'transition':'1s all'}).text(a[i]);
+          li.on('click', function(){
+            let text = $(this).text();
+            console.log(`item ${i} clicked, valued ${text}`);
+            obj["check"](i);
+            if(!b) {
+              setTimeout(function() {
+                root.remove();
+              }, 1000);
+              resolve(i);
+            }
+          });
+          ul.append(li);
+        }
+      }
+      if(b) {
+        let sm = $('<div>').addClass("list-group-item");
+        let sb = $('<button>').addClass("btn btn-primary").text("✔");
+        sb.on("click",function() {
+          let s = ul.find(".list-group-item-selected").index();
+          if(s>0) {
+            resolve(s-1);
+            root.remove();
+          }
+          return false;
+        });
+        sm.append(sb);
+        root.append(sm);
+      }
+      $(d).append(root);
+    });
+  },
 };
