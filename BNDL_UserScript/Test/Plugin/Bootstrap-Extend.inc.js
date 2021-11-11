@@ -1,4 +1,4 @@
-const ver = "20211111.0";
+const ver = "20211111.1";
 console.log("Bootstrap-Extended", "version", ":", ver);
 
 //toast(message, type, showTime, header, options)
@@ -167,7 +167,6 @@ const PopList = {
   check:function(a=null){
     const root=$('.popmenu'), ul=$(".list-group");
     if(ul.length==0) return;
-    
     if(a!=null) {
       if(ul.find(".list-group-item-selected")[0] != ul.find(".list-group-item-action")[a]) {
         ul.find(".list-group-item-selected").removeClass("list-group-item-selected");
@@ -183,9 +182,9 @@ const PopList = {
     }
   },
   checked:function(){
-    const root=$('popmenu'), ul=$("list-group");
+    const root=$('.popmenu'), ul=$(".list-group");
     if(ul.length==0) return;
-    ul.find("list-group-item-action");
+    return ul.find(".list-group-item-selected").index();
   },
   build:function(a,b=0,c=null,d=null){
     if(!d || !$(d).length) d = $('body');
