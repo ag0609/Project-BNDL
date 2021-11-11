@@ -184,7 +184,7 @@ const PopList = {
   checked:function(){
     const root=$('.popmenu'), ul=$(".list-group");
     if(ul.length==0) return;
-    return ul.find(".list-group-item-selected").index();
+    return Math.max(-1, ul.find(".list-group-item-selected").index()-1);
   },
   build:function(a,b=0,c=null,d=null){
     if(!d || !$(d).length) d = $('body');
