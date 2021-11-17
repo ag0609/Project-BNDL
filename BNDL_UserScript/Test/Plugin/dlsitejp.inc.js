@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20211026.10");
+console.log("Dlsite Play Japan ver20211117.0");
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
@@ -7,7 +7,21 @@ let delay_max = 2500; //in miliseconds, please keep it over 2 seconds(2000) or b
 let pdf_minw = 1000, pdf_minh = 1500; //in pixel, minimum resolution of pdf rendering output
 let cache_size = 10; //number of images will be cached before viewer load image, set 5 or above to avoiding CORS error ocuurs
 //
+//User Configuration
+let retry_max = 25; //Maximum retry when drawImage
+let delay_max = 2500; //in miliseconds, please keep it over 2 seconds(2000) or blanks output may occurs
+let pdf_minw = 1000, pdf_minh = 1500; //in pixel, minimum resolution of pdf rendering output
+let cache_size = 10; //number of images will be cached before viewer load image, set 5 or above to avoiding CORS error ocuurs
+//
 let durl={};durl.pre="https://",durl.base="dlsite.com",durl.play=durl.pre+"play."+durl.base,durl.api=[durl.play,'api'].join('/'),durl.dtoken=[durl.api,'download_token'].join('/'),durl.pcount=[durl.api,'product_count'].join('/'),durl.plist=[durl.api,'purchases'].join('/');
+let hurl={};
+
+let comipo = /hybrid/.test(document.location.pathname) ? 1 : 0;
+
+if(comipo) {
+    console.log("DLSite Comipo Products...");
+    hurl["base"] = qParams.get("cgi");
+}
 
 const param = {
     dtoken:['workno'],
@@ -160,6 +174,46 @@ function loadcache(startidx=0, path=tp) {
         }
     }
 }
+let needs={};
+unsafeWindow.oFetch = unsafeWindow.fetch;
+unsafeWindow.fetch = function() {
+    let url = arguments[0];
+    let options = arguments.length > 1 ? arguments[1] : {};
+    let xurl = new URL(url);
+    let xparams = new URLSearchParams(xurl.search);
+    console.debug('fetch:', url, options);
+    let copycat;
+    return unsafeWindow.oFetch.call(this, url, options).then(res=>{
+        let resclone = res.clone();
+        let dP = new DOMParser();
+        console.log(xparams.get('file'));
+        if(/bin/.test(xparams.get('file'))) {
+            resclone.blob().then(blob=>{
+                zip.file(xparams.get('file'), blob);
+            });
+        } else {
+            resclone.text().then(txt=>{
+                switch (parseInt(xparams.get('mode'))) {
+                    case 999:
+                        zip.file("init.xml", txt);
+                        needs["param"] = encodeURIComponent(xparams.get('param'));
+                        needs["time"] = xparams.get('time');
+                        break;
+                    case 7:
+                        let xml = dP.parseFromString(txt, "application/xml");
+                        zip.file(xparams.get('file'), txt);
+                        needs["TOP"] = $(xml).find("TotalPage").text();
+                        break;
+                    default:
+                        //
+                }
+                comipo = 2;
+            });
+        }
+        return res;
+    });
+}
+
 XMLHttpRequest.prototype.osend = XMLHttpRequest.prototype.send;
 XMLHttpRequest.prototype.send = async function() {
     let thisobj = this;
@@ -436,7 +490,11 @@ CanvasRenderingContext2D.prototype.hdI = function() {
         }, 100);
     }
 }
-CanvasRenderingContext2D.prototype.drawImage = CanvasRenderingContext2D.prototype.hdI;
+if(comipo) {
+    CanvasRenderingContext2D.prototype.drawImage = function() {};
+} else {
+    CanvasRenderingContext2D.prototype.drawImage = CanvasRenderingContext2D.prototype.hdI;
+}
 function getCurrentCanvas() {
     let tf = cc.style.transform.replace(/\-/g, "");
     return document.evaluate("//div[@class='pswp__item'][contains(@style, '"+tf+"')]//canvas", cc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
@@ -586,35 +644,89 @@ function zip2pdf2img(url=null) {
     }
 }
 bndl_d.zip2img = zip2pdf2img;
-start = function() {
-    let cango=0;
-    if(pr) {
-        switch(pr.dl_format) {
-            case 0:  //RAW
-                if(confirm("This product is not DRM protected. Using HTML5 Downloader only collect down-scaled quality images.\nAre you sure want to continue?")) {
-                    cango=1;
-                }
-                break;
-            case 9:  //DLST, DLViewer Encrypted
-            case 17: //DLView Only
-                cango=1;
-                break;
-            default:
-                cango=1;
+let comipoGetPage = function(p, n=null) {
+    if(n==null) {
+        if(needs) {
+            n = needs;
+        } else {
+            return null;
         }
     }
-    if(cango) {
-        console.debug('go');
+    return new Promise((resolve) => {
+        //get xml
+        let xurl = [hurl["base"],['mode','file','reqtype','vm','param','time'].map((v,i)=>v+"="+[8,pad(p,4)+".xml",0,4,n["param"],n["time"]][i]).join('&')].join('?'),
+            burl = [hurl["base"],['mode','file','reqtype','vm','param','time'].map((v,i)=>v+"="+[1,pad(p,4)+"_0000.bin",0,4,n["param"],n["time"]][i]).join('&')].join('?');
+        GM.xmlHttpRequest({
+            method: "GET",
+            url: xurl,
+            onload: function(res) {
+                console.log("page", p, "xml granted");
+                zip.file(new URLSearchParams(new URL(burl).search).get('file'), res.response);
+                //get bin
+                GM.xmlHttpRequest({
+                    method: "GET",
+                    url: burl,
+                    responseType:"blob",
+                    onload: function(blob) {
+                        console.log("page", p, "image granted");
+                        zip.file(new URLSearchParams(new URL(burl).search).get('file'), blob.response);
+                        resolve(true);
+                    }
+                });
+            }
+        });
+    });
+}
+start = async function() {
+    if(comipo>1) {
         startf=1;
         $(bndlBTN).attr({disabled:true});
         $(maindiv).addClass('w-100 h-100');
         $(pc).css({height:'16px'});
         ss.play();
-        //if(autoplay.length) autoplay[0].click();
-        console.time('Job Time');
-        if(next) next();
+        if(comipo==2) {
+            comipo=3;
+            $(pcv).attr("aria-valuemax", needs["TOP"]);
+            for(let i=0;i<needs["TOP"];i++) {
+                console.log("fetching ", i);
+                if(!startf) {
+                    let longwait = await paused();
+                }
+                let wait = await comipoGetPage(i, needs);
+                $(pcv).attr("aria-valuenow", i+1);
+            }
+            debug.dlzip();
+        }
     } else {
-        console.debug('cannot go');
+        let cango=0;
+        if(pr) {
+            switch(pr.dl_format) {
+                case 0:  //RAW
+                    if(confirm("This product is not DRM protected. Using HTML5 Downloader only collect down-scaled quality images.\nAre you sure want to continue?")) {
+                        cango=1;
+                    }
+                    break;
+                case 9:  //DLST, DLViewer Encrypted
+                case 17: //DLView Only
+                    cango=1;
+                    break;
+                default:
+                    cango=1;
+            }
+        }
+        if(cango) {
+            console.debug('go');
+            startf=1;
+            $(bndlBTN).attr({disabled:true});
+            $(maindiv).addClass('w-100 h-100');
+            $(pc).css({height:'16px'});
+            ss.play();
+            //if(autoplay.length) autoplay[0].click();
+            console.time('Job Time');
+            if(next) next();
+        } else {
+            console.debug('cannot go');
+        }
     }
 }
 bndl_d.start = start;
@@ -625,8 +737,8 @@ cancel = function() {
         startf=0;
         ss.pause();
         toast("", "warning", 10000, "Job Paused");
-        //if(autoplay.length) autoplay[0].click();
     } else {
+        if(comipo) unsafeWindow.fetch = unsafeWindow.oFetch;
         CanvasRenderingContext2D.prototype.drawImage = CanvasRenderingContext2D.prototype.odI;
         XMLHttpRequest.prototype.send = XMLHttpRequest.prototype.osend;
         $(maindiv).remove();
@@ -634,6 +746,9 @@ cancel = function() {
     }
 }
 bndl_d.stop = cancel;
+const paused = function() {
+    return new Promise((resolve)=>{let loop=setInterval(()=>{if(startf){clearInterval(loop);resolve(true)}},100)});
+}
 var img_list = [];
 let hideimg;
 const hashcheck = setInterval(function() {
@@ -691,6 +806,10 @@ const hashcheck = setInterval(function() {
                 }
             }
         }
+    }
+    if(comipo) {
+        clearInterval(hashcheck);
+        butcheck();
     }
 }, 50);
 const butcheck = () => {
