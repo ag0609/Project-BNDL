@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20211117.2");
+console.log("Dlsite Play Japan ver20211117.3");
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
@@ -810,7 +810,13 @@ const butcheck = () => {
     if(!bc) {
         console.debug("button check start");
         bc = setInterval(function() {
-            if($(".view-controls").length) {
+            if(comipo) {
+                $(maindiv).show();
+                clearInterval(bc);
+                $(bndlBTN).removeAttr('disabled');
+                console.timeEnd("Ready Time");
+                toast("", "info", 0, "Job Ready");
+            } else if($(".view-controls").length) {
                 console.debug("button check start");
                 autoplay = $(".toggle-autoplay").detach()[0];
                 spread = $(".toggle-spread-pages").detach()[0];
