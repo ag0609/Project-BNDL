@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20211117.1");
+console.log("Dlsite Play Japan ver20211117.2");
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
@@ -655,7 +655,7 @@ let comipoGetPage = function(p, n=null) {
             url: xurl,
             onload: function(res) {
                 console.log("page", p, "xml granted");
-                zip.file(new URLSearchParams(new URL(burl).search).get('file'), res.response);
+                zip.file(new URLSearchParams(new URL(xurl).search).get('file'), res.response);
                 //get bin
                 GM.xmlHttpRequest({
                     method: "GET",
