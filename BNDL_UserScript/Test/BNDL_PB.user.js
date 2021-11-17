@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Bootstrap version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.93
+// @version      0.94
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://viewer.bookwalker.jp/*
@@ -47,6 +47,8 @@
     console.log(bndl_ver);
     console.time("Initialization Time");
     let debug_enable = 1;
+    //
+    const qParams = new URLSearchParams(window.location.search);
     //
     let show_org = 0;
     let overflow_limit = 100;
