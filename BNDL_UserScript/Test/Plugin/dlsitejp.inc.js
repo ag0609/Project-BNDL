@@ -7,12 +7,6 @@ let delay_max = 2500; //in miliseconds, please keep it over 2 seconds(2000) or b
 let pdf_minw = 1000, pdf_minh = 1500; //in pixel, minimum resolution of pdf rendering output
 let cache_size = 10; //number of images will be cached before viewer load image, set 5 or above to avoiding CORS error ocuurs
 //
-//User Configuration
-let retry_max = 25; //Maximum retry when drawImage
-let delay_max = 2500; //in miliseconds, please keep it over 2 seconds(2000) or blanks output may occurs
-let pdf_minw = 1000, pdf_minh = 1500; //in pixel, minimum resolution of pdf rendering output
-let cache_size = 10; //number of images will be cached before viewer load image, set 5 or above to avoiding CORS error ocuurs
-//
 let durl={};durl.pre="https://",durl.base="dlsite.com",durl.play=durl.pre+"play."+durl.base,durl.api=[durl.play,'api'].join('/'),durl.dtoken=[durl.api,'download_token'].join('/'),durl.pcount=[durl.api,'product_count'].join('/'),durl.plist=[durl.api,'purchases'].join('/');
 let hurl={};
 
