@@ -6,11 +6,21 @@ let retry_max = 25; //Maximum retry when drawImage
 let delay_max = 2500; //in miliseconds, please keep it over 2 seconds(2000) or blanks output may occurs
 let pdf_minw = 1000, pdf_minh = 1500; //in pixel, minimum resolution of pdf rendering output
 let cache_size = 10; //number of images will be cached before viewer load image, set 5 or above to avoiding CORS error ocuurs
+let comipo_unscramable = "http://ag0609.c1.biz/Lab/comipo/comipo.php"; //for comipo uses
 //
 let durl={};durl.pre="https://",durl.base="dlsite.com",durl.play=durl.pre+"play."+durl.base,durl.api=[durl.play,'api'].join('/'),durl.dtoken=[durl.api,'download_token'].join('/'),durl.pcount=[durl.api,'product_count'].join('/'),durl.plist=[durl.api,'purchases'].join('/');
 let hurl={};
 
 let comipo = /hybrid/.test(document.location.pathname) ? 1 : 0;
+
+if(typeof(comipo_unscramable) != "undefined" && comipo) {
+    fetch(comipo_unscramable, {method:'HEAD'}).then(res=>{
+        console.log("unscramable portal seems ok...");
+    }).catch(err=>{
+        console.log("unscramable portal ping failed");
+        comipo_unscramable = undefined;
+    });
+}
 
 if(comipo) {
     console.log("DLSite Comipo Products...");
@@ -649,13 +659,18 @@ let comipoGetPage = function(p, n=null) {
     return new Promise((resolve) => {
         //get xml
         let xurl = [hurl["base"],['mode','file','reqtype','vm','param','time'].map((v,i)=>v+"="+[8,pad(p,4)+".xml",0,4,n["param"],n["time"]][i]).join('&')].join('?'),
-            burl = [hurl["base"],['mode','file','reqtype','vm','param','time'].map((v,i)=>v+"="+[1,pad(p,4)+"_0000.bin",0,4,n["param"],n["time"]][i]).join('&')].join('?');
+            burl = [hurl["base"],['mode','file','reqtype','vm','param','time'].map((v,i)=>v+"="+[1,pad(p,4)+"_0000.bin",0,4,n["param"],n["time"]][i]).join('&')].join('?')
+            data = {};
         GM.xmlHttpRequest({
             method: "GET",
             url: xurl,
             onload: function(res) {
                 console.log("page", p, "xml granted");
-                zip.file(new URLSearchParams(new URL(xurl).search).get('file'), res.response);
+                if(!comipo_unscramable) {
+                    zip.file(new URLSearchParams(new URL(xurl).search).get('file'), res.response);
+                }else{
+                    data["xml"] = btoa(res.response);
+                }
                 //get bin
                 GM.xmlHttpRequest({
                     method: "GET",
@@ -663,7 +678,11 @@ let comipoGetPage = function(p, n=null) {
                     responseType:"blob",
                     onload: function(blob) {
                         console.log("page", p, "image granted");
-                        zip.file(new URLSearchParams(new URL(burl).search).get('file'), blob.response);
+                        if(!comipo_unscramable) {
+                            zip.file(new URLSearchParams(new URL(burl).search).get('file'), blob.response);
+                        } else {
+                            data["jpg"] = await function(b){return new Promise((resolve,_)=>{const r=new FileReader();r.onloadend=()=>resolve(r.result);r.readAsDataURL(b);});}(blob);
+                        }
                         resolve(true);
                     }
                 });
