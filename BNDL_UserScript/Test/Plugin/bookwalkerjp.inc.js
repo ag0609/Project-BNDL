@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("BW Japan", "v20211201.2");
+console.log("BW Japan", "v20211201.4");
 console.log("Reference:", "https://fireattack.wordpress.com/", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -213,13 +213,13 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 					let h = res.responseText;
 					let parser = new DOMParser();
 					let html = parser.parseFromString(h, "text/html");
-					let authors = $("dl.p-author");
+					let authors = $(html).find("dl.p-author > dt");
 					bd.author = [];
 					let wt, pcl;
 					for(let i=0;i<authors.length;i++) {
 						try {
-							const at = $(authors[i]).find('dt').text().split('・');
-							const an = $(authors[i]).find('dd').text().replace(/(（.*?）|\s)/g, "");
+							const at = $(authors[i]).text().split('・');
+							const an = $(authors[i]).next('dd').text().replace(/(（.*?）|\s)/g, "");
 							at.forEach((v) => {
 								if(/キャラ|設定/.test(v)) { //キャラクター原案
 									bd.author.push({'p':4, 'type':v, 'name':an});
