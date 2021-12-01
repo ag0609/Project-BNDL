@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("BW Japan", "v20211107.0");
+console.log("BW Japan", "v20211201.0");
 console.log("Reference:", "https://fireattack.wordpress.com/", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -213,14 +213,13 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 					let h = res.responseText;
 					let parser = new DOMParser();
 					let html = parser.parseFromString(h, "text/html");
-					//bd.author = [].slice.call(html.getElementsByClassName('author-name')).map(e => e.innerHTML).join('×');
-					let authors = html.querySelectorAll("dl.author");
+					let authors = $("dl.author");
 					bd.author = [];
 					let wt, pcl;
 					for(let i=0;i<authors.length;i++) {
 						try {
-							const at = authors[i].getElementsByClassName('author-head')[0].innerText.split('・');
-							const an = authors[i].getElementsByClassName('author-name')[0].innerText.replace(/(（.*?）|\s)/g, "");
+							const at = $(authors[i]).find('dt').text().split('・');
+							const an = $(authors[i]).find('dd').text().replace(/(（.*?）|\s)/g, "");
 							at.forEach((v) => {
 								if(/キャラ|設定/.test(v)) { //キャラクター原案
 									bd.author.push({'p':4, 'type':v, 'name':an});
@@ -267,22 +266,22 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 					bd.fileName = fn;
 					console.log('getDetaik(fn): '+ fn);
 					document.title = fn;
-					//const pD = document.evaluate("//dt[text()='配信開始日']", html, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.nextElementSibling.innerText;
-					const pD = $(html).find("dt.work-detail-head:contains('配信開始日'):last").next().text();
+					const info = $(html).find(".p-information__data");
+					const pD = info.find("dt:contains('配信開始日'):last").next().text();
 					const pDate = pD.split('/');
 					bd.publishDate = new Date(pDate[0], pDate[1]-1, pDate[2]);
 					Ci.add("/ComicInfo", "Year", pDate[0]);
 					Ci.add("/ComicInfo", "Month", pDate[1]);
 					Ci.add("/ComicInfo", "Day", pDate[2]);
 					console.debug("Published Date: %s/%s/%s", ...pDate);
-					const imp = $(html).find("dt.work-detail-head:contains('レーベル'):last").next().text();
+					const imp = info.find("dt:contains('レーベル'):last").next().text();
 					Ci.add("/ComicInfo", "Imprint", imp);
-					const ser = $(html).find("dt.work-detail-head:contains('シリーズ'):last").next().text();
+					const ser = info.find("dt:contains('シリーズ'):last").next().text();
 					Ci.add("/ComicInfo", "Series", ser.replace(/([^（]+)\s*[（]?.*/, "$1").trim());
 					Ci.add("/ComicInfo", "LanguageISO", "ja");
 					Ci.add("/ComicInfo", "BlackAndWhite", "Yes");
 					cty ? Ci.add("/ComicInfo", "Manga", "YesAndRightToLeft") : Ci.add("/ComicInfo", "Manga", "No");
-					Ci.add("/ComicInfo", "Summary", $(html).find("dd.synopsis-contents--base").text().trim());
+					Ci.add("/ComicInfo", "Summary", $(html).find("p.p-summary__text").text().trim());
 					toast('html:<a href="'+bwhp+bid+'" target="_blank">'+fn+'</a>', "info", 0, "Title");
 					// TOC
 					console.groupCollapsed("TOS");
