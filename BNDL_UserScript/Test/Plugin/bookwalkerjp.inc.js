@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("BW Japan", "v20211201.0");
+console.log("BW Japan", "v20211201.1");
 console.log("Reference:", "https://fireattack.wordpress.com/", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -213,7 +213,7 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 					let h = res.responseText;
 					let parser = new DOMParser();
 					let html = parser.parseFromString(h, "text/html");
-					let authors = $("dl.author");
+					let authors = $("dl.p-author");
 					bd.author = [];
 					let wt, pcl;
 					for(let i=0;i<authors.length;i++) {
@@ -281,7 +281,7 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 					Ci.add("/ComicInfo", "LanguageISO", "ja");
 					Ci.add("/ComicInfo", "BlackAndWhite", "Yes");
 					cty ? Ci.add("/ComicInfo", "Manga", "YesAndRightToLeft") : Ci.add("/ComicInfo", "Manga", "No");
-					Ci.add("/ComicInfo", "Summary", $(html).find("p.p-summary__text").text().trim());
+					Ci.add("/ComicInfo", "Summary", $(html).find("p.p-summary__text").text().trim();
 					toast('html:<a href="'+bwhp+bid+'" target="_blank">'+fn+'</a>', "info", 0, "Title");
 					// TOC
 					console.groupCollapsed("TOS");
