@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("BW Japan", "v20211201.5");
+console.log("BW Japan", "v20211201.6");
 console.log("Reference:", "https://fireattack.wordpress.com/", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -218,7 +218,7 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 					let wt, pcl;
 					for(let i=0;i<authors.length;i++) {
 						try {
-							const an = $(authors[i]).text().split('・');
+							const an = $(authors[i]).find("a").text().split('・');
 							const at = $(authors[i]).prev('dt').text().replace(/(（.*?）|\s)/g, "") || "";
 							an.forEach((v,i) => {
 								if(/キャラ|設定/.test(at[i])) { //キャラクター原案
