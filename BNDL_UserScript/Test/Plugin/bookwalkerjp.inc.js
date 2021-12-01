@@ -218,8 +218,8 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 					let wt, pcl;
 					for(let i=0;i<authors.length;i++) {
 						try {
-							const an = $(authors[i]).find("a").text().split('・');
-							const at = $(authors[i]).prev('dt').text().replace(/(（.*?）|\s)/g, "") || "";
+							const an = $(authors[i]).find("a").text().trim().split('・');
+							const at = $(authors[i]).prev('dt').text().trim().replace(/(（.*?）|\s)/g, "") || "";
 							an.forEach((v,i) => {
 								if(/キャラ|設定/.test(at[i])) { //キャラクター原案
 									bd.author.push({'p':4, 'type':v, 'name':an});
