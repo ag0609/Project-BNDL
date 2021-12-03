@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("BW Japan", "v20211204.1");
+console.log("BW Japan", "v20211204.2");
 console.log("Reference:", "https://fireattack.wordpress.com/", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
