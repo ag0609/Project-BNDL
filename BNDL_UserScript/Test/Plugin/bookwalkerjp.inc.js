@@ -227,7 +227,7 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 									bd.author.push({'p':0, 'type':at, 'name':v});
 								} else if(/^[著作][者]?$/.test(at)) { //著, 作, 著者, 作者
 									bd.author.push({'p':1, 'type':at, 'name':v});
-								} else if(/(画|マンガ|イラスト)/g.test(at)) { //画, 漫画, マンガ, イラスト
+								} else if(/(画|マンガ|まんが|イラスト)/g.test(at)) { //画, 漫画, マンガ, イラスト
 									bd.author.push({'p':2, 'type':at, 'name':v});
 								} else if(at[i] != "") {
 									bd.author.push({'p':5, 'type':at, 'name':v});
