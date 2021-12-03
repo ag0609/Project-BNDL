@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("BW Japan", "v20211204.0");
+console.log("BW Japan", "v20211204.1");
 console.log("Reference:", "https://fireattack.wordpress.com/", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -222,15 +222,15 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 							const at = $(authors[i]).prev('dt').text().trim().replace(/(（.*?）|\s)/g, "") || "";
 							an.forEach((v,i) => {
 								if(/キャラ|設定/.test(at)) { //キャラクター原案
-									bd.author.push({'p':4, 'type':v, 'name':an});
+									bd.author.push({'p':4, 'type':at, 'name':v});
 								} else if(/^(原[著作])$/g.test(at)) { //原作, 原著
-									bd.author.push({'p':0, 'type':v, 'name':an});
+									bd.author.push({'p':0, 'type':at, 'name':v});
 								} else if(/^[著作][者]?$/.test(at)) { //著, 作, 著者, 作者
-									bd.author.push({'p':1, 'type':v, 'name':an});
+									bd.author.push({'p':1, 'type':at, 'name':v});
 								} else if(/(画|マンガ|イラスト)/g.test(at)) { //画, 漫画, マンガ, イラスト
-									bd.author.push({'p':2, 'type':v, 'name':an});
+									bd.author.push({'p':2, 'type':at, 'name':v});
 								} else if(at[i] != "") {
-									bd.author.push({'p':5, 'type':v, 'name':an});
+									bd.author.push({'p':5, 'type':at, 'name':v});
 								}
 							});
 						} catch(e){};
