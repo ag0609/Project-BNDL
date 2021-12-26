@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Bootstrap version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.94
+// @version      0.95
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://viewer.bookwalker.jp/*
@@ -359,7 +359,7 @@
         };
         return chart;
     }
-    const halfwidthValue = (value) => {return value.replace(/(?:！？|!\?)/g, "⁉").replace(/[\uff01-\uff5e]/g, fullwidthChar => String.fromCharCode(fullwidthChar.charCodeAt(0) - 0xfee0)).replace(/\u3000/g, '\u0020')}
+    const halfwidthValue=(value,exception={})=>{Object.keys(exception).forEach(k=>value.replace(new RegExp(k,'g'),exception[k]));return value.replace(/(?:！？|!\?)/g,"⁉").replace(/[\uff01-\uff5e]/g,fullwidthChar=>String.fromCharCode(fullwidthChar.charCodeAt(0)-0xfee0)).replace(/\u3000/g,'\u0020')}
     toast('', "success", 5000, bndl_ver);
     let jsMain = "";
     if(/viewer(?:\-(?:p?trial|subscription))?\.bookwalker\.jp/i.test(window.location.href)) jsMain = GM_getResourceText("BWJP");
