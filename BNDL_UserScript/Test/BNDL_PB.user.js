@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Bootstrap version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.97
+// @version      0.98
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://viewer.bookwalker.jp/*
@@ -78,11 +78,11 @@
     let bndl_d, bnt, bnto, start=()=>{}, cancel=()=>{}, next=() => { console.warn("no function yet"); }, prev=() => { console.warn("no function yet"); };
     let bd = {};
     const presym = {
-        '\?!':'⁈',
+        '\\?!':'⁈',
         '？！':'⁈',
-        '\?\?':'⁇',
+        '\\?\\?':'⁇',
         '？？':'⁇',
-        '!\?':'⁉',
+        '!\\?':'⁉',
         '！？':'⁉',
         ':':'꞉',
         '：':'꞉',
