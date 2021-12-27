@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Bootstrap version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.95
+// @version      0.96
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://viewer.bookwalker.jp/*
@@ -77,6 +77,18 @@
     let fn, on, retry, wait;
     let bndl_d, bnt, bnto, start=()=>{}, cancel=()=>{}, next=() => { console.warn("no function yet"); }, prev=() => { console.warn("no function yet"); };
     let bd = {};
+    const presym = {
+        '?!':'⁈',
+        '？！':'⁈',
+        '??':'⁇',
+        '？？':'⁇',
+        '!?':'⁉',
+        '！？':'⁉',
+        ':':'꞉',
+        '：':'꞉',
+        '/':' ⁄ ',
+        '／':' ⁄ '
+    };
     let Ci = new comicinfo(); //Build XML class for ComicInfo.xml(which mainly used by Comic Reader)
     let pages;
     let scan = "Scaned By BNDL "+GM_info.script.version+"(ag0609)";
