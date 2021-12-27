@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("BW Japan", "v20211228.0");
+console.log("BW Japan", "v20211228.1");
 console.log("Reference:", "https://fireattack.wordpress.com/", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -155,7 +155,7 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 								try {
 									let tar;
 									tar = Array.from(html.querySelectorAll("a[title*='"+ non +"']")).filter(v => !/(期間限定|お試し|試し読み)/.test(v.title));
-									if(!tar.length) tar = Array.from(html.querySelectorAll("a[title*='"+ non.toHalfWidth({oswin:1}) +"']")).filter(v => !/(期間限定|お試し|試し読み)/.test(v.title));
+									if(!tar.length) tar = Array.from(html.querySelectorAll("a[title*='"+ non.toHalfWidth({oswin:1,prepend:presym}) +"']")).filter(v => !/(期間限定|お試し|試し読み)/.test(v.title));
 									if(tar.length == 1) {
 										auuid = tar[0].href.split('/')[3] || null;
 									} else if(tar.length > 1) {
@@ -262,7 +262,7 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 						autag = '[' + bd.author.splice(0,Math.min(bd.author.length,3)).map(e=>e.name).join('×') + '] ';
 					}
 					bd.originalTitle = on || bn;
-					fn = (autag + (on || bn)).toHalfWidth({oswin:1});
+					fn = (autag + (on || bn)).toHalfWidth({oswin:1,prepend:presym});
 					bd.fileName = fn;
 					console.log('getDetaik(fn): '+ fn);
 					document.title = fn;
@@ -412,7 +412,7 @@ function main() {
 						});
 						let num = on;
 						if(Ci.get("/ComicInfo/Series")) num = num.replace(Ci.get("/ComicInfo/Series"), "");
-						num = num.toHalfWidth({oswin:1});
+						num = num.toHalfWidth({oswin:1,prepend:presym});
 						if(Number.hasOwnProperty("fromRoman")) num = num.replace(/\s([IVX]+)(\s.*)?$/i, function(m,p,q,r,o,s){return Number.fromRoman(p);});
 						num = num.replace(/.*?[第\:]?(\d+)[巻話\)]?.*?$/, "$1");
 						if(isNaN(parseInt(num))) { //Books may only have single volume, so no volume number
