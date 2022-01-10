@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("BW Japan", "v20220110.5");
+console.log("BW Japan", "v20220110.6");
 console.log("Reference:", "https://fireattack.wordpress.com/", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -328,7 +328,7 @@ function main() {
 			_$canvas[curp] = [];
 			if(!_$canvas[1] && curp > 1) return control.moveToFirst();
 		} else {
-			if(retry && img$size[curp]) return control.moveToPage(curp+1); //Page Down
+			if(retry && img$size[curp]) return control.moveToNext(); //Page Down
 			if(startf && curp > startf && !img$size[curp-1]) return control.moveToPrevious(); //Page Up
 		}
 		if (image && !img$size[curp]) {
@@ -401,7 +401,7 @@ function main() {
 				}
 				if(startf) {
 					window.document.title = "["+curp+"/"+totp+"] "+on;
-					control.moveToPage(curp+1);
+					control.moveToNext();
 				} else {
 					if(!wait && img$size[curp] > 20000) { //Detail collect will only do once and Cover should be larger than 20KB
 						wait = 1;
@@ -453,7 +453,7 @@ start = function() {
 	$(maindiv).addClass('w-100 h-100');
 	startf = ($('#pageSliderCounter').text()).split('/')[0] * 1;;
 	_page_time = new Date();
-	control.moveToPage(curp+1);
+	control.moveToNext();
 }
 cancel = function() {
 	if(startf) {
