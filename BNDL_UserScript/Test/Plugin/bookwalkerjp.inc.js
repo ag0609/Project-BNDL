@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("BW Japan", "v20211228.1");
+console.log("BW Japan", "v20220110.0");
 console.log("Reference:", "https://fireattack.wordpress.com/", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -221,6 +221,10 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 							const an = $(authors[i]).find("a").text().trim().split('・');
 							const at = $(authors[i]).prev('dt').text().trim().replace(/(（.*?）|\s)/g, "") || "";
 							an.forEach((v,i) => {
+								v = v.replace(/\s/g, '');
+								if(/.+[\(（].*?[\)）]$/.test(v)) {
+									v.replace(/\s*[\(（].*?[\)）]$/, '');
+								}
 								if(/キャラ|設定/.test(at)) { //キャラクター原案
 									bd.author.push({'p':4, 'type':at, 'name':v});
 								} else if(/^(原[著作])$/g.test(at)) { //原作, 原著
@@ -230,7 +234,7 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 								} else if(/(画|マンガ|まんが|イラスト)/g.test(at)) { //画, 漫画, マンガ, イラスト
 									bd.author.push({'p':2, 'type':at, 'name':v});
 								} else if(at[i] != "") {
-									bd.author.push({'p':5, 'type':at, 'name':v});
+									bd.author.push({'p':0, 'type':at, 'name':v});
 								}
 							});
 						} catch(e){};
@@ -482,12 +486,14 @@ const _$IfuBW_FFFF$_ = setInterval(function() {
 			_page_time = _job_time = new Date();
 			next = ()=>{control['moveToNext']()};
 			prev = ()=>{control['moveToPrevious']()};
+			model.attributes.viewerSpreadDouble = false;
 			main();
 		} catch {
 			console.debug('r1', r1, 'r2', r1[r2], 'm1', m1, 'm2', m1[m2], 'menu', menu, 'control', control, 'model', model, 'renderer', renderer);
 		}
 	}
 }, 100);
+/*
 let nospreadinit;
 const ___$nospeard = setInterval(async function() {
 	if(!nospreadinit) {
@@ -501,6 +507,7 @@ const ___$nospeard = setInterval(async function() {
 		clearInterval(___$nospeard);
 	}
 }, 100);
+*/
 const ___$loopcheckdead = setInterval(function() {
 	let dead = 0;
 	if(stage == 0 && _init_time && Date.now() - _init_time > 30000) {
