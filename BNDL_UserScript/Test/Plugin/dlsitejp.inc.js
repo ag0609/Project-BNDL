@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("Dlsite Play Japan ver20211117.3");
+console.log("Dlsite Play Japan ver20220114.0");
 
 //User Configuration
 let retry_max = 25; //Maximum retry when drawImage
@@ -676,7 +676,7 @@ let comipoGetPage = function(p, n=null) {
                     method: "GET",
                     url: burl,
                     responseType:"blob",
-                    onload: function(blob) {
+                    onload: async function(blob) {
                         console.log("page", p, "image granted");
                         if(!comipo_unscramable) {
                             zip.file(new URLSearchParams(new URL(burl).search).get('file'), blob.response);
