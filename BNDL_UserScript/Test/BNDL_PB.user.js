@@ -38,7 +38,7 @@
 // @grant        GM_getResourceText
 // @grant        GM.notification
 // @grant        unsafeWindow
-// @run-at       document-body
+// @run-at       document-start
 // ==/UserScript==
 
 (async function() {
