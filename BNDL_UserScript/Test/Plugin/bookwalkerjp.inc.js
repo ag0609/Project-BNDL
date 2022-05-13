@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("BW Japan", "v20220110.6");
+console.log("BW Japan", "v20220513.0");
 console.log("Reference:", "https://fireattack.wordpress.com/", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -214,6 +214,7 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 					let parser = new DOMParser();
 					let html = parser.parseFromString(h, "text/html");
 					let authors = $(html).find("dl.p-author > dd");
+					bd.id = bd.substr(2);
 					bd.author = [];
 					let wt, pcl;
 					for(let i=0;i<authors.length;i++) {
@@ -278,10 +279,10 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 					Ci.add("/ComicInfo", "Month", pDate[1]);
 					Ci.add("/ComicInfo", "Day", pDate[2]);
 					console.debug("Published Date: %s/%s/%s", ...pDate);
-					const imp = info.find("dt:contains('レーベル'):last").next().text();
-					Ci.add("/ComicInfo", "Imprint", imp);
-					const ser = info.find("dt:contains('シリーズ'):last").next().text();
-					Ci.add("/ComicInfo", "Series", ser.replace(/([^（]+)\s*[（]?.*/, "$1").trim());
+					bd.imprint = info.find("dt:contains('レーベル'):last").next().text();
+					Ci.add("/ComicInfo", "Imprint", bd.imprint);
+					bd.series = info.find("dt:contains('シリーズ'):last").next().text();
+					Ci.add("/ComicInfo", "Series", bd.series.replace(/([^（]+)\s*[（]?.*/, "$1").trim());
 					Ci.add("/ComicInfo", "LanguageISO", "ja");
 					Ci.add("/ComicInfo", "BlackAndWhite", "Yes");
 					cty ? Ci.add("/ComicInfo", "Manga", "YesAndRightToLeft") : Ci.add("/ComicInfo", "Manga", "No");
@@ -292,11 +293,14 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 					try {
 						const toc = t1["toc_"];
 						const tocidx = t1[t2];
+						bd.toc = [];
 						toc.forEach(function(v,i) {
+							bd.toc[tocidx[v.href]] = v.label;
 							pages.setPageAttr(parseInt(tocidx[v.href]), "Bookmark", v.label);
 							console.log(v.label, ":", parseInt(tocidx[v.href]));
 						});
 					} catch(e) {};
+					bddb.add(bd);
 					console.groupEnd();
 					return resolve(autag);
 				}
@@ -307,6 +311,35 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 function main() {
 	console.log("main");
 	let _sdb=[];
+	try {
+                window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+                window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
+                window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
+	} catch(e) {
+                console.error('Your Browser doesn\'t support a stable version of IndexedDB');
+   	}
+	let idbmode = false, IDB = window.indexedDB, IDBT = window.IDBTransaction, IDBKR = window.IDBKeyRange;
+	if(window.indexedDB) {
+		idbmode=true;
+	}
+	let dbreq, pldb, bddb, cid=document.location.search.substr(1).split('&').map(v=>v.split('=')).find(v=>v[0]=='cid')[1]; //pagelist, bookdetail
+	if(idbmode) {
+		//https://viewer.bookwalker.jp/03/19/viewer.html?cid=19ba093b-776b-413c-8e2a-a53ca900815f&cty=1
+		dbreq = IDB.open('BNDL', 1);
+
+		dbreq.onupgradeneeded = (ev)=>{
+			bddb = ev.target.result.createObjectStore('books', {keyPath:'id'});
+			bddb.createIndex('id','id',{unique:true}); //12345678-1234-5678-9abc-123456789abc
+			bddb.createIndex('title','title',{unique:false});
+			bddb.createIndex('series','series',{unique:false});
+			bddb.createIndex('author','author',{unique:false});
+
+			pldb = ev.target.result.createObjectStore(cid, {autoIncrement:true, keyPath: 'id'});
+			pldb.createIndex('id', 'id', {unique:true});
+			pldb.createIndex('size', 'size', {unique:false});
+			pldb.createIndex('data','data',{unique:false});
+		}
+	}
 	const data = {labels:[],datasets:[{backgroundColor:'rgba(99,99,222,0.2)',borderColor:'rgba(99,99,222,0.8)',type:'line',label:'usetime',fill:'start',pointRadius:0,data:_pdb},
             	{backgroundColor:'rgba(99,222,99,0.2)',borderColor:'rgba(99, 222, 99, 0.8)',yAxisID:'y-axis-2',type:'line',label:'size',fill:'end',pointRadius:0,data:_sdb}]};
 	const options = {scales:{responsive:true,xAxes:[{display:false}],
@@ -347,6 +380,14 @@ function main() {
 			img$size[curp] = Math.round((c.toDataURL('image/jpeg')).length *3 /4);
 			console.log("size:", Math.round(img$size[curp]/1024).toFixed(2), "KBytes");
 			c.toBlob(async(v)=>{
+				//found what can be stored
+				let fr = new FileReader();
+				if(idbmode) {
+					fr.onload = function(ev) {
+						pldb.put({id:curp, size:img$size[curp], data:ev.target.result});
+					}
+					fr.readAsDataURL(v);
+				}
 				zip.file("P"+pad(curp, 5) + ".jpg", v);
 				if(curp == 1) pages.setPageAttr(curp-1, 'Type', 'FrontCover');
 				pages.setPageAttr(curp-1, 'ImageWidth', c.width);
@@ -354,6 +395,7 @@ function main() {
 				pages.setPageAttr(curp-1, 'ImageSize', v.size);
 				//if((curp >= totp || mode == 1) && startf) {
 				if(curp >= totp && startf) {
+					//zip.file("P"+pad(curp, 5) + ".jpg", v);
 					Ci.add("/ComicInfo", "ScanInfomation", scan);
 					Ci.addPageCollection(pages);
 					zip.file("ComicInfo.xml", Ci.toString(), {type: "text/xml"});
@@ -394,6 +436,7 @@ function main() {
 							$(pc).hide();
 							ss.pause();
 							startf=0;
+							if(idbmode) pldb.clear();
 						}, 5000);
 					});
 				} else {
