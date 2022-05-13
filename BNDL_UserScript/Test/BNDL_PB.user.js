@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Bootstrap version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      0.99
+// @version      1.02
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://viewer.bookwalker.jp/*
@@ -92,6 +92,34 @@
     let Ci = new comicinfo(); //Build XML class for ComicInfo.xml(which mainly used by Comic Reader)
     let pages;
     let scan = "Scaned By BNDL "+GM_info.script.version+"(ag0609)";
+    
+    	}
+	let dbreq, cid=document.location.search.substr(1).split('&').map(v=>v.split('=')).find(v=>v[0]=='cid')[1]; //pagelist, bookdetail
+	if(idbmode) {
+		//https://viewer.bookwalker.jp/03/19/viewer.html?cid=19ba093b-776b-413c-8e2a-a53ca900815f&cty=1
+		dbreq = IDB.open('BNDL', Date.now());
+		dbreq.onupgradeneeded = (ev)=>{
+            console.log('update');
+            try {
+                let bddb = ev.target.result.createObjectStore('books', {keyPath:'id'});
+                bddb.createIndex('id','id',{unique:true}); //12345678-1234-5678-9abc-123456789abc
+                bddb.createIndex('title','title',{unique:false});
+                bddb.createIndex('series','series',{unique:false});
+                bddb.createIndex('author','author',{unique:false});
+            } catch(e){};
+
+            try {
+                let pldb = ev.target.result.createObjectStore(cid, {autoIncrement:true, keyPath: 'id'});
+                pldb.createIndex('id', 'id', {unique:true});
+                pldb.createIndex('size', 'size', {unique:false});
+                pldb.createIndex('data','data',{unique:false});
+            } catch(e){};
+		}
+        dbreq.onsuccess = (ev)=>{
+            console.log('dbReady');
+        }
+	}
+    
     //Main UI
     const maindiv = document.createElement('div');
     const maincontent = $('<div>').appendTo($(maindiv));
