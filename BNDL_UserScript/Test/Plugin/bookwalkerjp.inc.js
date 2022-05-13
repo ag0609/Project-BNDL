@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("BW Japan", "v20220513.0");
+console.log("BW Japan", "v20220513.1");
 console.log("Reference:", "https://fireattack.wordpress.com/", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -214,7 +214,7 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 					let parser = new DOMParser();
 					let html = parser.parseFromString(h, "text/html");
 					let authors = $(html).find("dl.p-author > dd");
-					bd.id = bd.substr(2);
+					bd.id = bid.substr(2);
 					bd.author = [];
 					let wt, pcl;
 					for(let i=0;i<authors.length;i++) {
@@ -300,7 +300,13 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 							console.log(v.label, ":", parseInt(tocidx[v.href]));
 						});
 					} catch(e) {};
-					bddb.add(bd);
+					dbreq.result.transaction(['book'], 'readwrite').objectStore('book').get(cid).onsuccess = function() {
+						if(this.result) {
+						    this.put(bd);
+						} else {
+						    this.add(bd);
+						}
+					}
 					console.groupEnd();
 					return resolve(autag);
 				}
@@ -311,35 +317,6 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 function main() {
 	console.log("main");
 	let _sdb=[];
-	try {
-                window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-                window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
-                window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
-	} catch(e) {
-                console.error('Your Browser doesn\'t support a stable version of IndexedDB');
-   	}
-	let idbmode = false, IDB = window.indexedDB, IDBT = window.IDBTransaction, IDBKR = window.IDBKeyRange;
-	if(window.indexedDB) {
-		idbmode=true;
-	}
-	let dbreq, pldb, bddb, cid=document.location.search.substr(1).split('&').map(v=>v.split('=')).find(v=>v[0]=='cid')[1]; //pagelist, bookdetail
-	if(idbmode) {
-		//https://viewer.bookwalker.jp/03/19/viewer.html?cid=19ba093b-776b-413c-8e2a-a53ca900815f&cty=1
-		dbreq = IDB.open('BNDL', 1);
-
-		dbreq.onupgradeneeded = (ev)=>{
-			bddb = ev.target.result.createObjectStore('books', {keyPath:'id'});
-			bddb.createIndex('id','id',{unique:true}); //12345678-1234-5678-9abc-123456789abc
-			bddb.createIndex('title','title',{unique:false});
-			bddb.createIndex('series','series',{unique:false});
-			bddb.createIndex('author','author',{unique:false});
-
-			pldb = ev.target.result.createObjectStore(cid, {autoIncrement:true, keyPath: 'id'});
-			pldb.createIndex('id', 'id', {unique:true});
-			pldb.createIndex('size', 'size', {unique:false});
-			pldb.createIndex('data','data',{unique:false});
-		}
-	}
 	const data = {labels:[],datasets:[{backgroundColor:'rgba(99,99,222,0.2)',borderColor:'rgba(99,99,222,0.8)',type:'line',label:'usetime',fill:'start',pointRadius:0,data:_pdb},
             	{backgroundColor:'rgba(99,222,99,0.2)',borderColor:'rgba(99, 222, 99, 0.8)',yAxisID:'y-axis-2',type:'line',label:'size',fill:'end',pointRadius:0,data:_sdb}]};
 	const options = {scales:{responsive:true,xAxes:[{display:false}],
@@ -384,7 +361,9 @@ function main() {
 				let fr = new FileReader();
 				if(idbmode) {
 					fr.onload = function(ev) {
-						pldb.put({id:curp, size:img$size[curp], data:ev.target.result});
+						let t = dbreq.result.transaction([cid], 'readwrite').objectStore(cid).add({id:curp, size:img$size[curp], data:ev.target.result}).onsuccess = function() {
+						    //
+						}
 					}
 					fr.readAsDataURL(v);
 				}
