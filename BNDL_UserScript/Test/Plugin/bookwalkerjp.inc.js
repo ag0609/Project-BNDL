@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("BW Japan", "v20220513.1");
+console.log("BW Japan", "v20220517.0");
 console.log("Reference:", "https://fireattack.wordpress.com/", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -249,8 +249,6 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 							pcl.push(v.name);
 						}
 					});
-					bd.writer = wt;
-					bd.penciler = pcl;
 					//bd.author.sort(function(a,b) { if(a.name < b.name) { return -1 } else if(a.name > b.name) { return 1 } return 0; }); //sort by name
 					Ci.add("/ComicInfo", "Writer", wt);
 					if(pcl.length) {
@@ -300,14 +298,12 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 							console.log(v.label, ":", parseInt(tocidx[v.href]));
 						});
 					} catch(e) {};
-					dbreq.result.transaction(['book'], 'readwrite').objectStore('book').get(cid).onsuccess = function() {
-						if(this.result) {
-						    this.put(bd);
-						} else {
-						    this.add(bd);
-						}
-					}
 					console.groupEnd();
+					bd.lastUpdated = Date.now();
+					dbreq.result.transaction(['books'], 'readwrite').objectStore('books').put(bd).onsuccess = function() {
+						//
+						console.log(bd);
+					}
 					return resolve(autag);
 				}
 			});
@@ -333,7 +329,11 @@ function main() {
 			pages = new comicInfoPages(totp);
 		}
 		let curp = page.index+1;
-		gcurp = curp;
+		if(curp > gcurp) {
+		    gcurp = curp;
+		} else {
+		    control.moveToPage(gcurp+1);
+		}
 		if(_$canvas[curp] == undefined) {
 			_$canvas[curp] = [];
 			if(!_$canvas[1] && curp > 1) return control.moveToFirst();
@@ -341,7 +341,7 @@ function main() {
 			if(retry && img$size[curp]) return control.moveToNext(); //Page Down
 			if(startf && curp > startf && !img$size[curp-1]) return control.moveToPrevious(); //Page Up
 		}
-		if (image && !img$size[curp]) {
+		if (image &&) {
 			console.groupCollapsed("Page", curp, "/", totp, "("+(zip.file(/.*/).length+1),"files zipped)");
 			$(pcv).attr({"aria-valuemax":totp, "aria-valuenow":curp});
 			$(pcv).find('span').text("Capture Canvas: "+curp +"/"+ totp);
@@ -361,7 +361,7 @@ function main() {
 				let fr = new FileReader();
 				if(idbmode) {
 					fr.onload = function(ev) {
-						let t = dbreq.result.transaction([cid], 'readwrite').objectStore(cid).add({id:curp, size:img$size[curp], data:ev.target.result}).onsuccess = function() {
+						let t = dbreq.result.transaction([cid], 'readwrite').objectStore(cid).put({id:curp, size:img$size[curp], data:ev.target.result}).onsuccess = function() {
 						    //
 						}
 					}
@@ -411,11 +411,13 @@ function main() {
 						_job_time = new Date() - _job_time;
 						console.log("Book Download Time:", _job_time/1000, "sec");
 						toast($(a), "success", -1, "Job Done", {"htmlBody":true});
+						if(idbmode) pldb.clear().onsuccess = function() {
+                            console.log('cached image files cleared');
+                        };
 						setTimeout(function() {
 							$(pc).hide();
 							ss.pause();
 							startf=0;
-							if(idbmode) pldb.clear();
 						}, 5000);
 					});
 				} else {
@@ -425,7 +427,7 @@ function main() {
 					window.document.title = "["+curp+"/"+totp+"] "+on;
 					control.moveToNext();
 				} else {
-					if(!wait && img$size[curp] > 20000) { //Detail collect will only do once and Cover should be larger than 20KB
+					if(!wait) { //Detail collect will only do once and Cover should be larger than 20KB
 						wait = 1;
 						on = model.get('contentTitle') || $("#pagetitle").text();
 						if(on.match(/\s?【[^【】]*(無料|お試し|試し読み)[^【】]*】\s?/)) mode=1;
@@ -473,8 +475,28 @@ function main() {
 start = function() {
 	$(bndlBTN).attr({disabled:true});
 	$(maindiv).addClass('w-100 h-100');
-	startf = ($('#pageSliderCounter').text()).split('/')[0] * 1;;
 	_page_time = new Date();
+    if(idbmode) {
+        let lastid = 0;
+        dbreq.result.transaction([cid]).objectStore(cid).openCursor().onsuccess = function(ev) {
+            let cursor = ev.target.result;
+            if(cursor) {
+                img$size[cursor.value.id] = cursor.value.size;
+                pages.setPageAttr(cursor.value.id-1, 'ImageSize', cursor.value.size);
+                zip.file('P'+pad(cursor.value.id, 5)+'.jpg', cursor.value.data.split(',')[1], {base64:true});
+                if(lastid == cursor.value.id-1) lastid=cursor.value.id;
+                console.log(`Page ${cursor.value.id} added in zip`);
+                cursor.continue();
+            } else {
+                gcurp = lastid;
+                startf = gcurp;
+                console.log(`job restore completed, goto last page: ${lastid}`);
+                control.moveToPage(gcurp);
+            }
+        }
+    } else {
+        startf = ($('#pageSliderCounter').text()).split('/')[0] * 1;
+    }
 	control.moveToNext();
 }
 cancel = function() {
