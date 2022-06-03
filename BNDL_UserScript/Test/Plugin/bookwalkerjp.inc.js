@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("BW Japan", "v20220517.0");
+console.log("BW Japan", "v20220603.0");
 console.log("Reference:", "https://fireattack.wordpress.com/", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -300,9 +300,10 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 					} catch(e) {};
 					console.groupEnd();
 					bd.lastUpdated = Date.now();
-					dbreq.result.transaction(['books'], 'readwrite').objectStore('books').put(bd).onsuccess = function() {
-						//
-						console.log(bd);
+					if(idbmode && idbready) {
+						dbreq.result.transaction(['books'], 'readwrite').objectStore('books').put(bd).onsuccess = function() {
+							//console.log(bd);
+						}
 					}
 					return resolve(autag);
 				}
@@ -336,13 +337,14 @@ function main() {
 		}
 		if(_$canvas[curp] == undefined) {
 			_$canvas[curp] = [];
-			if(!_$canvas[1] && curp > 1) return control.moveToFirst();
+			if(!_$canvas[1] && curp > 1) return move(1);
 		} else {
-			if(retry && img$size[curp]) return control.moveToNext(); //Page Down
-			if(startf && curp > startf && !img$size[curp-1]) return control.moveToPrevious(); //Page Up
+			if(retry && img$size[curp]) return next();; //Page Down
+			if(startf && curp > startf && !img$size[curp-1]) return prev(); //Page Up
 		}
-		if (image &&) {
-			console.groupCollapsed("Page", curp, "/", totp, "("+(zip.file(/.*/).length+1),"files zipped)");
+		if (image && !img$size[curp]) {
+			let zipped = zip.file(/.*/).length+1;
+			console.groupCollapsed(`Page ${curp} / ${totp} (${zipped} files zipped)`);
 			$(pcv).attr({"aria-valuemax":totp, "aria-valuenow":curp});
 			$(pcv).find('span').text("Capture Canvas: "+curp +"/"+ totp);
 			const c = document.createElement('canvas');
@@ -374,7 +376,7 @@ function main() {
 				pages.setPageAttr(curp-1, 'ImageSize', v.size);
 				//if((curp >= totp || mode == 1) && startf) {
 				if(curp >= totp && startf) {
-					//zip.file("P"+pad(curp, 5) + ".jpg", v);
+					startf=0;
 					Ci.add("/ComicInfo", "ScanInfomation", scan);
 					Ci.addPageCollection(pages);
 					zip.file("ComicInfo.xml", Ci.toString(), {type: "text/xml"});
@@ -411,7 +413,7 @@ function main() {
 						_job_time = new Date() - _job_time;
 						console.log("Book Download Time:", _job_time/1000, "sec");
 						toast($(a), "success", -1, "Job Done", {"htmlBody":true});
-						if(idbmode) pldb.clear().onsuccess = function() {
+						if(idbmode && dbready) pldb.clear().onsuccess = function() {
                             console.log('cached image files cleared');
                         };
 						setTimeout(function() {
@@ -476,7 +478,7 @@ start = function() {
 	$(bndlBTN).attr({disabled:true});
 	$(maindiv).addClass('w-100 h-100');
 	_page_time = new Date();
-    if(idbmode) {
+    if(idbmode && dbready) {
         let lastid = 0;
         dbreq.result.transaction([cid]).objectStore(cid).openCursor().onsuccess = function(ev) {
             let cursor = ev.target.result;
@@ -491,7 +493,7 @@ start = function() {
                 gcurp = lastid;
                 startf = gcurp;
                 console.log(`job restore completed, goto last page: ${lastid}`);
-                control.moveToPage(gcurp);
+                move(gcurp);
             }
         }
     } else {
