@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("BW Japan", "v20220603.1");
+console.log("BW Japan", "v20220603.2");
 console.log("Reference:", "https://fireattack.wordpress.com/", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -360,8 +360,8 @@ function main() {
 			console.log("size:", Math.round(img$size[curp]/1024).toFixed(2), "KBytes");
 			c.toBlob(async(v)=>{
 				//found what can be stored
-				let fr = new FileReader();
-				if(idbmode) {
+				if(idbmode && dbready) {
+					let fr = new FileReader();
 					fr.onload = function(ev) {
 						let t = dbreq.result.transaction([cid], 'readwrite').objectStore(cid).put({id:curp, size:img$size[curp], data:ev.target.result}).onsuccess = function() {
 						    //
@@ -414,8 +414,8 @@ function main() {
 						console.log("Book Download Time:", _job_time/1000, "sec");
 						toast($(a), "success", -1, "Job Done", {"htmlBody":true});
 						if(idbmode && dbready) pldb.clear().onsuccess = function() {
-                            console.log('cached image files cleared');
-                        };
+							console.log('cached image files cleared');
+						};
 						setTimeout(function() {
 							$(pc).hide();
 							ss.pause();
