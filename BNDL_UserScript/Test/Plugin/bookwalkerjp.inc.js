@@ -300,7 +300,7 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 					} catch(e) {};
 					console.groupEnd();
 					bd.lastUpdated = Date.now();
-					if(idbmode && idbready) {
+					if(idbmode && dbready) {
 						dbreq.result.transaction(['books'], 'readwrite').objectStore('books').put(bd).onsuccess = function() {
 							//console.log(bd);
 						}
