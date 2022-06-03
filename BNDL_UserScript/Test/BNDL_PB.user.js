@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BNDL collector(Bootstrap version)
 // @namespace    https://github.com/ag0609/Project-BNDL
-// @version      1.02
+// @version      1.03
 // @description  Don't use if you don't know what is this
 // @author       ag0609
 // @match        https://viewer.bookwalker.jp/*
@@ -38,7 +38,7 @@
 // @grant        GM_getResourceText
 // @grant        GM.notification
 // @grant        unsafeWindow
-// @run-at       document-start
+// @run-at       document-body
 // ==/UserScript==
 
 (async function() {
@@ -92,8 +92,20 @@
     let Ci = new comicinfo(); //Build XML class for ComicInfo.xml(which mainly used by Comic Reader)
     let pages;
     let scan = "Scaned By BNDL "+GM_info.script.version+"(ag0609)";
-    
-    	}
+
+    //IndexedDB
+    let IDB, IDBT, IDBKR;
+    try {
+		IDB = unsafeWindow.indexedDB || unsafeWindow.mozIndexedDB || unsafeWindow.webkitIndexedDB || unsafeWindow.msIndexedDB || null;
+		IDBT = unsafeWindow.IDBTransaction || unsafeWindow.webkitIDBTransaction || unsafeWindow.msIDBTransaction || null;
+		IDBKR = unsafeWindow.IDBKeyRange || unsafeWindow.webkitIDBKeyRange || unsafeWindow.msIDBKeyRange || null;
+	} catch(e) {
+		console.error('Your Browser doesn\'t support a stable version of IndexedDB');
+   	}
+	let idbmode = false, dbready=false;
+	if(IDB) {
+		idbmode=true;
+	}
 	let dbreq, cid=document.location.search.substr(1).split('&').map(v=>v.split('=')).find(v=>v[0]=='cid')[1]; //pagelist, bookdetail
 	if(idbmode) {
 		//https://viewer.bookwalker.jp/03/19/viewer.html?cid=19ba093b-776b-413c-8e2a-a53ca900815f&cty=1
@@ -106,20 +118,21 @@
                 bddb.createIndex('title','title',{unique:false});
                 bddb.createIndex('series','series',{unique:false});
                 bddb.createIndex('author','author',{unique:false});
-            } catch(e){};
+            } catch(e){ idbmode=false };
 
             try {
                 let pldb = ev.target.result.createObjectStore(cid, {autoIncrement:true, keyPath: 'id'});
                 pldb.createIndex('id', 'id', {unique:true});
                 pldb.createIndex('size', 'size', {unique:false});
                 pldb.createIndex('data','data',{unique:false});
-            } catch(e){};
+            } catch(e){ idbmode=false };
 		}
         dbreq.onsuccess = (ev)=>{
             console.log('dbReady');
+            dbready=true;
         }
 	}
-    
+
     //Main UI
     const maindiv = document.createElement('div');
     const maincontent = $('<div>').appendTo($(maindiv));
@@ -147,31 +160,31 @@
     });
     const pc = document.createElement('div');
     $(pc).attr("id", 'bndl-progress')
-      .css({height:'0px'})
-      .addClass("progress user-select-none");
+    .css({height:'0px'})
+    .addClass("progress user-select-none");
     const pcv = document.createElement('div');
     $(pcv).addClass("progress-bar progress-bar-striped progress-bar-animated overflow-visible")
-      .attr({"role":"progress-bar", "aria-valuemin":0, "aria-valuemax":0, "aria-valuenow":0})
-      .css({"overflow":"visible!important"})
-      .appendTo($(pc));
+    .attr({"role":"progress-bar", "aria-valuemin":0, "aria-valuemax":0, "aria-valuenow":0})
+    .css({"overflow":"visible!important"})
+    .appendTo($(pc));
     $('<span>').addClass('progress-label container w-auto text-nowrap').css({'text-shadow':'-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000'}).appendTo($(pcv));
     maindiv.ob.observe(pcv, {attributes:true});
     const btn_obj = document.createElement('button');
     $(btn_obj).attr("type", "button").addClass("btn");
     const bndlBTN = btn_obj.cloneNode();
     $(bndlBTN).attr("id", 'bndl4')
-      .attr({"data-default-text":"BNDL", disabled:"true"})
-      .addClass('btn-success')
-      .text('BNDL');
+    		  .attr({"data-default-text":"BNDL", disabled:"true"})
+    		  .addClass('btn-success')
+    		  .text('BNDL');
     const quaBTN = btn_obj.cloneNode();
     $(quaBTN).addClass('btn-primary')
-      .attr({"data-default-text":"Quality","data-now-text":'Quality('+quality*100+')'})
-      .text('Quality('+quality*100+')')
-      .click(async ()=>{let tmpq = prompt("Quality?(0-100)"); if(tmpq < 100 && tmpq > 0) {quality = tmpq/100; await GM.setValue('quality', quality);} $(quaBTN).text('Quality('+quality*100+')');});
+    		 .attr({"data-default-text":"Quality","data-now-text":'Quality('+quality*100+')'})
+    		 .text('Quality('+quality*100+')')
+    		 .click(async ()=>{let tmpq = prompt("Quality?(0-100)"); if(tmpq < 100 && tmpq > 0) {quality = tmpq/100; await GM.setValue('quality', quality);} $(quaBTN).text('Quality('+quality*100+')');});
     const canBTN = btn_obj.cloneNode();
     $(canBTN).addClass('btn-danger')
-      .attr("data-default-text", "Stop")
-      .text("Stop");
+    		 .attr("data-default-text", "Stop")
+    		 .text("Stop");
     //$('<tr>').appendTo($(maincontent));
     $(pc).appendTo($(maincontent));
     $(quaBTN).appendTo($(maincontent));
@@ -305,6 +318,7 @@
         bndl_d.cancel = ()=>{cancel()};
         bndl_d.next = ()=>{next()};
         bndl_d.prev = ()=>{prev()};
+        bndl_d.move = function(){move(...arguments)}
         bndl_d.ob = new MutationObserver(bndl_d.attrchg);
         bndl_d.ob.observe(bndl_d, {attributes:true});
         document.body.appendChild(bndl_d);
@@ -406,6 +420,9 @@
     //if(/bookwalker\.tw/i.test(window.location.href)) jsMain = GM_getResourceText("BWTW");
     if(/booklive\.jp/i.test(window.location.href)) jsMain = GM_getResourceText("BLJP");
     if(/play\.dlsite\.com/i.test(window.location.href)) jsMain = GM_getResourceText("DLJP");
+
+
+
     eval(jsMain);
     $(bndlBTN).on("click", ()=>{start()});
     $(canBTN).on("click", ()=>{cancel()});
