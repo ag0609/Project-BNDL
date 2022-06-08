@@ -1,8 +1,10 @@
 //Reference Discramer
-console.log("BW Japan", "v20220603.2");
+console.log("BW Japan", "v20220608.0");
 console.log("Reference:", "https://fireattack.wordpress.com/", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
+let cid=document.location.search.substr(1).split('&').map(v=>v.split('=')).find(v=>v[0]=='cid')[1]
+
 //Check if reading a trial version of a book
 let mode = 0;
 let pop = false;
@@ -301,11 +303,13 @@ const getDetail = async function(bn, st=5, on="", ta=null, bid=null) { //Booknam
 					console.groupEnd();
 					bd.lastUpdated = Date.now();
 					if(idbmode && dbready) {
-						dbreq.result.transaction(['books'], 'readwrite').objectStore('books').put(bd).onsuccess = function() {
+						idxdb.transaction(['books'], 'readwrite').objectStore('books').put(bd).onsuccess = function() {
 							//console.log(bd);
+							return resolve(autag);
 						}
+					} else {
+						return resolve(autag);
 					}
-					return resolve(autag);
 				}
 			});
 		}
@@ -333,14 +337,14 @@ function main() {
 		if(curp > gcurp) {
 		    gcurp = curp;
 		} else {
-		    control.moveToPage(gcurp+1);
+		    move(gcurp+1);
 		}
 		if(_$canvas[curp] == undefined) {
 			_$canvas[curp] = [];
-			if(!_$canvas[1] && curp > 1) return move(1);
+			if(!_$canvas[1] && curp > 1) move(0);
 		} else {
-			if(retry && img$size[curp]) return next();; //Page Down
-			if(startf && curp > startf && !img$size[curp-1]) return prev(); //Page Up
+			if(retry && img$size[curp]) next(); //Page Down
+			if(startf && curp > startf && !img$size[curp-1]) prev(); //Page Up
 		}
 		if (image && !img$size[curp]) {
 			let zipped = zip.file(/.*/).length+1;
@@ -363,7 +367,7 @@ function main() {
 				if(idbmode && dbready) {
 					let fr = new FileReader();
 					fr.onload = function(ev) {
-						let t = dbreq.result.transaction([cid], 'readwrite').objectStore(cid).put({id:curp, size:img$size[curp], data:ev.target.result}).onsuccess = function() {
+						let t = idxdb.transaction([cid], 'readwrite').objectStore(cid).put({id:curp, size:img$size[curp], data:ev.target.result}).onsuccess = function() {
 						    //
 						}
 					}
@@ -427,7 +431,7 @@ function main() {
 				}
 				if(startf) {
 					window.document.title = "["+curp+"/"+totp+"] "+on;
-					control.moveToNext();
+					next();
 				} else {
 					if(!wait) { //Detail collect will only do once and Cover should be larger than 20KB
 						wait = 1;
@@ -498,8 +502,8 @@ start = function() {
         }
     } else {
         startf = ($('#pageSliderCounter').text()).split('/')[0] * 1;
+		next();
     }
-	control.moveToNext();
 }
 cancel = function() {
 	if(startf) {
@@ -532,7 +536,7 @@ const _$IfuBW_FFFF$_ = setInterval(function() {
 			_page_time = _job_time = new Date();
 			next = ()=>{control['moveToNext']()};
 			prev = ()=>{control['moveToPrevious']()};
-			move = ()=>{control['moveToPage']()};
+			move = (p)=>{control['moveToPage'](p)};
 			control.setSpreadDouble(false);
 			//model.attributes.viewerSpreadDouble = false;
 			main();
