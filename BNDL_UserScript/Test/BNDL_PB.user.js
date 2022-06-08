@@ -73,7 +73,7 @@
     let _$canvas = [];
     let img$size = [];
     let _$c_wh = {w:0, h:0};
-    let gcurp, gtotp;
+    let gcurp=0, gtotp=0;
     let fn, on, retry, wait;
     let bndl_d, bnt, bnto, start=()=>{}, cancel=()=>{}, next=() => { console.warn("no function yet"); }, prev=() => { console.warn("no function yet"); }, move=() => { console.warn("no function yet"); };
     let bd = {};
@@ -106,7 +106,7 @@
 	if(IDB) {
 		idbmode=true;
 	}
-	let dbreq, cid=document.location.search.substr(1).split('&').map(v=>v.split('=')).find(v=>v[0]=='cid')[1]; //pagelist, bookdetail
+	let idxdb, dbreq;
 	if(idbmode) {
 		//https://viewer.bookwalker.jp/03/19/viewer.html?cid=19ba093b-776b-413c-8e2a-a53ca900815f&cty=1
 		dbreq = IDB.open('BNDL', Date.now());
@@ -129,6 +129,7 @@
 		}
         dbreq.onsuccess = (ev)=>{
             console.log('dbReady');
+			idxdb=dbreq.result;
             dbready=true;
         }
 	}
