@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("BW Japan", "v20220608.0");
+console.log("BW Japan", "v20220608.1");
 console.log("Reference:", "https://fireattack.wordpress.com/", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -417,9 +417,7 @@ function main() {
 						_job_time = new Date() - _job_time;
 						console.log("Book Download Time:", _job_time/1000, "sec");
 						toast($(a), "success", -1, "Job Done", {"htmlBody":true});
-						if(idbmode && dbready) pldb.clear().onsuccess = function() {
-							console.log('cached image files cleared');
-						};
+						if(idbmode && dbready) idxdb.deleteObjectStore(cid);
 						setTimeout(function() {
 							$(pc).hide();
 							ss.pause();
