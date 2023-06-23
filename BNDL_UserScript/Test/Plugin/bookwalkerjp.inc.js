@@ -1,5 +1,5 @@
 //Reference Discramer
-console.log("BW Japan", "v20220608.1");
+console.log("BW Japan", "v20230623.0");
 console.log("Reference:", "https://fireattack.wordpress.com/", "by fireattack");
 let _detail$retry_ = 0;
 let backup, control, menu, renderer, model;
@@ -336,13 +336,12 @@ function main() {
 		let curp = page.index+1;
 		if(curp > gcurp) {
 		    gcurp = curp;
-		} else {
-		    move(gcurp+1);
 		}
 		if(_$canvas[curp] == undefined) {
 			_$canvas[curp] = [];
 			if(!_$canvas[1] && curp > 1) move(0);
 		} else {
+			if(startf > curp) return move(startf); //Jump
 			if(retry && img$size[curp]) next(); //Page Down
 			if(startf && curp > startf && !img$size[curp-1]) prev(); //Page Up
 		}
@@ -515,7 +514,7 @@ cancel = function() {
 		toast("", "danger", -1, "Job Canceled");
 	}
 }
-let r1, r2="G1W", m1, m2="Z4p", t1, t2="L1u"; //The Legend Keys
+let r1, r2="X0x", m1, m2="L7v", t1, t2="R0y"; //The Legend Keys
 const qwer = "%4e%46%42%52"; //The magic word
 let asdf; //The throne of brave
 const _$IfuBW_FFFF$_ = setInterval(function() {
